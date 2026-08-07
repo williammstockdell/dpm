@@ -118,28 +118,29 @@ Agent::start(
          }
     }
 
-    boost::asio::io_service io_service;
-    const SignalHandler::Ptr signalHandler(
-            SignalHandler::create( io_service )
-            );
-    MasterConnection::create( io_service, ports, this );
+    // FIXME: Replace!
+    // boost::asio::io_service io_service;
+    // const SignalHandler::Ptr signalHandler(
+    //         SignalHandler::create( io_service )
+    //         );
+    // MasterConnection::create( io_service, ports, this );
 
-    while ( 1 ) {
-        try {
-            io_service.run();
+    // while ( 1 ) {
+    //     try {
+    //         io_service.run();
 
-            // getting here means we received a signal, fall through
-            break;
-        } catch ( const std::exception& e ) {
-            LOG_WARN_MSG( "Uncaught exception: " << e.what() );
-            io_service.reset();
-            sleep(5);
-        }
-    }
+    //         // getting here means we received a signal, fall through
+    //         break;
+    //     } catch ( const std::exception& e ) {
+    //         LOG_WARN_MSG( "Uncaught exception: " << e.what() );
+    //         io_service.reset();
+    //         sleep(5);
+    //     }
+    // }
 
     // signal should be non-zero, if not something is wrong
-    BOOST_ASSERT( signalHandler->getSignal() );
-    this->doEndAgentRequest( signalHandler->getSignal() );
+    // BOOST_ASSERT( signalHandler->getSignal() );
+    // this->doEndAgentRequest( signalHandler->getSignal() );
 }
 
 BGMasterAgentProtocolSpec::JoinRequest

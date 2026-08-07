@@ -28,11 +28,10 @@
 #include "ras.h"
 
 #include "common/BinaryController.h"
+#include <utility/include/TimeStuff.h>
+#include <utility/include/ScopeExit.h>
 
 #include "../lib/exceptions.h"
-
-
-#include <boost/scope_exit.hpp>
 
 
 #include <unistd.h>
@@ -89,9 +88,9 @@ Alias::runPolicy(
     LOG_DEBUG_MSG("Policy check for alias " << _name);
 
     // Make SURE we are no longer waiting for an agent when this function is done!
-    BOOST_SCOPE_EXIT( ( &_waiting_for_agent ) ) {
+    ScopeExit cleanup([this] {
         _waiting_for_agent = false;
-    } BOOST_SCOPE_EXIT_END;
+    });
 
     // We have to check the following to see if we can start the job:
     // 1) That we will not exceed the maximum number of occurrences
@@ -278,7 +277,7 @@ Alias::evaluatePolicy(
     LOG_DEBUG_MSG("Start time=" << time_to_string(start)
                   << " Now=" << time_to_string(now));
     const auto td = now - start;
-    if (td.total_seconds() < RETRY_WINDOW) {
+    if (td < std::chrono::seconds(RETRY_WINDOW)) {
         ++_retry_count;
         LOG_DEBUG_MSG( "retry count: " << _retry_count );
     }

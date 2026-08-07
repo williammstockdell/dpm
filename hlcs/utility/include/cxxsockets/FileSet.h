@@ -28,13 +28,13 @@
 
 #include <utility/include/cxxsockets/types.h>
 
-#include <bgq_util/include/pthreadmutex.h>
+#include <utility/include/pthreadmutex.h>
 
 #include <vector>
 #include <list>
 
 namespace CxxSockets {
-    
+
 class FileSet
 {
 public:
@@ -49,7 +49,7 @@ protected:
 
 protected:
     typedef std::vector<FilePtr>::iterator iterator;
-    typedef std::vector<FilePtr>::const_iterator const_iterator; 
+    typedef std::vector<FilePtr>::const_iterator const_iterator;
 
 private:
     void pAddFile(FilePtr file);

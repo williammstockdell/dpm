@@ -23,8 +23,6 @@
 
 #include "DBUpdater.h"
 
-#include <db/include/api/tableapi/DBConnectionPool.h>
-#include <db/include/api/tableapi/TxObject.h>
 
 #include <utility/include/Log.h>
 
@@ -47,33 +45,14 @@ DBUpdater::~DBUpdater()
 void
 DBUpdater::start()
 {
-    _dbthread = boost::thread(&DBUpdater::runThread, this);
+    return;
 }
 
 void
 DBUpdater::runThread()
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    while (!_ending) {
-        std::string rasMessage;
-        if (_doq.pickUp(rasMessage)) {
-            LOG_DEBUG_MSG("Sending RAS message to database: " << rasMessage);
-            BGQDB::TxObject tx(BGQDB::DBConnectionPool::Instance());
-            if (!tx.getConnection()) {
-                LOG_ERROR_MSG("Unable to connect to database. Cannot put RAS message \"" << rasMessage << "\"");
-                return;
-            }
-
-            tx.setAutoCommit(true);
-            (void)tx.execStmt(rasMessage.c_str());
-        }
-        if (_doq.get_unread() == 0) { // No more to read...
-            boost::unique_lock<boost::mutex> ulock(_notify_lock);
-            while (!_ending && _doq.get_unread() == 0) {
-                _dropoff_notification.wait(ulock); // so wait for something to be dropped off.
-            }
-        }
-    }
+    return;
 }
 
 void
@@ -82,12 +61,7 @@ DBUpdater::addMsg(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    if (_ending) {
-        return;
-    }
-    _doq.dropOff(msg);
-    boost::lock_guard<boost::mutex> lg(_notify_lock);
-    _dropoff_notification.notify_all();
+    return;
     LOG_TRACE_MSG("Added following message to drop off queue: " << msg);
 }
 
@@ -95,10 +69,5 @@ void
 DBUpdater::end()
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    _ending = true;
-    if (!_ended) {
-        _dropoff_notification.notify_all();
-        _dbthread.join();
-    }
-    _ended = true;
+    return;
 }

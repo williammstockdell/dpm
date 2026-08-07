@@ -33,12 +33,6 @@
 
 #include "../lib/exceptions.h"
 
-
-#include <db/include/api/tableapi/DBConnectionPool.h>
-
-#include <ras/include/RasEventImpl.h>
-#include <ras/include/RasEventHandlerChain.h>
-
 #include <utility/include/version.h>
 
 
@@ -95,25 +89,26 @@ MasterController::putRAS(
         const std::map<std::string, std::string>& details
         )
 {
-    if (_master_db) { // Only bother with RAS if we've got a DB
-        RasEventImpl event(id);
-        for (std::map<std::string, std::string>::const_iterator it = details.begin(); it != details.end(); ++it) {
-            event.setDetail(it->first, it->second);
-        }
+    return;
+    // if (_master_db) { // Only bother with RAS if we've got a DB
+    //     RasEventImpl event(id);
+    //     for (std::map<std::string, std::string>::const_iterator it = details.begin(); it != details.end(); ++it) {
+    //         event.setDetail(it->first, it->second);
+    //     }
 
-        RasEventHandlerChain::handle(event);
+    //     RasEventHandlerChain::handle(event);
 
-        std::string rasMessage("insert into tbgqeventlog (msg_id,component,category,severity,message) values(");
-        rasMessage.append("'").append(event.getDetail(RasEvent::MSG_ID)).append("'");
-        rasMessage.append(",'").append(event.getDetail(RasEvent::COMPONENT)).append("'");
-        rasMessage.append(",'").append(event.getDetail(RasEvent::CATEGORY)).append("'");
-        rasMessage.append(",'").append(event.getDetail(RasEvent::SEVERITY)).append("'");
-        rasMessage.append(",'").append(event.getDetail(RasEvent::MESSAGE)).append("'");
-        rasMessage.append(")");
+    //     std::string rasMessage("insert into tbgqeventlog (msg_id,component,category,severity,message) values(");
+    //     rasMessage.append("'").append(event.getDetail(RasEvent::MSG_ID)).append("'");
+    //     rasMessage.append(",'").append(event.getDetail(RasEvent::COMPONENT)).append("'");
+    //     rasMessage.append(",'").append(event.getDetail(RasEvent::CATEGORY)).append("'");
+    //     rasMessage.append(",'").append(event.getDetail(RasEvent::SEVERITY)).append("'");
+    //     rasMessage.append(",'").append(event.getDetail(RasEvent::MESSAGE)).append("'");
+    //     rasMessage.append(")");
 
-        LOG_DEBUG_MSG("Sending RAS request to DB updater: " << rasMessage);
-        _updater.addMsg(rasMessage);
-    }
+    //     LOG_DEBUG_MSG("Sending RAS request to DB updater: " << rasMessage);
+    //     _updater.addMsg(rasMessage);
+    // }
 }
 
 void
@@ -622,7 +617,7 @@ MasterController::addBehaviors(
                 }
             }
             if (!policy_found) {
-                // Didn't find a policy, Assume the [master.binmap] entry has been commented out. 
+                // Didn't find a policy, Assume the [master.binmap] entry has been commented out.
                 // Log warning message in case something else is going on.
                 LOG_WARN_MSG("Policy " << current_policy << " found for undefined alias: " << keyval.first << " Skipping [master.policy.map] entry ...");
 
@@ -896,9 +891,9 @@ MasterController::startServers(
         if (agent) {
             // If we got here, we have an agent ready.
             const BGMasterAgentProtocolSpec::StartRequest agentreq(
-                    al->get_path(), 
+                    al->get_path(),
                     al->get_args(),
-                    al->get_logdir(), 
+                    al->get_logdir(),
                     al->get_name(),
                     al->get_user()
                     );
@@ -956,9 +951,9 @@ MasterController::startup(
         // Initialize the database for the process
         // This must be done before starting any threads, due to the initialization of static variables
         LOG_DEBUG_MSG("Initializing database connection pool");
-        BGQDB::DBConnectionPool::reset();
+        // BGQDB::DBConnectionPool::reset();
         // We aren't cutting RAS very often, just one DB pool thread.
-        BGQDB::DBConnectionPool::init(_props, 1);
+        // BGQDB::DBConnectionPool::init(_props, 1);
         _updater.start(); // Start the DB updater.
         _master_db = true;
     } else {
@@ -1050,7 +1045,7 @@ MasterController::startup(
                 }
 
                 // use _exit instead of exit since other threads are running and we don't want to
-                // run global destructors 
+                // run global destructors
                 _exit( 128 + siginfo.si_signo );
             }
         } else if ( !rc ) {
