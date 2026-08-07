@@ -27,7 +27,7 @@ include ../../Make.hlcs.rules
 
 DIRS = $(subst /Makefile,,$(wildcard */Makefile))
 
-
+CXXFLAGS += -std=c++20
 
 DIR_TARGS_ALL		= $(addsuffix .all,$(DIRS))
 DIR_TARGS_INSTALL       = $(addsuffix .install,$(DIRS))

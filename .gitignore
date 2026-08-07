@@ -1,0 +1,8 @@
+*.d
+*.o
+*.~
+*.#
+*.8
+*.bak
+cscope.files
+cscope.out

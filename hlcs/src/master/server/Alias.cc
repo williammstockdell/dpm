@@ -45,9 +45,9 @@ LOG_DECLARE_FILE( "master" );
 const int RETRY_WINDOW = 60;
 
 Alias::Alias(
-        const std::string& name, 
-        const std::string& path, 
-        const Policy& p, 
+        const std::string& name,
+        const std::string& path,
+        const Policy& p,
         const std::string& user,
         const std::string& logdir,
         const int preferredHostWait
@@ -273,11 +273,11 @@ Alias::evaluatePolicy(
         bptr = p;
     }
 
-    const boost::posix_time::ptime start = bptr->get_start_time();
-    const boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-    LOG_DEBUG_MSG("Start time=" << boost::posix_time::to_simple_string(start)
-                  << " Now=" << boost::posix_time::to_simple_string(now));
-    const boost::posix_time::time_duration td = now - start;
+    const std::chrono::system_clock::time_point start = bptr->get_start_time();
+    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    LOG_DEBUG_MSG("Start time=" << time_to_string(start)
+                  << " Now=" << time_to_string(now));
+    const auto td = now - start;
     if (td.total_seconds() < RETRY_WINDOW) {
         ++_retry_count;
         LOG_DEBUG_MSG( "retry count: " << _retry_count );
@@ -367,7 +367,7 @@ Alias::evaluatePolicy(
         if (bvr.get_retries() > (_retry_count==0?_retry_count:_retry_count - 1)) {
             LOG_INFO_MSG(
                     "Restarting alias " << get_name() << " on agent " << agent.get_host().fqhn() << " " <<
-                    _retry_count << " of " << bvr.get_retries() 
+                    _retry_count << " of " << bvr.get_retries()
                     );
             // Update database with RAS message
             std::map<std::string, std::string> details;

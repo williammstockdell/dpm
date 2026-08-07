@@ -27,6 +27,7 @@ endif
 
 # boost stuff
 CXXFLAGS    += -isystem $(BGQ_INSTALL_DIR)/extlib/include
+CXXFLAGS += -std=c++20
 LDFLAGS     += -L $(BGQ_INSTALL_DIR)/extlib/lib
 LDFLAGS     += -Wl,-rpath,$(BGQ_INSTALL_DIR)/extlib/lib
 

@@ -21,6 +21,8 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <ranges>
+
 #include <utility/include/TimeStuff.h>
 #include <utility/include/ScopeExit.h>
 
@@ -593,27 +595,29 @@ BGMasterClient::event_monitor() const
         all_messages.push_back("Error: " + curr_msg._errormsg);
     }
 
-    // For each message, put it after the last message <= its time.
-    for(const std::string& curr_msg : all_messages) {
-        using namespace boost::posix_time;
-        const ptime curr_msg_time(time_from_string(curr_msg.substr(7,20)));
+    for (const std::string& curr_msg : all_messages) {
+        const auto curr_msg_time =
+            time_from_string(curr_msg.substr(7, 20));
+
         bool inserted = false;
-        // NOTE - the insert into the vector being searched seems like it will cause problems here
-        for(const std::string& inner_msg : sorted_msgs) {
-            const ptime inner_msg_time(time_from_string(inner_msg.substr(7,20)));
+
+        for (auto it = sorted_msgs.begin(); it != sorted_msgs.end(); ++it) {
+            const auto inner_msg_time =
+                time_from_string(it->substr(7, 20));
+
             if (curr_msg_time > inner_msg_time) {
-                // Stick it in the sorted vector after the inner message.
-                sorted_msgs.insert(std::find(sorted_msgs.begin(), sorted_msgs.end(), inner_msg), curr_msg);
+                sorted_msgs.insert(it, curr_msg);
                 inserted = true;
                 break;
             }
         }
+
         if (!inserted) {
             sorted_msgs.push_back(curr_msg);
         }
     }
 
-    BOOST_REVERSE_FOREACH(std::string& curr_msg, sorted_msgs) {
+    for (std::string& curr_msg : sorted_msgs | std::views::reverse) {
         std::cout << curr_msg << std::endl;
     }
 
@@ -622,6 +626,7 @@ BGMasterClient::event_monitor() const
     // don't confuse the end message reply with an event message.
     _prot->initializeResponder(_prot->getRequester());
 
+    const BGMasterClient* this_p = this;
     ScopeExit cleanup([&] {
         try {
             this_p->end_monitor();
@@ -709,7 +714,7 @@ BGMasterClient::log_level(
     BGMasterClientProtocolSpec::LoglevelRequest loglevreq;
     BGMasterClientProtocolSpec::LoglevelReply loglevrep;
     // Load up the new log levels for the request.
-    BOOST_FOREACH(const std::string& i, input) {
+    for(const std::string& i : input) {
         loglevreq._loggers.push_back(i);
     }
     try {
@@ -723,7 +728,7 @@ BGMasterClient::log_level(
     }
 
     output.clear();
-    BOOST_FOREACH(const BGMasterClientProtocolSpec::Logger& curr_logger, loglevrep._loggers) {
+    for(const BGMasterClientProtocolSpec::Logger& curr_logger : loglevrep._loggers) {
         output[curr_logger._name] = curr_logger._level;
     }
 }
