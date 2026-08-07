@@ -121,7 +121,7 @@ public:
 
     //! \brief Get status of specified binaries (or all if empty).
     //! \param ids Map.  Associated statuses will be filled out for supplied binary ids.
-    void status(std::map<BinaryId, boost::shared_ptr<BinaryController>, Id::Comp>& ids) const;
+    void status(std::map<BinaryId, std::shared_ptr<BinaryController>, Id::Comp>& ids) const;
 
     //! \brief Get the status of bgmaster_server
     //! \param start_time is when bgmaster_server started.

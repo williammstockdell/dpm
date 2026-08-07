@@ -1,27 +1,26 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2011, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2011, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 
-include ../../../../../Make.rules
 include ../../../../Make.hlcs.rules
 
 all:
@@ -62,5 +61,3 @@ else
 	@echo "Will not generate docs because doxygen version is" $(shell doxygen --version) "and required version is" $(required_doxygen_version)
 	@touch $@
 endif
-
-

@@ -21,15 +21,15 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <utility/include/TimeStuff.h>
+#include <utility/include/ScopeExit.h>
+
 #include "BGMasterClient.h"
 
 #include "exceptions.h"
 
 #include "common/BinaryController.h"
 #include "common/ClientProtocol.h"
-
-#include <boost/foreach.hpp>
-#include <boost/scope_exit.hpp>
 
 LOG_DECLARE_FILE( "master" );
 
@@ -51,7 +51,7 @@ BGMasterClient::connectMaster(
     bool failed = true;
     std::ostringstream portstrings;
 
-    BOOST_FOREACH(const bgq::utility::PortConfiguration::Pair& portpair, portpairs) {
+    for(const bgq::utility::PortConfiguration::Pair& portpair : portpairs) {
         portstrings << portpair.first << ":" << portpair.second;
         try {
             _prot->initializeRequester(props, AF_UNSPEC, portpair.first, portpair.second, 2);
@@ -313,9 +313,7 @@ BGMasterClient::master_status(
 }
 
 void
-BGMasterClient::status(
-        std::map<BinaryId, BinaryControllerPtr, Id::Comp>& stats
-        ) const
+BGMasterClient::status(std::map<BinaryId, BinaryControllerPtr, Id::Comp>& stats) const
 {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::StatusRequest statreq;
@@ -371,7 +369,7 @@ BGMasterClient::idle_aliases(
     } catch (const CxxSockets::Error& err) {
         throw exceptions::CommunicationError(exceptions::WARN, "Connection to bgmaster_server failed.");
     }
-    BOOST_FOREACH(const std::string& al, idlerep._aliases) {
+    for(const std::string& al : idlerep._aliases) {
         aliases.push_back(al);
     }
 }
@@ -479,7 +477,7 @@ BGMasterClient::fail_over(
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::FailoverRequest failreq;
     BGMasterClientProtocolSpec::FailoverReply failrep(exceptions::OK, "success");
-    BOOST_FOREACH(const BinaryId& curr_id, bins) {
+    for(const BinaryId& curr_id : bins) {
         failreq._binary_ids.push_back(curr_id.str());
     }
     failreq._trigger = trigger;
@@ -496,7 +494,7 @@ BGMasterClient::fail_over(
     bins.clear();
     // Now go through the fail replies and put all of the failed failovers in the vector
     typedef BGMasterClientProtocolSpec::FailoverReply::BinaryStatus BinStat;
-    BOOST_FOREACH(BinStat& bs, failrep._statuses) {
+    for(BinStat& bs : failrep._statuses) {
         const BinaryId bid(bs._binary_id);
         bins.push_back(bid);
     }
@@ -588,20 +586,20 @@ BGMasterClient::event_monitor() const
     std::vector<std::string> sorted_msgs;
     // Note: The format of the messages is important. The "Event: " and "Error: " needs
     // to be there and be that length or the string parsification that happens later gets broken.
-    BOOST_FOREACH(BGMasterClientProtocolSpec::MonitorReply::EventMessage curr_msg, monrep._eventmessages) {
+    for(BGMasterClientProtocolSpec::MonitorReply::EventMessage curr_msg : monrep._eventmessages) {
         all_messages.push_back("Event: " + curr_msg._eventmsg);
     }
-    BOOST_FOREACH(BGMasterClientProtocolSpec::MonitorReply::ErrorMessage curr_msg, monrep._errormessages) {
+    for(BGMasterClientProtocolSpec::MonitorReply::ErrorMessage curr_msg : monrep._errormessages) {
         all_messages.push_back("Error: " + curr_msg._errormsg);
     }
 
     // For each message, put it after the last message <= its time.
-    BOOST_FOREACH(const std::string& curr_msg, all_messages) {
+    for(const std::string& curr_msg : all_messages) {
         using namespace boost::posix_time;
         const ptime curr_msg_time(time_from_string(curr_msg.substr(7,20)));
         bool inserted = false;
         // NOTE - the insert into the vector being searched seems like it will cause problems here
-        BOOST_FOREACH(const std::string& inner_msg, sorted_msgs) {
+        for(const std::string& inner_msg : sorted_msgs) {
             const ptime inner_msg_time(time_from_string(inner_msg.substr(7,20)));
             if (curr_msg_time > inner_msg_time) {
                 // Stick it in the sorted vector after the inner message.
@@ -624,14 +622,13 @@ BGMasterClient::event_monitor() const
     // don't confuse the end message reply with an event message.
     _prot->initializeResponder(_prot->getRequester());
 
-    const BGMasterClient* this_p = this;
-    BOOST_SCOPE_EXIT( (&this_p) ) {
+    ScopeExit cleanup([&] {
         try {
             this_p->end_monitor();
         } catch (std::runtime_error& e) {
             std::cerr << e.what() << std::endl;
         }
-    } BOOST_SCOPE_EXIT_END;
+    });
 
     // Now just monitor the socket forever.
     while (1) {

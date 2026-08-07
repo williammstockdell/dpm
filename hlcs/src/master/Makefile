@@ -63,11 +63,11 @@ bg_bin_links := \
  get_errors \
  get_history
 
-.PHONY: $(DIR_TARGS) clean docs install distclean all
+.PHONY: $(DIR_TARGS) clean install distclean all
 
 all: $(DIR_TARGS_ALL)
 
-install: $(DIR_TARGS_INSTALL)
+#install: $(DIR_TARGS_INSTALL)
 
 clean: $(DIR_TARGS_CLEAN)
 
@@ -87,10 +87,10 @@ lib.all: common.all
 lib.install: common.install
 command.all: lib.all
 command.install: lib.install
-docs.all: protocol.all
-docs.install: protocol.install
-test.all: common.all
-test.install: common.install
+#docs.all: protocol.all
+#docs.install: protocol.install
+#test.all: common.all
+#test.install: common.install
 
 vars:
 	echo $(DIR_TARGS_ALL) $(DIR_TARGS_CLEAN) dt $(DIR_TARGS)

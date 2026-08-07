@@ -40,8 +40,6 @@
 #include <list>
 #include <string>
 
-class MasterConnection;
-
 //! \brief Class for the concrete implementation.
 //! The base class provides the definition common
 //! to the master and the agent.  This provides the
@@ -90,7 +88,7 @@ public:
     const CxxSockets::Host& get_hostname() const { return _hostname; }
 
 private:
-    friend class MasterConnection;
+
     boost::mutex _uid_mutex;
     std::string _user_list;
     const CxxSockets::Host _hostname;

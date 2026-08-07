@@ -28,7 +28,7 @@
 #include "common/BinaryController.h"
 
 #include <utility/include/Log.h>
-
+#include <utility/include/TimeStuff.h>
 
 LOG_DECLARE_FILE( "master" );
 
@@ -78,11 +78,11 @@ doListAgents(
                               << (*bin_it)->get_alias_name().substr(0,16) << std::setw(13)
                               << BinaryController::status_to_string((*bin_it)->get_status())
                               << std::setw(11) << (*bin_it)->get_user().substr(0,10) << std::setw(11)
-                              << (*bin_it)->get_start_time() << std::endl;
+                              << time_to_string((*bin_it)->get_start_time()) << std::endl;
                 } else {
                     std::cout << idstr << "|" << (*bin_it)->get_binid().str() << ":" << (*bin_it)->get_alias_name()
                               << "|" << BinaryController::status_to_string((*bin_it)->get_status()) << "|"
-                              << (*bin_it)->get_user() << "|" << (*bin_it)->get_start_time() << std::endl;
+                              << (*bin_it)->get_user() << "|" << time_to_string((*bin_it)->get_start_time()) << std::endl;
                 }
             }
         }

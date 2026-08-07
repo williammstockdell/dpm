@@ -1,4 +1,3 @@
-include ../../../../../Make.rules
 include ../../../../Make.hlcs.rules
 
 TOP_DIR=hlcs
@@ -25,13 +24,15 @@ XML_SRC += monitor_master.xml
 
 XML_OBJ = $(XML_SRC:%.xml=%.8)
 
+DOCBOOK := /usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl
+
 ifneq ($(DOCBOOK), no)
 
-$(MAN_INSTALL_DIR):
-	$(MKDIR) -p $@
+# $(MAN_INSTALL_DIR):
+# 	$(MKDIR) -p $@
 
-$(MAN_INSTALL_DIR)/%.8: %.8 | $(MAN_INSTALL_DIR)
-	$(CP) $^ $@
+# $(MAN_INSTALL_DIR)/%.8: %.8 | $(MAN_INSTALL_DIR)
+# 	$(CP) $^ $@
 
 %.8:	%.xml
 	@echo "generating man pages"
@@ -40,19 +41,19 @@ $(MAN_INSTALL_DIR)/%.8: %.8 | $(MAN_INSTALL_DIR)
 
 default: all
 
-all:	docs install
+all:	docs
 
 docs: $(XML_OBJ)
 
-install: $(addprefix $(MAN_INSTALL_DIR)/, $(XML_OBJ))
+#install: $(addprefix $(MAN_INSTALL_DIR)/, $(XML_OBJ))
 
-uninstall:
+#uninstall:
 	$(RM) -r $(MAN_INSTALL_DIR)
 
 else
 
 all:
-install:
+#install:
 
 endif
 

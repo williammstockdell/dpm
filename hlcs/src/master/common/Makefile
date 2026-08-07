@@ -22,7 +22,6 @@
 # end_generated_IBM_copyright_prolog
 
 include ../../../Make.hlcs.rules
-#include ../../../../Make.rules
 
 
 CXXFLAGS += \

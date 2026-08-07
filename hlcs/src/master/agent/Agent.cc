@@ -22,7 +22,6 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include "Agent.h"
-#include "MasterConnection.h"
 #include "SignalHandler.h"
 
 #include "common/BinaryController.h"
