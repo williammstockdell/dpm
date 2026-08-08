@@ -24,16 +24,18 @@
 #include <Properties.h>
 
 #include <Log.h>
-
+#include <shared_mutex>
 #include <unistd.h>
-
+#include <string>
 #include <cassert>
 #include <cerrno>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
-
+#include <string.h>
+#include <filesystem>
+#include <Trim.h>
 
 using std::string;
 
@@ -41,6 +43,9 @@ LOG_DECLARE_FILE( "utility" );
 
 namespace bgq {
 namespace utility {
+
+#include <algorithm>
+#include <cctype>
 
 
 //---------------------------------------------------------------------
@@ -77,12 +82,7 @@ Properties::read()
     std::ifstream stream(_filename.c_str());
     if (!stream) {
         char buf[256];
-        BOOST_THROW_EXCEPTION(
-                FileError(
-                    "could not open properties " + _filename + " (" +
-                    strerror_r(errno, buf, sizeof(buf)) + ")"
-                    )
-                );
+        throw(FileError("could not open properties " + _filename + " (" + strerror_r(errno, buf, sizeof(buf)) + ")"));
     }
 
     // parse config file
@@ -101,7 +101,7 @@ Properties::read()
         }
 
         // trim left white space
-        boost::trim_left(line);
+        trim_left(line);
 
         // ignore empty lines
         if (line.empty()) {
@@ -114,9 +114,9 @@ Properties::read()
         } else if (section != _map.end()) {
             this->parseLine(section, line, lineno);
         } else {
-            BOOST_THROW_EXCEPTION(
+            throw(
                     MissingSection(
-                        "line " + boost::lexical_cast<std::string>(lineno) +
+                                   "line " + std::to_string(lineno) +
                         " of properties file " + _filename + " is invalid"
                         )
                     );
@@ -133,10 +133,10 @@ Properties::parseSection(
     // ensure we have left brackets
     std::string::size_type leftBracket = line.find_first_of('[');
     if (leftBracket == std::string::npos) {
-        BOOST_THROW_EXCEPTION(
+        throw(
                 MalformedSection(
                     "missing [ character at line " +
-                    boost::lexical_cast<std::string>(lineno) +
+                    std::to_string(lineno) +
                     " in file " + _filename
                     )
                 );
@@ -145,10 +145,10 @@ Properties::parseSection(
     // ensure we have right bracket
     std::string::size_type rightBracket = line.find_first_of(']', leftBracket);
     if (rightBracket == std::string::npos) {
-        BOOST_THROW_EXCEPTION(
+        throw(
                 MalformedSection(
                     "missing ] character at line " +
-                    boost::lexical_cast<std::string>(lineno) +
+                    std::to_string(lineno) +
                     " in file " + _filename
                     )
                 );
@@ -158,15 +158,15 @@ Properties::parseSection(
     std::string name = line.substr(leftBracket + 1, rightBracket - leftBracket - 1);
 
     // strip white space
-    boost::trim(name);
+    trim(name);
 
     // make sure we don't have this section
     Map::const_iterator section = _map.find(name);
     if (section != _map.end()) {
-        BOOST_THROW_EXCEPTION(
+        throw(
                 DuplicateSection(
-                    "section " + boost::lexical_cast<std::string>(name) + " already exists"
-                    " in properties file " + _filename
+                                 "section " + name + " already exists"
+                                 " in properties file " + _filename
                     )
                 );
     }
@@ -186,9 +186,9 @@ Properties::parseLine(
     // look for equals char
     std::string::size_type equals = line.find_first_of('=');
     if (equals == std::string::npos) {
-        BOOST_THROW_EXCEPTION(
+        throw(
                 MalformedKey(
-                    "line " + boost::lexical_cast<std::string>(lineno) + " missing equals token"
+                             "line " + std::to_string(lineno) + " missing equals token"
                     " in properties file " + _filename
                     )
                 );
@@ -199,16 +199,15 @@ Properties::parseLine(
     std::string value = line.substr(equals + 1);
 
     // trim white space
-    boost::trim(key);
-    boost::trim(value);
+    trim(key);
+    trim(value);
 
     // make sure we don't have this key
     try {
         this->getValueImpl(sectionIterator->first, key);
-        BOOST_THROW_EXCEPTION(
+        throw(
                 DuplicateKey(
-                    "found duplicate key \"" + boost::lexical_cast<std::string>(key) +
-                    "\" in section " + boost::lexical_cast<std::string>(sectionIterator->first) +
+                    "found duplicate key in section " + sectionIterator->first +
                     " of properties file " + _filename
                     )
                 );
@@ -228,38 +227,31 @@ Properties::getValue(
         ) const
 {
     // acquire read lock
-    boost::shared_lock<Mutex> lock( _mutex );
+    std::shared_lock<Mutex> lock( _mutex );
     return this->getValueImpl( sectionName, keyName );
 }
 
-const std::string&
-Properties::getValueImpl(
-        const std::string& sectionName,
-        const std::string& keyName
-        ) const
+const std::string& Properties::getValueImpl(const std::string& sectionName, const std::string& keyName) const
 {
-    // get section
-    const Section& section = this->getValuesImpl(sectionName);
+    const Section& section = getValuesImpl(sectionName);
 
-    // find key
-    Section::const_iterator keyIterator = std::find_if(
-            section.begin(),
-            section.end(),
-            boost::bind(
-                std::equal_to<std::string>(),
-                keyName,
-                boost::bind(&Section::value_type::first, _1) ) );
+    const auto keyIterator = std::find_if(
+        section.begin(),
+        section.end(),
+        [&keyName](const auto& entry) {
+            return entry.first == keyName;
+        }
+    );
 
     if (keyIterator == section.end()) {
-        BOOST_THROW_EXCEPTION(
-                std::invalid_argument(
-                    "could not find key " + keyName + " in section " + sectionName +
-                    " of properties file " + _filename
-                    )
-                );
-    } else {
-        return keyIterator->second;
+        throw std::invalid_argument(
+            "could not find key " + keyName +
+            " in section " + sectionName +
+            " of properties file " + _filename
+        );
     }
+
+    return keyIterator->second;
 }
 
 const Properties::Section&
@@ -268,7 +260,7 @@ Properties::getValues(
         ) const
 {
     // acquire read lock
-    boost::shared_lock<Mutex> lock( _mutex );
+    std::shared_lock<Mutex> lock( _mutex );
     return this->getValuesImpl( sectionName );
 }
 
@@ -280,7 +272,7 @@ Properties::getValuesImpl(
     // find section
     Map::const_iterator sectionIterator = _map.find(sectionName);
     if (sectionIterator == _map.end()) {
-        BOOST_THROW_EXCEPTION(
+        throw(
                 std::invalid_argument(
                     "Could not find section " + sectionName + " in properties file " + _filename
                     )
@@ -296,15 +288,15 @@ Properties::reload(
         )
 {
     // ensure filename is fully qualified
-    if ( !filename.empty() && !boost::filesystem::path(filename).is_complete() ) {
+    if ( !filename.empty() && !std::filesystem::path(filename).is_absolute() ) {
         LOG_WARN_MSG( filename << " is not a fully qualified path" );
-        BOOST_THROW_EXCEPTION(
+        throw(
                 std::invalid_argument( filename )
                 );
     }
 
     // acquire write lock
-    boost::unique_lock<Mutex> unique( _mutex );
+    std::unique_lock<Mutex> unique( _mutex );
 
     // retain copy
     Map map;

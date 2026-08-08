@@ -108,8 +108,8 @@ Handshaker::_handleClientHandshake(
     LOG_TRACE_MSG( __FUNCTION__ );
     if ( error ) {
         const string error_str(
-                "handshake with " + 
-                boost::lexical_cast<std::string>(socket_ptr->next_layer().remote_endpoint()) + 
+                "handshake with " +
+                boost::lexical_cast<std::string>(socket_ptr->next_layer().remote_endpoint()) +
                 " failed with " +
                 error.message()
                 );
@@ -126,7 +126,7 @@ Handshaker::_handleClientHandshake(
     std::string server_cn;
 
     try {
-        boost::shared_ptr<std::string> server_cn_ptr(pc_util::extractPeerCn( *socket_ptr ));
+        std::shared_ptr<std::string> server_cn_ptr(pc_util::extractPeerCn( *socket_ptr ));
 
         if ( ! server_cn_ptr ) {
             BOOST_THROW_EXCEPTION( runtime_error( "the server didn't provide a certificate and a certificate is required" ) );
@@ -262,7 +262,7 @@ Handshaker::_handleServerHandshake(
     try {
         // Get the client's CN if present so can compare it vs the expected CNs.
 
-        boost::shared_ptr<std::string> client_cn_ptr = pc_util::extractPeerCn( *socket_ptr );
+        std::shared_ptr<std::string> client_cn_ptr = pc_util::extractPeerCn( *socket_ptr );
 
         if ( ! client_cn_ptr ) {
 

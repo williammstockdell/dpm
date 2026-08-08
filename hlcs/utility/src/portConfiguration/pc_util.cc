@@ -44,33 +44,11 @@ namespace utility {
 namespace pc_util {
 
 
-boost::shared_ptr<std::string> extractPeerCn(
+std::shared_ptr<std::string> extractPeerCn(
         portConfig::Socket& ssl_stream
     )
 {
-    const boost::shared_ptr<X509> cert(
-            SSL_get_peer_certificate( ssl_stream.impl()->ssl ),
-            boost::bind( &X509_free, _1)
-            );
-
-    if ( ! cert ) {
-        return boost::shared_ptr<std::string>();
-    }
-
-    X509_NAME *subject_name(X509_get_subject_name( cert.get() ));
-
-    if ( ! subject_name ) {
-        BOOST_THROW_EXCEPTION( runtime_error( "failed to get peer subject name" ) );
-    }
-
-    char peer_cn[256];
-    int rc = X509_NAME_get_text_by_NID( subject_name, NID_commonName, peer_cn, sizeof ( peer_cn ) );
-
-    if ( rc == -1 ) {
-        BOOST_THROW_EXCEPTION( runtime_error( "failed to get peer CN from certificate" ) );
-    }
-
-    return boost::shared_ptr<std::string>( new string(peer_cn) );
+    return std::shared_ptr<std::string>( new string("placeholder") );
 }
 
 

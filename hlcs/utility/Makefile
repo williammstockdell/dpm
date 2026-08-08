@@ -1,27 +1,25 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2010, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
-
-include ../Make.rules
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2010, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 
 DIRS  = $(subst /Makefile,,$(wildcard */Makefile))
 
@@ -32,7 +30,6 @@ endif
 
 
 TARGETS_ALL		= $(addsuffix .all,$(DIRS))
-TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))
 TARGETS_CLEAN		= $(addsuffix .clean,$(DIRS))
 TARGETS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
 TARGETS_UNINSTALL	= $(addsuffix .uninstall,$(DIRS))
@@ -49,13 +46,11 @@ doxygen_version := $(subst 1.7,1.6,$(findstring 1.6, $(shell doxygen --version))
 required_doxygen_version := 1.6
 
 
-.PHONY: default all install clean distclean uninstall docs $(TARGETS)
+.PHONY: default all clean distclean uninstall docs $(TARGETS)
 
 
 # make the all also do an install so the top level default make works
-default:    install
-all:        install
-
+all:  $(TARGETS)
 
 install:		$(TARGETS_INSTALL) docs $(call TLD_INSTALL_PACKAGING_TARGET, utility.specsrc)
 clean:			$(TARGETS_CLEAN) docs.clean
@@ -90,4 +85,3 @@ endif
 
 
 docs: doxygen.out
-

@@ -47,15 +47,15 @@ private:
 class XMLEntity
 {
 public:
-    static XMLEntity* readXML (const char* filename) throw(XMLException);
-    static XMLEntity* readXML(std::istream& is) throw(XMLException);
+    static XMLEntity* readXML (const char* filename);
+    static XMLEntity* readXML(std::istream& is);
     static void dumpXML(const std::stringstream& os, const char* description, const bool force);
 
     const std::string& name() const { return _name; }
     const std::string& cdata() const { return _cdata; }
-    const char* attrByName(const char *name) const throw(XMLException);
+    const char* attrByName(const char *name) const;
     const char* attrOptByName(const char *name) const;
-    const XMLEntity* subEntByName(const char *name) const throw(XMLException);
+    const XMLEntity* subEntByName(const char *name) const;
     std::vector<const XMLEntity*> subentities() const;
     unsigned lineno() const { return _lineno; }
 

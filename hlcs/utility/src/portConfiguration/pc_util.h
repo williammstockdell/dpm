@@ -43,7 +43,7 @@ namespace pc_util {
  *
  *  \throws runtime_error if there's a peer certificate and fails to get CN.
  */
-boost::shared_ptr<std::string> extractPeerCn(
+std::shared_ptr<std::string> extractPeerCn(
         portConfig::Socket& ssl_stream
     );
 

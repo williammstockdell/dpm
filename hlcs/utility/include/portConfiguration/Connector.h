@@ -156,7 +156,6 @@ public:
      *
      */
     Connector(
-            boost::asio::io_service& io_service, //!< [held]
             const ClientPortConfiguration& port_configuration //!< [copied]
         );
 
@@ -195,9 +194,7 @@ public:
 
 private:
 
-    boost::asio::io_service &_io_service;
     ClientPortConfiguration _port_config;
-    SslConfiguration::ContextPtr _context_ptr;
 
     void _connectHandler(
             portConfig::SocketPtr socket_ptr,

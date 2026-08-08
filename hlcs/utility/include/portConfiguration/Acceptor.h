@@ -36,9 +36,6 @@
 
 #include <utility/include/UserId.h>
 
-#include <boost/asio.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <string>
 #include <vector>
@@ -110,16 +107,12 @@ public:
         portConfig::UserType::Value user_type;
         std::string client_cn;
 
-        typedef std::vector<boost::asio::ip::tcp::endpoint> Endpoints;
-        Endpoints endpoints;
-
         explicit AcceptArguments(
                 Status::Value status
             );
 
         // status will be NowAccepting
         explicit AcceptArguments(
-                const Endpoints& endpoints
             );
 
         AcceptArguments(
@@ -131,22 +124,12 @@ public:
     };
 
 
-    /*! \brief Function type for the callbacks.
-     */
-    typedef boost::function<
-            void (
-                const AcceptArguments& args
-            )
-        > AcceptHandler;
-
-
     /*! \brief Constructor
      *
      * Call start() to start accepting.
      *
      */
     Acceptor(
-            boost::asio::io_service& io_service, //!< [retains reference]
             const ServerPortConfiguration& port_configuration, //!< [copied]
             portConfig::UserIdHandling::Value user_id_handling = portConfig::UserIdHandling::Process //!< user ID handling.
         );
@@ -181,7 +164,7 @@ public:
      *
      */
     void start(
-            AcceptHandler accept_handler //!< [copied]
+
         );
 
     /*! \brief Stop accepting connections. */
@@ -190,22 +173,10 @@ public:
 
 private:
 
-    typedef boost::shared_ptr<boost::asio::ip::tcp::acceptor> AcceptorPtr; //!< An acceptor pointer.
-
-    typedef std::vector<AcceptorPtr> Acceptors; //!< Collection of acceptor pointers.
 
 
-    boost::asio::io_service &_io_service;
-    boost::asio::strand _strand;
     const ServerPortConfiguration _port_config;
     portConfig::UserIdHandling::Value _user_id_handling;
-    SslConfiguration::ContextPtr _context_ptr;
-
-    boost::asio::ip::tcp::resolver _resolver;
-
-    AcceptHandler _accept_handler;
-
-    Acceptors _acceptors;
 
 
     void _startResolve(
@@ -213,19 +184,16 @@ private:
         );
 
     void _handleResolve(
-            ServerPortConfiguration::Pairs::const_iterator pi,
-            const boost::system::error_code& err,
-            boost::asio::ip::tcp::resolver::iterator endpoint_iterator
+            ServerPortConfiguration::Pairs::const_iterator pi
         );
 
     void _startAccept(
-            AcceptorPtr acceptor_ptr
+
         );
 
     void _handleAccept(
-            AcceptorPtr acceptor_ptr,
-            portConfig::SocketPtr socket_ptr,
-            const boost::system::error_code& err
+
+            portConfig::SocketPtr socket_ptr
         );
 
     void _handshakeComplete(

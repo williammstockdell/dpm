@@ -1,26 +1,26 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2011, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
-include ../../../Make.rules
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2011, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
+
 include ../../Make.utility.rules
 
 CXXFLAGS += -Wall
@@ -48,7 +48,7 @@ test_singleton: LDFLAGS += -lboost_unit_test_framework-mt
 test_singleton: singleton.o Makefile
 	$(CXX) -o $@ $(filter-out Makefile, $^) $(LDFLAGS)
 
-install: all 
+install: all
 
 
 clean:

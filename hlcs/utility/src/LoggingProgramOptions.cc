@@ -26,15 +26,10 @@
 
 #include <Log.h>
 
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
-
-using boost::bind;
-using boost::shared_ptr;
 
 using log4cxx::Level;
 using log4cxx::LevelPtr;
@@ -54,7 +49,7 @@ namespace utility {
 
 
 LevelPtr
-LoggingProgramOptions::parseVerboseArgument( 
+LoggingProgramOptions::parseVerboseArgument(
         const string& str
         )
 {
@@ -68,30 +63,26 @@ LoggingProgramOptions::parseVerboseArgument(
     if ( str == "T" || str == "t" )  return Level::getTrace();
     if ( str == "A" || str == "a" )  return Level::getAll();
 
-    try {
-        int level_int(boost::lexical_cast<int> ( str ));
+    int level_int(std::stoi( str ));
 
-        switch ( level_int ) {
-            case 0: return Level::getOff();
-            case 1: return Level::getFatal();
-            case 2: return Level::getError();
-            case 3: return Level::getWarn();
-            case 4: return Level::getInfo();
-            case 5: return Level::getDebug();
-            case 6: return Level::getTrace();
-            case 7: return Level::getAll();
-        }
-
-        BOOST_THROW_EXCEPTION( std::invalid_argument( string() + "invalid verbose option '" + str + "'" ) );
-    } catch ( boost::bad_lexical_cast& e ) {
-        // Ignore this exception and try another method.
+    switch ( level_int ) {
+    case 0: return Level::getOff();
+    case 1: return Level::getFatal();
+    case 2: return Level::getError();
+    case 3: return Level::getWarn();
+    case 4: return Level::getInfo();
+    case 5: return Level::getDebug();
+    case 6: return Level::getTrace();
+    case 7: return Level::getAll();
     }
+
+    throw( std::invalid_argument( string() + "invalid verbose option '" + str + "'" ) );
 
     LevelPtr ret(Level::toLevel( str ));
 
     // To figure out if the level string wasn't recognized,
     if ( ret != Level::toLevel( str, Level::getOff() ) ) {
-        BOOST_THROW_EXCEPTION( std::invalid_argument( string() + "invalid verbose option '" + str + "'" ) );
+        throw( std::invalid_argument( string() + "invalid verbose option '" + str + "'" ) );
     }
 
     return ret;
@@ -107,21 +98,21 @@ LoggingProgramOptions::LoggingProgramOptions(
 
 
 void LoggingProgramOptions::addTo(
-        boost::program_options::options_description& opts_desc
+                                  //   boost::program_options::options_description& opts_desc
     )
 {
-    namespace po = boost::program_options;
+    // namespace po = boost::program_options;
 
-    shared_ptr<po::option_description> opt_desc_ptr(
-            new po::option_description(
-                    "verbose",
-                    po::value<Strings>()
-                        ->notifier( bind( &LoggingProgramOptions::notifier, this, _1 ) ),
-                    "Logging configuration"
-                )
-        );
+    // shared_ptr<po::option_description> opt_desc_ptr(
+    //         new po::option_description(
+    //                 "verbose",
+    //                 po::value<Strings>()
+    //                     ->notifier( bind( &LoggingProgramOptions::notifier, this, _1 ) ),
+    //                 "Logging configuration"
+    //             )
+    //     );
 
-    opts_desc.add( opt_desc_ptr );
+    // opts_desc.add( opt_desc_ptr );
 }
 
 
@@ -155,12 +146,11 @@ void LoggingProgramOptions::apply() const
 
 
     // Log current logger settings.
+    const auto root = log4cxx::Logger::getRootLogger();
 
-    log4cxx::LoggerList loggers(log4cxx::Logger::getRootLogger()->getLoggerRepository()->getCurrentLoggers());
-
-    for ( log4cxx::LoggerList::const_iterator i(loggers.begin()) ; i != loggers.end() ; ++i ) {
-        if ( (*i)->getLevel() ) {
-            LOG_DEBUG_MSG( (*i)->getName() << "=" << (*i)->getLevel()->toString() );
+    if (const auto repo = root->getLoggerRepository().lock()) {
+        for (const log4cxx::LoggerPtr& curr_loggerp : repo->getCurrentLoggers()) {
+            LOG_DEBUG_MSG( curr_loggerp->getName() << "=" << curr_loggerp->getLevel()->toString() );
         }
     }
 }

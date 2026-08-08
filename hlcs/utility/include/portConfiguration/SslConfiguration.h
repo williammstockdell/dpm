@@ -32,10 +32,6 @@
 
 #include <utility/include/Properties.h>
 
-#include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
-
-#include <boost/asio/ssl.hpp>
 
 #include <string>
 
@@ -52,10 +48,7 @@ class SslConfiguration
 {
 public:
 
-    typedef boost::asio::ssl::context Context;
-    typedef boost::shared_ptr<Context> ContextPtr;
-
-    typedef boost::shared_ptr<std::string> StringPtr;
+    typedef std::shared_ptr<std::string> StringPtr;
 
 
     struct Use {
@@ -98,8 +91,7 @@ public:
     /*! \brief Create a context.
      *
      */
-    ContextPtr createContext(
-            boost::asio::io_service& io_service
+    void createContext(
         );
 
 

@@ -154,77 +154,10 @@ SslConfiguration::SslConfiguration(
 }
 
 
-SslConfiguration::ContextPtr SslConfiguration::createContext(
-            boost::asio::io_service& io_service
+void SslConfiguration::createContext(
         )
 {
-    string ssl_function_name;
 
-    LOG_DEBUG_MSG( "Creating context." );
-
-    ContextPtr context_ptr;
-
-    try {
-        ssl_function_name = "constructor";
-        context_ptr.reset( new Context(
-                io_service,
-                _use == Use::Client ? boost::asio::ssl::context::sslv23_client : boost::asio::ssl::context::sslv23_server
-            ) );
-
-        Context &context(*context_ptr);
-
-        ssl_function_name = "set_options";
-        context.set_options(
-                boost::asio::ssl::context::default_workarounds
-            );
-
-        ssl_function_name = "set_verify_mode";
-        boost::asio::ssl::context::verify_mode mode = boost::asio::ssl::context::verify_peer;
-        if ( _use == Use::Client ) {
-            mode |= boost::asio::ssl::context::verify_fail_if_no_peer_cert;
-        } else {
-            // only enable peer verification if requested
-            if ( _certificate != Certificate::Optional ) {
-                mode |= boost::asio::ssl::context::verify_fail_if_no_peer_cert;
-            }
-        }
-        LOG_DEBUG_MSG( "verify mode: " << std::hex << mode );
-        context.set_verify_mode( mode );
-
-        ssl_function_name = "use_certificate_chain_file";
-        context.use_certificate_chain_file(
-                _my_cert_filename
-            );
-
-        ssl_function_name = "use_private_key_file";
-        context.use_private_key_file(
-                _my_private_key_filename,
-                boost::asio::ssl::context::pem
-            );
-
-        // Configure CA stuff.
-
-        if ( _ca_certificates_path ) {
-            ssl_function_name = "add_verify_path";
-            context.add_verify_path( *_ca_certificates_path );
-        }
-
-        if ( _ca_certificate_filename ) {
-            ssl_function_name = "load_verify_file";
-            context.load_verify_file( *_ca_certificate_filename );
-        }
-    } catch ( std::exception& e ) {
-        THROW_SSL_ERROR( ssl_function_name );
-    }
-
-    if ( _use_default_paths ) {
-        int ssl_rc(SSL_CTX_set_default_verify_paths( context_ptr->impl() ));
-        if ( ssl_rc != 0 ) {
-            THROW_SSL_ERROR( ssl_function_name );
-        }
-    }
-
-    return context_ptr;
 }
 
 

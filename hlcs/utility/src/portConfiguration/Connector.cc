@@ -36,12 +36,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/throw_exception.hpp>
 
-#include <boost/spirit/home/phoenix/core.hpp>
-#include <boost/spirit/home/phoenix/operator.hpp>
-#include <boost/spirit/home/phoenix/statement.hpp>
-
-#include <boost/spirit/home/phoenix/object/construct.hpp>
-
 #include <iostream>
 #include <sstream>
 
@@ -91,12 +85,9 @@ Connector::ConnectResult::ConnectResult(
 // Class Connector
 
 Connector::Connector(
-        boost::asio::io_service& io_service,
         const ClientPortConfiguration& port_configuration
     ) :
-    _io_service(io_service),
-    _port_config(port_configuration),
-    _context_ptr()
+    _port_config(port_configuration)
 {
     // Nothing to do.
 }
@@ -105,38 +96,6 @@ Connector::Connector(
 portConfig::SocketPtr
 Connector::connect()
 {
-    using namespace boost::phoenix;
-    using namespace boost::phoenix::arg_names;
-    ConnectResult result;
-
-    // reset I/O service when we go out of scope
-    ScopeGuard reset(
-            boost::bind(
-                &boost::asio::io_service::reset,
-                boost::ref( _io_service )
-                )
-            );
-
-    // connect
-    this->async_connect(
-            boost::phoenix::ref( result ) = arg1
-        );
-
-    // run I/O service
-    _io_service.run();
-
-    if ( result.error != Error::Success )
-    {
-        switch ( result.error )
-        {
-            case Error::ResolveError: throw ResolveError( result.error_str );
-            case Error::ConnectError: throw ConnectError( result.error_str );
-            case Error::HandshakeError: throw HandshakeError( result.error_str );
-            default: throw ConnectError( result.error_str );
-        }
-    }
-
-    return result.socket_ptr;
 }
 
 
@@ -169,31 +128,6 @@ Connector::async_connect(
         ConnectHandler connect_handler
     )
 {
-    // create context
-    _context_ptr = _port_config.createSslConfiguration().createContext( _io_service );
-
-    // create socket
-    portConfig::SocketPtr socket_ptr( new portConfig::Socket( _io_service, *_context_ptr ) );
-
-    // start connecting
-    PairConnector::Ptr pair_connector_ptr(
-            new PairConnector(
-                _io_service,
-                _port_config.getPairs(),
-                socket_ptr->next_layer()
-                )
-            );
-
-    pair_connector_ptr->start(
-            bind(
-                &Connector::_connectHandler,
-                this,
-                socket_ptr,
-                connect_handler,
-                _1,
-                _2
-                )
-            );
 }
 
 

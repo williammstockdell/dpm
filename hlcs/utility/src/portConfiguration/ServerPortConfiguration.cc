@@ -35,8 +35,6 @@
 
 using boost::bind;
 
-using boost::asio::ip::tcp;
-
 using std::ostringstream;
 using std::string;
 

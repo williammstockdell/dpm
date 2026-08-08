@@ -1,33 +1,31 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2010, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2010, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 
 TOP_DIR=utility
 BGQ_BIN_INSTALL_DIR=$(BGQ_INSTALL_DIR)/$(TOP_DIR)/etc
 
-include ../../Make.rules
 
-
-.PHONY: default all install clean distclean
+.PHONY: default all clean distclean
 
 
 default: all
@@ -69,20 +67,13 @@ bg.bringup.properties: bg.bringup.properties.template
 	$(CP) $< $@
 
 all: bg.properties bg.properties.ship.tpl bg.bringup.properties
-	$(MAKE) --directory security $@
 
-
-install: $(install_targets)
-	$(MAKE) --directory security $@
 
 clean:
 	$(RM) bg.properties bg.properties.ship.tpl bg.bringup.properties
-	$(MAKE) --directory security $@
 
 distclean: clean
-	$(MAKE) --directory security $@
 
 uninstall:
 	$(RM) $(etc_install_dir)/bg.properties.tpl
 	$(RM) $(etc_install_dir)/bg.bringup.properties.tpl
-	$(MAKE) --directory security $@

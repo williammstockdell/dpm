@@ -94,27 +94,8 @@ ClientPortConfiguration::ClientPortConfiguration(
 
 
 void ClientPortConfiguration::addTo(
-        boost::program_options::options_description& options
     )
 {
-    namespace po = boost::program_options;
-
-    string option_name((_name.empty() ? "" : string() + _name + "-") + OptionName);
-
-    string desc_text(_description.empty() ? "Server to connect to" : string() + "Server to open " + _description + " connection to" );
-
-    options.add_options()
-            ( option_name.c_str(),
-              po::value<Strings>()->notifier(
-                      boost::bind(
-                              (void(ClientPortConfiguration::*)(const Strings&)) &ClientPortConfiguration::setPorts,
-                              this,
-                              _1
-                          )
-                  ),
-              desc_text.c_str()
-            )
-        ;
 }
 
 
@@ -148,4 +129,3 @@ ClientPortConfiguration::Pairs ClientPortConfiguration::_getDefault() const
 
 } // namespace bgq::utility
 } // namespace bgq
-

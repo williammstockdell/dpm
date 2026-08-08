@@ -45,7 +45,7 @@
 LOG_DECLARE_FILE( "utility" );
 
 XMLEntity*
-XMLEntity::readXML (const char* filename) throw(XMLException)
+XMLEntity::readXML (const char* filename)
 {
     XML_Parser parser = XML_ParserCreate(NULL);
     XMLEntity* o = new XMLEntity(parser);
@@ -86,7 +86,7 @@ XMLEntity::readXML (const char* filename) throw(XMLException)
 }
 
 XMLEntity*
-XMLEntity::readXML(std::istream& is) throw(XMLException)
+XMLEntity::readXML(std::istream& is)
 {
     XML_Parser parser = XML_ParserCreate(NULL);
     XMLEntity* o = new XMLEntity(parser);
@@ -202,7 +202,7 @@ XMLEntity::dump(unsigned indent) const
 }
 
 const XMLEntity*
-XMLEntity::subEntByName(const char* name) const throw(XMLException)
+XMLEntity::subEntByName(const char* name) const
 {
     for (unsigned i=0; i < _entities.size(); i++)
         if (_entities[i]._name == name) return &_entities[i];
@@ -227,7 +227,7 @@ XMLEntity::subentities() const
 }
 
 const char*
-XMLEntity::attrByName(const char* name) const throw(XMLException)
+XMLEntity::attrByName(const char* name) const
 {
     for (unsigned i=0; i < _attnames.size(); i++)
         if (_attnames[i] == name) return _attvalues[i].c_str();
