@@ -71,9 +71,7 @@ public:
     static Registrar _client_registrar;
     static DBUpdater _updater;
 
-    MasterController(
-            const bgq::utility::Properties::Ptr& properties
-            );
+    MasterController(const bgq::utility::Properties::Ptr& properties);
 
     void startup(int signal_fd);
     static void putRAS(unsigned int id, const std::map<std::string, std::string>& details);

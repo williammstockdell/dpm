@@ -34,16 +34,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <boost/algorithm/string.hpp>
-
-#include <boost/filesystem/path.hpp>
-
-#include <boost/thread/locks.hpp>
-#include <boost/thread/shared_mutex.hpp>
-
-#include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/throw_exception.hpp>
 
 using std::string;
 
@@ -51,25 +41,6 @@ LOG_DECLARE_FILE( "utility" );
 
 namespace bgq {
 namespace utility {
-
-
-//---------------------------------------------------------------------
-// class Properties::ProgramOptions
-
-void Properties::ProgramOptions::addTo(
-        boost::program_options::options_description& opts_desc
-        )
-{
-    namespace po = boost::program_options;
-    boost::shared_ptr<po::option_description> opt_desc_ptr(
-            new po::option_description(
-                    "properties",
-                    po::value<string>( &_filename ),
-                    "Blue Gene configuration file"
-                )
-        );
-    opts_desc.add( opt_desc_ptr );
-}
 
 
 //---------------------------------------------------------------------

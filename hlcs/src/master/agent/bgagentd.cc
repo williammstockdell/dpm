@@ -78,10 +78,11 @@ main(int argc, const char** argv)
     bgq::utility::Properties::Ptr props;
     try {
         po::options_description temp;
-        bgq::utility::Properties::ProgramOptions propertiesOptions;
-        propertiesOptions.addTo( temp );
-        bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-        lpo.addTo( temp );
+        // FIXME: Replace
+        // bgq::utility::Properties::ProgramOptions propertiesOptions;
+        // propertiesOptions.addTo( temp );
+        // bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
+        // lpo.addTo( temp );
         po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
         cmd_line.allow_unregistered();
         cmd_line.options( temp );
@@ -90,8 +91,9 @@ main(int argc, const char** argv)
         po::notify( vm );
 
         // Create properties and initialize logging
-        props = bgq::utility::Properties::create( propertiesOptions.getFilename() );
-        bgq::utility::initializeLogging(*props, lpo, "master");
+        // FIXME:  Replace
+        //        props = bgq::utility::Properties::create( propertiesOptions.getFilename() );
+        //        bgq::utility::initializeLogging(*props, lpo, "master");
     } catch (const std::runtime_error& e) {
         std::cerr << "Error reading configuration file: " << e.what() << std::endl;
         exit( EXIT_FAILURE );
@@ -115,17 +117,18 @@ main(int argc, const char** argv)
         ;
 
     // Add properties and verbose options
-    bgq::utility::Properties::ProgramOptions propertiesOptions;
-    propertiesOptions.addTo( options );
-    bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-    lpo.addTo( options );
+    // FIXME: Replace
+    // bgq::utility::Properties::ProgramOptions propertiesOptions;
+    // propertiesOptions.addTo( options );
+    // bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
+    // lpo.addTo( options );
 
     // Add host option
     bgq::utility::ClientPortConfiguration host(
             32041,
             bgq::utility::ClientPortConfiguration::ConnectionType::Administrative
             );
-    host.addTo( options );
+    //    host.addTo( options );
 
     po::variables_map vm;
     po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
@@ -189,7 +192,7 @@ main(int argc, const char** argv)
     }
 
     agent.set_users(users);
-    
+
     struct rlimit rlimit_nofile = {0, 0}; // process limit on number of files
     struct rlimit rlimit_core = {0, 0};    // process limit on core file size
     rlimit_core.rlim_cur = RLIM_INFINITY;
@@ -213,7 +216,7 @@ main(int argc, const char** argv)
     LOG_DEBUG_MSG("File limits: " << rlimit_nofile.rlim_cur);
 
     LOG_INFO_MSG(
-            "bgagentd [" << getpid() << "] Blue Gene/Q " << 
+            "bgagentd [" << getpid() << "] Blue Gene/Q " <<
             boost::filesystem::basename( boost::filesystem::path(argv[0]) ) <<
             " " << bgq::utility::DriverName << " (revision " << bgq::utility::Revision << ") " <<
             __DATE__ << " " << __TIME__ << " starting"

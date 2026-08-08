@@ -32,7 +32,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <algorithm>
 
 //! \brief Small class for grabbing properties and parsing arguments
 //! for BGmaster commands

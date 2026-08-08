@@ -35,8 +35,8 @@
 #include "common/BinaryController.h"
 
 #include <utility/include/LoggingProgramOptions.h>
-
-
+#include <utility/include/TimeStuff.h>
+#include <log4cxx/logger.h>
 
 
 #include <pthread.h>
@@ -213,7 +213,7 @@ ClientController::doAgentRequest(
         BOOST_FOREACH(const BinaryControllerPtr& binary, binaries) {
             typedef BGMasterClientProtocolSpec::AgentlistReply::Agent::Binary AgentBin;
             LOG_DEBUG_MSG("Found binary " << binary);
-            const std::string t = boost::posix_time::to_simple_string(binary->get_start_time());
+            const std::string t = time_to_string(binary->get_start_time());
             const AgentBin bin(
                     binary->get_status(),
                     binary->get_exit_status(),
@@ -291,7 +291,7 @@ ClientController::doWaitRequest(
     if (found) {
         const BinaryControllerPtr bcptr = loc.first;
 
-        boost::unique_lock<boost::mutex> ulock(bcptr->_status_lock);
+        std::unique_lock<std::mutex> ulock(bcptr->_status_lock);
         while (bcptr->get_status() == BinaryController::RUNNING && !_ending) {
             // As long as it is RUNNING, we wait
             bcptr->_status_notifier.wait(ulock);
@@ -473,7 +473,7 @@ ClientController::doStatusRequest(
             if (found) {
                 const BinaryControllerPtr pbase = location.first;
                 if (pbase->valid()) {
-                    const std::string t = boost::posix_time::to_simple_string(pbase->get_start_time());
+                    const std::string t = time_to_string(pbase->get_start_time());
                     const BinCont bin(
                             pbase->get_exit_status(),
                             pbase->get_binid().str(),
@@ -498,7 +498,7 @@ ClientController::doStatusRequest(
             // Now loop through binaries
             BOOST_FOREACH(const BinaryControllerPtr& pbase, binaries) {
                 if (pbase->valid()) {
-                    const std::string t = boost::posix_time::to_simple_string(pbase->get_start_time());
+                    const std::string t = time_to_string(pbase->get_start_time());
                     const BinCont bin(
                             pbase->get_exit_status(),
                             pbase->get_binid().str(),
@@ -864,20 +864,19 @@ ClientController::doLoglevelRequest(
         LOG_WARN_MSG( e.what() );
     }
 
-    // Get the current levels and return them.
-    using namespace log4cxx;
-    // Output all current loggers and their levels
-    const LoggerPtr root = Logger::getRootLogger();
-    BOOST_FOREACH(const LoggerPtr& curr_loggerp, root->getLoggerRepository()->getCurrentLoggers() ) {
-        if ( !curr_loggerp ) continue;
-        if ( !curr_loggerp->getLevel() ) continue;
+    const auto root = log4cxx::Logger::getRootLogger();
 
-        loglevrep._loggers.push_back(
-                BGMasterClientProtocolSpec::Logger(
-                    curr_loggerp->getName(),
-                    curr_loggerp->getLevel()->toString()
-                    )
-                );
+    if (const auto repo = root->getLoggerRepository().lock()) {
+        for (const log4cxx::LoggerPtr& curr_loggerp : repo->getCurrentLoggers()) {
+            if (!curr_loggerp || !curr_loggerp->getLevel()) {
+                continue;
+            }
+
+            loglevrep._loggers.emplace_back(
+                                            curr_loggerp->getName(),
+                                            curr_loggerp->getLevel()->toString()
+                                            );
+        }
     }
 
     try {

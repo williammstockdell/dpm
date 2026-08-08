@@ -107,23 +107,25 @@ int
 main(int argc, const char** argv)
 {
     // Parse --properties and --verbose before everything else
-    namespace po = boost::program_options;
+    // FIXME:  Replace
+    //    namespace po = boost::program_options;
     bgq::utility::Properties::Ptr props;
     try {
-        po::options_description temp;
-        bgq::utility::Properties::ProgramOptions propertiesOptions;
-        propertiesOptions.addTo( temp );
+        // po::options_description temp;
+        //        bgq::utility::Properties::ProgramOptions propertiesOptions;
+        // propertiesOptions.addTo( temp );
         bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-        lpo.addTo( temp );
-        po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
-        cmd_line.allow_unregistered();
-        cmd_line.options( temp );
-        po::variables_map vm;
-        po::store( cmd_line.run(), vm );
-        po::notify( vm );
+        // lpo.addTo( temp );
+        // po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
+        // cmd_line.allow_unregistered();
+        // cmd_line.options( temp );
+        // po::variables_map vm;
+        // po::store( cmd_line.run(), vm );
+        // po::notify( vm );
 
         // Create properties and initialize logging
-        props = bgq::utility::Properties::create( propertiesOptions.getFilename() );
+        //        props = bgq::utility::Properties::create( propertiesOptions.getFilename() );
+        props = bgq::utility::Properties::create( "placeholder" );
         bgq::utility::initializeLogging(*props, lpo, "master");
     } catch (const std::runtime_error& e) {
         std::cerr << "Error reading configuration file: " << e.what() << std::endl;
@@ -133,53 +135,54 @@ main(int argc, const char** argv)
         exit( EXIT_FAILURE );
     }
 
+    // FIXME: Replace
     bgq::utility::BoolAlpha debug;
 
-    po::options_description options;
-    options.add_options()
-        ("help,h", po::bool_switch(), "this help text")
-        ("debug,d", po::value(&debug)->implicit_value(true), "enable debug mode (do not daemonize)")
-        ;
+    // po::options_description options;
+    // options.add_options()
+    //     ("help,h", po::bool_switch(), "this help text")
+    //     ("debug,d", po::value(&debug)->implicit_value(true), "enable debug mode (do not daemonize)")
+    //     ;
 
-    // Add properties and verbose options
-    bgq::utility::Properties::ProgramOptions propertiesOptions;
-    propertiesOptions.addTo( options );
-    bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-    lpo.addTo( options );
+    // // Add properties and verbose options
+    // bgq::utility::Properties::ProgramOptions propertiesOptions;
+    // propertiesOptions.addTo( options );
+    // bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
+    // lpo.addTo( options );
 
-    po::variables_map vm;
-    po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
-    cmd_line.options( options );
-    po::positional_options_description positional;
-    cmd_line.positional( positional );
-    try {
-        po::store( cmd_line.run(), vm );
+    // po::variables_map vm;
+    // po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
+    // cmd_line.options( options );
+    // po::positional_options_description positional;
+    // cmd_line.positional( positional );
+    // try {
+    //     po::store( cmd_line.run(), vm );
 
-        // Notify variables_map that we are done processing options
-        po::notify( vm );
-    } catch ( const std::exception& e ) {
-        std::cerr << e.what() << std::endl;
-        exit( EXIT_FAILURE );
-    }
+    //     // Notify variables_map that we are done processing options
+    //     po::notify( vm );
+    // } catch ( const std::exception& e ) {
+    //     std::cerr << e.what() << std::endl;
+    //     exit( EXIT_FAILURE );
+    // }
 
-    if ( vm["help"].as<bool>() ) {
-        std::cout << argv[0] << std::endl;
-        std::cout << std::endl;
-        std::cout << "OPTIONS:" << std::endl;
-        std::cout << options << std::endl;
-        exit(EXIT_SUCCESS);
-    }
+    // if ( vm["help"].as<bool>() ) {
+    //     std::cout << argv[0] << std::endl;
+    //     std::cout << std::endl;
+    //     std::cout << "OPTIONS:" << std::endl;
+    //     std::cout << options << std::endl;
+    //     exit(EXIT_SUCCESS);
+    // }
 
     std::string logdir;
     try {
-        logdir = props->getValue("master.server", "logdir");
+        // FIXME: Replace        logdir = props->getValue("master.server", "logdir");
     } catch (const std::invalid_argument& e) {
         LOG_WARN_MSG( "No log directory found, will use default. Error is: " << e.what() );
     }
 
     std::string master_instances = "1";
     try {
-        master_instances = props->getValue("master.policy.instances", "bgmaster_server");
+        // FIXME: Replace        master_instances = props->getValue("master.policy.instances", "bgmaster_server");
     } catch (const std::invalid_argument& e) {
         // Don't care if it isn't there.
     }
@@ -193,9 +196,9 @@ main(int argc, const char** argv)
         if (master_instances == "1") {
             lock_file = new LockFile("bgmaster_server");
             if (lock_file->_fileExists ) {
-                LOG_FATAL_MSG( 
+                LOG_FATAL_MSG(
                         "Lock file for bgmaster_server found. End bgmaster_server process "
-                        << lock_file->_pid << " and remove " << lock_file->_fname 
+                        << lock_file->_pid << " and remove " << lock_file->_fname
                         );
                 exit(EXIT_FAILURE);
             }
@@ -247,7 +250,7 @@ main(int argc, const char** argv)
     }
 
     // Construct master controller
-    MasterController master( props );
+    MasterController master(props);
     try {
         master.startup(signal_descriptors[0]);
     } catch (const exceptions::ConfigError& e) {

@@ -36,7 +36,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <algorithm>
 
 namespace bgq {
 namespace utility {
@@ -119,7 +119,7 @@ public:
      *
      */
     void addTo(
-            boost::program_options::options_description& opts_desc
+               //            boost::program_options::options_description& opts_desc
         );
 
     /*! \brief Set the parameters.

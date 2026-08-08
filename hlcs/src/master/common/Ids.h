@@ -61,7 +61,7 @@ public:
 
     //! \brief comparison operator for Id map
     struct Comp {
-        bool operator()(const Id& lhs, const Id& rhs);
+        bool operator()(const Id& lhs, const Id& rhs) const;
     };
 };
 
@@ -100,7 +100,7 @@ public:
 //! A ClientId is a unique identifier for a client consisting
 //! of its hostname and local port.  (There is no listener on a client connection.)
 //! host:port
-class ClientId : public Id 
+class ClientId : public Id
 {
 public:
     ClientId() {}

@@ -168,7 +168,7 @@ public:
      *  to connect to multiple ports.
      */
     void addTo(
-            boost::program_options::options_description& options
+               //            boost::program_options::options_description& options
         );
 
     ConnectionType::Value getConnectionType() const  { return _connection_type; }

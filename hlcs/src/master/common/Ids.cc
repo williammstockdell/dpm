@@ -99,11 +99,7 @@ Id::get_host() const
     }
 }
 
-bool
-Id::Comp::operator() (
-        const Id& lhs,
-        const Id& rhs
-        )
+bool Id::Comp::operator() (const Id& lhs, const Id& rhs) const
 {
     if (lhs._id < rhs._id) {
         return true;
