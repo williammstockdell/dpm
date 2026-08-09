@@ -32,10 +32,10 @@ TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))
 TARGETS_CLEAN		= $(addsuffix .clean,$(DIRS))
 TARGETS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
 
-TARGETS = $(TARGETS_ALL)       \
-	  $(TARGETS_INSTALL)   \
-	  $(TARGETS_CLEAN)     \
-	  $(TARGETS_DISTCLEAN)
+TARGETS  = $(TARGETS_ALL)
+TARGETS += $(TARGETS_INSTALL)
+TARGETS += $(TARGETS_CLEAN)
+TARGETS += $(TARGETS_DISTCLEAN)
 
 
 
@@ -45,12 +45,10 @@ TARGETS = $(TARGETS_ALL)       \
 
 .SUFFIXES:
 
-.PHONY: default all install clean dist_clean $(TARGETS)
+.PHONY: default all clean distclean $(TARGETS)
 
-default:	install
-
-# make the all also do an install so the top level default make works..
-all: install
+default: all
+all: this.all $(TARGETS_ALL)
 
 # +++
 #

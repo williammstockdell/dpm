@@ -22,22 +22,19 @@
 # end_generated_IBM_copyright_prolog
 
 include ../../Make.hlcs.rules
-#include ../../../Make.rules
-
 
 DIRS = $(subst /Makefile,,$(wildcard */Makefile))
 
 CXXFLAGS += -std=c++20
 
 DIR_TARGS_ALL		= $(addsuffix .all,$(DIRS))
-DIR_TARGS_INSTALL       = $(addsuffix .install,$(DIRS))
 DIR_TARGS_CLEAN		= $(addsuffix .clean,$(DIRS))
 DIR_TARGS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
 
 DIR_TARGS  = $(DIR_TARGS_ALL)
 DIR_TARGS += $(DIR_TARGS_CLEAN)
 DIR_TARGS += $(DIR_TARGS_DISTCLEAN)
-DIR_TARGS += $(DIR_TARGS_INSTALL)
+
 
 PROTOCOL_OBJS  = protocol/BGMasterAgentProtocolSpec.o
 PROTOCOL_OBJS += protocol/BGMasterClientProtocolSpec.o

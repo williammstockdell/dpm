@@ -145,13 +145,9 @@ $(TARGETS)::
 $(TARGETS_INSTALL):: $(lib_short)
 	$(MAKE) --directory $(basename $@) $(subst .,,$(suffix $@))
 
-$(TARGETS_ALL):: $(lib_short) svn_revision
+$(TARGETS_ALL):: $(lib_short)
 	$(MAKE) --directory $(basename $@) $(subst .,,$(suffix $@))
 
-
-SVN_URL = $(shell cat $(BGQ_INSTALL_DIR)/svn_revision | grep URL | cut -f2 -d\ )
-DRIVER_TAG = $(shell basename $(SVN_URL))
-SVN_REV = $(shell cat $(BGQ_INSTALL_DIR)/svn_revision | grep "Last Changed Rev" | cut -f4 -d\ )
 
 -include *.d
 -include performance/*.d

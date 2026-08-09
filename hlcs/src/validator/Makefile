@@ -1,28 +1,27 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2011, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2011, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 
 include ../../Make.hlcs.rules
-include ../../../Make.rules
 
 EXECS = properties_validate
 
@@ -39,7 +38,7 @@ LDFLAGS  += -llog4cxx
 LDFLAGS  += -lboost_filesystem-mt
 LDFLAGS  += -lboost_system-mt
 LDFLAGS  += -lcxxsockets
-LDFLAGS  += -L $(BGQ_INSTALL_DIR)/utility/lib -lbgutility 
+LDFLAGS  += -L $(BGQ_INSTALL_DIR)/utility/lib -lbgutility
 LDFLAGS  += -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib
 LDFLAGS  += -L $(BGQ_INSTALL_DIR)/xml/lib -lXML
 LDFLAGS  += -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib
@@ -76,13 +75,13 @@ INSTALL_LIST += $(call INSTALL_BIN_TARGET, $(EXECS))
 
 bg_bin_links := $(EXECS)
 
-.PHONY: clean docs install distclean all 
+.PHONY: clean docs install distclean all
 
 all: $(EXECS) test
 
 install: $(INSTALL_LIST) $(bg_links_targets) test
 
-clean:			
+clean:
 	$(RM) $(INSTALL_LIST)
 	$(RM) *.o
 	$(RM) *.d
@@ -91,7 +90,7 @@ clean:
 
 distclean:	clean
 
-properties_validate: properties_validate.o $(BGM_OBJS) $(MMCS_OBJS) 
+properties_validate: properties_validate.o $(BGM_OBJS) $(MMCS_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 test: properties_validate

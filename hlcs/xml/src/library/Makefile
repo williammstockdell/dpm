@@ -1,27 +1,26 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2011, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2011, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 
-include ../../../Make.rules
 
 MODULE_DIR=xml
 MODULE_INSTALL_DIR=$(BGQ_INSTALL_DIR)/$(MODULE_DIR)
@@ -59,7 +58,7 @@ else
 SOLIB_OBJS = $(OBJS)
 endif
 
-INC_PATH=-I$(BGQ_INSTALL_DIR)
+INC_PATH=-I$(BGQ_INSTALL_DIR)/hlcs
 
 
 ifeq ($(OS),AIX)
@@ -91,7 +90,7 @@ LIB_LDFLAGS  += -lexpat -shared -Wl,-soname,
 
 
 CXXFLAGS += $(INC_PATH)
-CXXFLAGS += $(DEBUG_FLAGS) 
+CXXFLAGS += $(DEBUG_FLAGS)
 
 # on 64 bit x86 platforms, compile defaults to 64 bits, we need a 32 bit static library
 # for fusion...
@@ -105,7 +104,7 @@ ifeq ($(OS_ARCH),x86_64)
   TARGET_LIST += $(LIB32)
   TARGET_LIST += $(LIB64)		# build an explicit 64 bit library
 endif
-ifeq ($(OS_ARCH),ppc64) 
+ifeq ($(OS_ARCH),ppc64)
   TARGET_LIST += $(LIB64)
 endif
 ifeq ($(OS),AIX)
@@ -115,11 +114,11 @@ endif
 
 INSTALL_LIST = $(addprefix $(MODULE_LIB_DIR)/,$(TARGET_LIST))
 
-echo OS_ARCH=$(OS_ARCH)
+default: install
 
-default: install 
+all:$(TARGET_LIST)
 
-install: $(INSTALL_LIST) 
+install: $(INSTALL_LIST)
 
 $(MODULE_LIB_DIR)/%.a: %.a
 	$(call bgq_install_lib,$<,$@)
@@ -163,7 +162,7 @@ $(SOLIB_VERS): $(SOLIB_FULL)
 $(SOLIB_FULL): $(SOLIB_OBJS)
 	$(CXX) -o $@ $^ $(SOLIB_LDFLAGS)
 
-$(C_API_CC): 
+$(C_API_CC):
 
 %.cc: $(XML_DEFS_DIR)/%.xml
 #	$(IDLC) --cimpl ../defs/$(basename $@).xml > $@
@@ -181,19 +180,19 @@ $(C_API_CC):
 %.o_xlc: %.cc
 	$(CXX_XLC) $(CXXFLAGS_XLC) -o $@ -c $<
 
-clean: 
+clean:
 	$(RM) $(filter-out $(KEEP), $(wildcard *.cc))
 	$(RM) *.o *.o_32 *.o_64 *.o_xlc *.a *.h $(SOLIB_DEV) $(SOLIB_VERS) $(SOLIB_FULL) dep.files
 
 distclean: clean
 	-rm -f *.vpwhistu
-	-rm -f *.vtg 
+	-rm -f *.vtg
 
-ifeq ($(filter distclean clean,$(MAKECMDGOALS)),)	
+ifeq ($(filter distclean clean,$(MAKECMDGOALS)),)
 -include .dep.*.d
 endif
 
-print: 
+print:
 	@echo INSTALL_LIST=$(INSTALL_LIST)
 	@echo TARGET_LIST=$(TARGET_LIST)
 	@echo OBJS=$(OBJS)

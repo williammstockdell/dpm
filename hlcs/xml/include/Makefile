@@ -1,31 +1,31 @@
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2011, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2011, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 OS	= $(shell uname)
 
 
 DIRS = $(subst /Makefile,,$(wildcard */Makefile))
 
-SKIP	= 
+SKIP	=
 DIRS	:= $(filter-out $(SKIP),$(DIRS))
 
 
@@ -36,11 +36,10 @@ TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))
 TARGETS_CLEAN		= $(addsuffix .clean,$(DIRS))
 TARGETS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
 
-TARGETS = $(TARGETS_ALL)       \
-	  $(TARGETS_INSTALL)   \
-	  $(TARGETS_CLEAN)     \
-	  $(TARGETS_DISTCLEAN)
-
+TARGETS  = $(TARGETS_ALL)
+TARGETS += $(TARGETS_INSTALL)
+TARGETS += $(TARGETS_CLEAN)
+TARGETS += $(TARGETS_DISTCLEAN)
 
 
 # +++
@@ -51,20 +50,13 @@ TARGETS = $(TARGETS_ALL)       \
 
 .PHONY: default all install clean dist_clean $(TARGETS)
 
-default:	install
+default: all
 
-# make the all also do an install so the top level default make works..
-all: install
+all: this.all $(TARGETS_ALL)
 
-# +++
-#
-# ---
-
-#all:		this.all	$(TARGETS_ALL)
-install:	this.install	$(TARGETS_INSTALL)
-clean:		this.clean	$(TARGETS_CLEAN)
-distclean:	this.distclean	$(TARGETS_DISTCLEAN)
-
+install: this.install $(TARGETS_INSTALL)
+clean: this.clean $(TARGETS_CLEAN)
+distclean: this.distclean $(TARGETS_DISTCLEAN)
 
 
 # +++
@@ -95,5 +87,3 @@ this.clean:
 
 this.distclean: this.clean
 	@echo "making distclean"
-
-

@@ -60,6 +60,6 @@ clean:
 distclean: clean
 
 
-.PHONY: default all install clean distclean
+.PHONY: default all clean distclean
 
 -include *.d

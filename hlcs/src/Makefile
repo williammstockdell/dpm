@@ -25,16 +25,6 @@ include ../Make.hlcs.rules
 
 DIRS  = docs
 DIRS += master
-DIRS += log_merge
-DIRS += libmmcs_client
-ifeq ($(BGQDB),yes)
-DIRS += mmcs
-DIRS += security
-DIRS += bgsched
-DIRS += realtime
-DIRS += runjob
-DIRS += validator
-endif
 
 TARGETS_ALL		= $(addsuffix .all,$(DIRS))
 TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))

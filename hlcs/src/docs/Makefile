@@ -47,4 +47,4 @@ docs: doxygen.out
 
 doxygen.out: Doxyfile
 	$(MKDIR) -p $(BGQ_INSTALL_DIR)/hlcs/docs/overview
-	cd ../../ && cat src/docs/$^ | sed 's:BGQ_INSTALL_DIR:$(BGQ_INSTALL_DIR):' | doxygen - &> src/docs/doxygen.out
+	cd ../../ && cat src/docs/$^ | sed 's\:BGQ_INSTALL_DIR:$(BGQ_INSTALL_DIR):' | doxygen - > src/docs/doxygen.out 2>&1
