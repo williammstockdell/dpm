@@ -1,37 +1,30 @@
-
 DIRS =
+DIRS += xml
+DIRS += utility
 DIRS += include
 DIRS += src
+DIRS += docs
 
-TARGETS_ALL		= $(addsuffix .all,$(DIRS))
-TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))
-TARGETS_CLEAN		= $(addsuffix .clean,$(DIRS))
-TARGETS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
-TARGETS_UNINSTALL	= $(addsuffix .uninstall,$(DIRS))
+TARGETS_ALL       = $(addsuffix .all,$(DIRS))
+TARGETS_CLEAN     = $(addsuffix .clean,$(DIRS))
+TARGETS_DISTCLEAN = $(addsuffix .distclean,$(DIRS))
 
 TARGETS  = $(TARGETS_ALL)
-TARGETS += $(TARGETS_INSTALL)
 TARGETS += $(TARGETS_CLEAN)
 TARGETS += $(TARGETS_DISTCLEAN)
-TARGETS += $(TARGETS_UNINSTALL)
 
-BUILD_LIBS :=  include.install
-BUILD_DIRS := $(filter-out $(BUILD_LIBS),$(TARGETS_INSTALL))
+.PHONY: default all clean distclean $(TARGETS)
 
+default: all
 
-.PHONY: stats default all install clean distclean uninstall $(TARGETS)
+all: $(TARGETS_ALL)
 
-default:	install
+# Build prerequisites between major trees.
+src.all: xml.all utility.all include.all
+docs.all: src.all
 
-$(BUILD_DIRS):: $(BUILD_LIBS)
+clean: $(TARGETS_CLEAN)
+distclean: $(TARGETS_DISTCLEAN)
 
-all: install
-
-all:		$(TARGETS_ALL)
-install:	$(TARGETS_INSTALL) $(call TLD_INSTALL_PACKAGING_TARGET, hlcs.specsrc)
-clean:		$(TARGETS_CLEAN)
-distclean:	$(TARGETS_DISTCLEAN)
-uninstall:	$(TARGETS_UNINSTALL)
-
-$(TARGETS)::
+$(TARGETS):
 	$(MAKE) --directory $(basename $@) $(subst .,,$(suffix $@))

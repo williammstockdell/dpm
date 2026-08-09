@@ -28,16 +28,10 @@
 
 #include "Log.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/regex.hpp>
-#include <boost/throw_exception.hpp>
-#include <boost/tokenizer.hpp>
-
 #include <stdexcept>
 #include <string>
 
 
-using boost::lexical_cast;
 
 using std::string;
 
@@ -49,36 +43,75 @@ namespace bgq {
 namespace utility {
 
 
-PortConfiguration::Pair PortConfiguration::parsePortStr( const std::string& port_str, const std::string& default_service_name )
+PortConfiguration::Pair PortConfiguration::parsePortStr(
+                                                        const std::string& port_str,
+                                                        const std::string& default_service_name)
 {
-    static const string bracketed_addr_re_str( "\\[([^\\]]*)\\]" ); // matches[1] == bracketed addr
-    static const string nonbracketed_addr_re_str( "([^:]*)" ); // matches[2] == nonbracketed addr
-    static const string addr_re_str( "(?:(?:" + bracketed_addr_re_str + ")|(?:" + nonbracketed_addr_re_str + "))" );
-    static const string port_re_str(":(.*)"); // matches[3] == service name
-    static const boost::regex addr_port_re( "(?:" + addr_re_str + ")?" + "(?:" + port_re_str + ")?" );
+    std::string host_name;
+    std::string service_name = default_service_name;
 
-    boost::smatch matches;
-    if ( ! boost::regex_match( port_str, matches, addr_port_re ) ) {
-        BOOST_THROW_EXCEPTION( InvalidPortStr( string() + "host:port value '" + port_str + "' is not valid" ) );
+    if (port_str.empty()) {
+        return {host_name, service_name};
     }
 
-    string host_name(matches[1].str().empty() ? matches[2] : matches[1]);
-    string service_name(matches[3].str().empty() ? default_service_name : matches[3]);
+    if (port_str.front() == '[') {
+        const auto close = port_str.find(']');
 
-    return Pair( host_name, service_name );
+        if (close == std::string::npos) {
+            throw InvalidPortStr(
+                "host:port value '" + port_str + "' is not valid");
+        }
+
+        host_name = port_str.substr(1, close - 1);
+
+        if (close + 1 < port_str.size()) {
+            if (port_str[close + 1] != ':') {
+                throw InvalidPortStr(
+                    "host:port value '" + port_str + "' is not valid");
+            }
+
+            service_name = port_str.substr(close + 2);
+        }
+    } else {
+        const auto colon = port_str.find(':');
+
+        if (colon == std::string::npos) {
+            host_name = port_str;
+        } else {
+            host_name = port_str.substr(0, colon);
+            service_name = port_str.substr(colon + 1);
+        }
+    }
+
+    return {host_name, service_name};
 }
 
 
-void PortConfiguration::parsePortsStr( const std::string& ports_str, const std::string& default_service_name, Pairs& pairs_out )
+void PortConfiguration::parsePortsStr(
+    const std::string& ports_str,
+    const std::string& default_service_name,
+    Pairs& pairs_out)
 {
-    typedef boost::tokenizer<boost::escaped_list_separator<char> > Tr;
+    std::size_t start = 0;
 
-    // split up the string on ,s
-    Tr toks( ports_str );
+    while (start <= ports_str.size()) {
+        const auto end = ports_str.find(',', start);
 
-    for ( Tr::iterator tok_i(toks.begin()); tok_i != toks.end(); ++tok_i ) {
-        Pair pair(parsePortStr( *tok_i, default_service_name ));
-        pairs_out.push_back( pair );
+        const std::string token =
+            ports_str.substr(
+                start,
+                end == std::string::npos
+                    ? std::string::npos
+                    : end - start
+            );
+
+        pairs_out.push_back(parsePortStr(token, default_service_name));
+
+        if (end == std::string::npos) {
+            break;
+        }
+
+        start = end + 1;
     }
 }
 
@@ -94,7 +127,7 @@ void PortConfiguration::parsePortsStrs( const Strings& ports_strs, const std::st
 PortConfiguration::PortConfiguration(
         uint32_t default_tcp_port
     ) :
-        _default_service_name(lexical_cast<string>( default_tcp_port ))
+    _default_service_name(std::to_string( default_tcp_port ))
 {
     // Nothing to do.
 }
@@ -122,13 +155,6 @@ void PortConfiguration::setProperties(
 const PortConfiguration::Pairs& PortConfiguration::getPairs() const
 {
     return _pairs;
-}
-
-
-void PortConfiguration::setPorts( const std::string& ports_str )
-{
-    _pairs.clear();
-    parsePortsStr( ports_str, _default_service_name, _pairs );
 }
 
 

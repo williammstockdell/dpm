@@ -26,13 +26,10 @@ LDFLAGS += -Wl,-rpath,$(BGQ_BUILD_DIR)/utility/src/cxxsockets
 LIBRARY = $(BGQ_BUILD_DIR)/utility/src/cxxsockets/libcxxsockets.so
 
 SAMPLES   = asio listen_both46 clientAssignAddrError
-TESTERS   = host
 TESTERS  += no_delay
 TESTERS  += user_error_exception
 
 all: $(TESTERS:%=out_%) $(SAMPLES)
-
-install: all
 
 listen_both46: listen_both46.o
 	$(CXX) -lboost_thread-mt $(LDFLAGS) -o $@ $(filter-out Makefile, $^)

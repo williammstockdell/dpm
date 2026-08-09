@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<tagfile doxygen_version="1.9.1">
+  <compound kind="page">
+    <name>terms</name>
+    <title>Terminology and Naming Conventions</title>
+    <filename>terms.html</filename>
+    <docanchor file="terms.html" title="Overview">overview</docanchor>
+    <docanchor file="terms.html" title="Deprecated Terms">deprecated</docanchor>
+    <docanchor file="terms.html">terminology</docanchor>
+    <docanchor file="terms.html" title="BGWS">bgws</docanchor>
+    <docanchor file="terms.html">block</docanchor>
+    <docanchor file="terms.html" title="compute node">cn</docanchor>
+    <docanchor file="terms.html">job</docanchor>
+    <docanchor file="terms.html" title="I/O node">io</docanchor>
+    <docanchor file="terms.html">midplane</docanchor>
+    <docanchor file="terms.html">MMCS</docanchor>
+    <docanchor file="terms.html">Navigator</docanchor>
+    <docanchor file="terms.html" title="node board">nb</docanchor>
+    <docanchor file="terms.html" title="Compute Rack">compute_rack</docanchor>
+    <docanchor file="terms.html" title="RAS">ras</docanchor>
+    <docanchor file="terms.html">Real-time</docanchor>
+    <docanchor file="terms.html">runjob</docanchor>
+    <docanchor file="terms.html">scheduler</docanchor>
+    <docanchor file="terms.html" title="Scheduler API&apos;s">scheduler_api</docanchor>
+  </compound>
+  <compound kind="page">
+    <name>partitioning</name>
+    <title>Partitioning and Block Sizes</title>
+    <filename>partitioning.html</filename>
+  </compound>
+  <compound kind="page">
+    <name>differences</name>
+    <title>Differences from Previous Releases</title>
+    <filename>differences.html</filename>
+  </compound>
+  <compound kind="page">
+    <name>index</name>
+    <title>notitle</title>
+    <filename>index.html</filename>
+    <docanchor file="index.html" title="Table of Contents">toc</docanchor>
+    <docanchor file="index.html" title="Introduction">introduction</docanchor>
+  </compound>
+</tagfile>

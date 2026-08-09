@@ -32,21 +32,19 @@ endif
 TARGETS_ALL		= $(addsuffix .all,$(DIRS))
 TARGETS_CLEAN		= $(addsuffix .clean,$(DIRS))
 TARGETS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
-TARGETS_UNINSTALL	= $(addsuffix .uninstall,$(DIRS))
 
 
 TARGETS  = $(TARGETS_ALL)
 TARGETS += $(TARGETS_INSTALL)
 TARGETS += $(TARGETS_CLEAN)
 TARGETS += $(TARGETS_DISTCLEAN)
-TARGETS += $(TARGETS_UNINSTALL)
 
 
 doxygen_version := $(subst 1.7,1.6,$(findstring 1.6, $(shell doxygen --version))$(findstring 1.7, $(shell doxygen --version)))
 required_doxygen_version := 1.6
 
 
-.PHONY: default all clean distclean uninstall docs $(TARGETS)
+.PHONY: default all clean distclean docs $(TARGETS)
 
 
 # make the all also do an install so the top level default make works
@@ -55,12 +53,6 @@ all:  $(TARGETS)
 install:		$(TARGETS_INSTALL) docs $(call TLD_INSTALL_PACKAGING_TARGET, utility.specsrc)
 clean:			$(TARGETS_CLEAN) docs.clean
 distclean:	clean   $(TARGETS_DISTCLEAN)
-uninstall:              $(TARGETS_UNINSTALL)
-
-
-# dependencies
-src.install::  include.install
-test.install:: etc.install src.install
 
 
 $(TARGETS)::

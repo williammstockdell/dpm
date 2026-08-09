@@ -33,8 +33,6 @@
 #include <sstream>
 
 
-using boost::bind;
-
 using std::ostringstream;
 using std::string;
 

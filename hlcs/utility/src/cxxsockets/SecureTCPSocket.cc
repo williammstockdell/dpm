@@ -21,21 +21,21 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <mutex>
+#include <openssl/err.h>
+
 #include "cxxsockets/SecureTCPSocket.h"
 
 #include "cxxsockets/FileLocker.h"
 
 #include "portConfiguration/SslConfiguration.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/thread/once.hpp>
-#include <boost/bind.hpp>
 
 LOG_DECLARE_FILE( "utility.cxxsockets" );
 
 namespace {
 
-boost::once_flag init_once_flag = BOOST_ONCE_INIT;
+std::once_flag init_once_flag;
 
 void
 init_ssl()
@@ -60,7 +60,7 @@ getErrStr(
 
         char buf[256] = {0};
         ERR_error_string_n(error, buf, sizeof(buf));
-        
+
         message << buf;
     }
 }
@@ -117,7 +117,7 @@ SecureTCPSocket::SecureTCPSocket(
         ) :
     TCPSocket( 0 /* family */, socket->getFileDescriptor() )
 {
-    boost::call_once( &init_ssl, init_once_flag );
+    std::call_once( init_once_flag, &init_ssl );
     _ctx = 0;
     _ssl = 0;
 
@@ -141,7 +141,7 @@ SecureTCPSocket::SecureTCPSocket(
         ) :
     TCPSocket(family, fd)
 {
-    boost::call_once( &init_ssl, init_once_flag );
+    std::call_once( init_once_flag, &init_ssl );
     _ctx = 0;
     _ssl = 0;
 }
@@ -166,11 +166,12 @@ extract_peer_cn(
         SSL* ssl
         )
 {
-    const boost::shared_ptr<X509> cert(
-            SSL_get_peer_certificate( ssl ),
-            boost::bind( &X509_free, _1)
-            );
-    if ( ! cert ) {
+    const std::shared_ptr<X509> cert(
+                                     SSL_get_peer_certificate(ssl),
+                                     X509_free
+                                     );
+
+ if ( ! cert ) {
         int error = 0;
         const std::string estr = printSSLError(ssl, error);
         throw HardError(error, "Failed to get peer certificate " + estr);
@@ -237,7 +238,7 @@ SecureTCPSocket::ServerHandshake(
     } else if ( rc == 0 ) {
         throw HardError(0, "No User ID size received on this connection." );
     } else if ( rc != sizeof(buffer) - 1 ) {
-        throw HardError(0, 
+        throw HardError(0,
                 "Received " + boost::lexical_cast<std::string>(rc) + " bytes of expected " +
                 boost::lexical_cast<std::string>(sizeof(buffer) - 1) + " user ID size bytes"
                 );
@@ -273,7 +274,7 @@ SecureTCPSocket::ServerHandshake(
     } else if ( rc == 0 ) {
         throw HardError(0, "No User ID received on this connection." );
     } else if ( static_cast<uint32_t>(rc) != user_id_size ) {
-        throw HardError(0, 
+        throw HardError(0,
                 "Received " + boost::lexical_cast<std::string>(rc) + " bytes of expected " +
                 boost::lexical_cast<std::string>(user_id_size) + " bytes"
                 );

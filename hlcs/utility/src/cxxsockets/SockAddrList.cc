@@ -27,8 +27,6 @@
 
 #include "Log.h"
 
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 
 namespace CxxSockets {
 
@@ -49,7 +47,7 @@ SockAddrList::SockAddrList(
 
     struct addrinfo* addrinf = 0;
     SockAddr::Addrinf(addrinf, family, nodename, service);
-    const boost::shared_ptr<struct addrinfo> guard( addrinf, boost::bind(&freeaddrinfo, _1) );
+    const std::shared_ptr<struct addrinfo> guard( addrinf, &freeaddrinfo );
     while (addrinf) {
         SockAddr sa(addrinf->ai_addr);
         if (family == AF_INET6_ONLY) {

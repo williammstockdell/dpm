@@ -77,7 +77,7 @@ endif
 LDFLAGS += -pthread
 LDFLAGS += -Wl,-soname,$(lib_vers)
 LDFLAGS += -llog4cxx
-LDFLAGS += -lboost_serialization-mt
+LDFLAGS += -lboost_serialization
 LDFLAGS += -lssl
 LDFLAGS += -Wl,--enable-new-dtags # sets DT_RUNPATH
 
@@ -97,14 +97,8 @@ so_srcs += BoolAlpha.cc
 so_srcs += ExitStatus.cc
 so_srcs += Symlink.cc
 so_srcs += UserId.cc
-so_srcs += portConfiguration/Acceptor.cc
-so_srcs += portConfiguration/ClientPortConfiguration.cc
-so_srcs += portConfiguration/Connector.cc
-so_srcs += portConfiguration/Handshaker.cc
-so_srcs += portConfiguration/PairConnector.cc
 so_srcs += portConfiguration/pc_util.cc
 so_srcs += portConfiguration/PortConfiguration.cc
-so_srcs += portConfiguration/ServerPortConfiguration.cc
 so_srcs += portConfiguration/ssl_util.cc
 so_srcs += portConfiguration/SslConfiguration.cc
 
@@ -143,10 +137,6 @@ clean: $(TARGETS_CLEAN)
 
 
 distclean: clean $(TARGETS_DISTCLEAN)
-
-
-uninstall: $(TARGETS_UNINSTALL)
-	$(RM) $(INSTALL_LIST)
 
 
 $(TARGETS)::

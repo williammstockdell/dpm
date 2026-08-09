@@ -1,6 +1,6 @@
 
 # 64-bit build flags
-
+CXX=g++-14
 UNAME_PROC := $(shell uname -i)
 
 ifndef BITS
