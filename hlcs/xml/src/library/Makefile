@@ -44,7 +44,6 @@ OBJS64          = $(patsubst %.cc, %.o_64, $(C_FILES))
 OBJSXLC         = $(patsubst %.cc, %.o_xlc, $(C_FILES))
 
 LIB     = libXML.a
-LIB32   = libXML32.a
 LIB64   = libXML_s.a
 LIBXLC  = libXML_xlc.a
 
@@ -101,7 +100,6 @@ ifneq ($(OS),AIX)
 endif
 ifeq ($(OS_ARCH),x86_64)
   TARGET_LIST += $(LIB)
-  TARGET_LIST += $(LIB32)
   TARGET_LIST += $(LIB64)		# build an explicit 64 bit library
 endif
 ifeq ($(OS_ARCH),ppc64)
@@ -141,9 +139,6 @@ $(MODULE_LIB_DIR)/$(SOLIB_VERS): $(SOLIB_VERS)
 
 $(LIB): $(OBJS)
 	$(SILENT)$(AR) rcs $(LIB) $(OBJS)
-
-$(LIB32): $(OBJS32)
-	 $(SILENT)$(AR) rcs $(LIB32) $(OBJS32)
 
 $(LIBXLC): $(OBJSXLC)
 	 $(SILENT)$(AR) -X64 rcs $(LIBXLC) $(OBJSXLC)

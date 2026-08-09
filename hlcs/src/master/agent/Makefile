@@ -43,23 +43,16 @@ CXXFLAGS += \
 
 
 LDFLAGS += \
- -L $(BGQ_INSTALL_DIR)/utility/lib -lbgutility -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/lib -lbgutility -lcxxsockets \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
  -L $(BGQ_INSTALL_DIR)/xml/lib -lXML \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
- -lboost_date_time-mt \
- -lboost_filesystem-mt \
- -lboost_program_options-mt \
- -lboost_system-mt \
- -lboost_thread-mt \
  -llog4cxx
 
 
 parts := \
  bgagentd \
- Agent \
- MasterConnection \
- SignalHandler
+ Agent
 
 objs := ${parts:%=%.o}
 
