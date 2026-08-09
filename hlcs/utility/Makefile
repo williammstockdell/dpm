@@ -48,7 +48,7 @@ required_doxygen_version := 1.6
 
 
 # make the all also do an install so the top level default make works
-all:  $(TARGETS)
+all:  $(TARGETS_ALL)
 
 install:		$(TARGETS_INSTALL) docs $(call TLD_INSTALL_PACKAGING_TARGET, utility.specsrc)
 clean:			$(TARGETS_CLEAN) docs.clean

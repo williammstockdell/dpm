@@ -43,11 +43,15 @@ CXXFLAGS += \
 
 
 LDFLAGS += \
- -L $(BGQ_INSTALL_DIR)/hlcs/utility/lib -lbgutility -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/cxxsockets -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/ -lbgutility \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
- -L $(BGQ_INSTALL_DIR)/xml/lib -lXML \
+ -L $(BGQ_INSTALL_DIR)/hlcs/xml/src/library -lXML \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
- -llog4cxx
+ -llog4cxx \
+ -lexpat \
+ -lssl \
+ -lcrypto
 
 
 parts := \
