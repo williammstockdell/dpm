@@ -26,8 +26,6 @@
 
 #include "portConfiguration/SslConfiguration.h"
 
-#include "PairConnector.h"
-
 #include "Log.h"
 
 #include <sstream>

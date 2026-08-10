@@ -101,6 +101,8 @@ so_srcs += portConfiguration/pc_util.cc
 so_srcs += portConfiguration/PortConfiguration.cc
 so_srcs += portConfiguration/ssl_util.cc
 so_srcs += portConfiguration/SslConfiguration.cc
+so_srcs += portConfiguration/ClientPortConfiguration.cc
+so_srcs += portConfiguration/ServerPortConfiguration.cc
 
 
 so_objs=${so_srcs:%.cc=%.o}

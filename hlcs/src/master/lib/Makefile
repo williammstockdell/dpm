@@ -31,7 +31,7 @@ lib := $(lib_soname).0.0
 
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR) \
+ -isystem $(BGQ_INSTALL_DIR)/hlcs \
  -iquote .. \
  -Wall \
  -Wextra \
@@ -42,11 +42,12 @@ CXXFLAGS += \
  -fPIC
 
 LDFLAGS += \
- -L$(BGQ_INSTALL_DIR)/utility/lib -lbgutility -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/cxxsockets -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/ -lbgutility \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/ -lbgutility \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
- -L$(BGQ_INSTALL_DIR)/xml/lib -lXML \
+ -L$(BGQ_INSTALL_DIR)/hlcs/xml/src/library -lXML \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
- -lboost_date_time-mt \
  -Wl,-soname,$(lib_soname)
 
 
