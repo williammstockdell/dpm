@@ -69,12 +69,10 @@ public:
 
     static Registrar _agent_registrar;
     static Registrar _client_registrar;
-    static DBUpdater _updater;
 
     MasterController(const bgq::utility::Properties::Ptr& properties);
 
     void startup(int signal_fd);
-    static void putRAS(unsigned int id, const std::map<std::string, std::string>& details);
 
     static bool get_master_terminating() { return _master_terminating; }
     static void set_master_terminating()  { _master_terminating = true; }
@@ -87,9 +85,11 @@ public:
     //! \brief log error message and save it to the ring buffer
     //! \param msg the error message the handle
     static void handleErrorMessage(const std::string& msg);
+
     //! \brief get the current messages in the ring buffer
     //! \param messages A vector of messages to be filled and returned
     static void getErrorMessages(std::vector<std::string>& messages);
+
     static void addHistoryMessage(const std::string& message);
     static void getHistoryMessages(std::vector<std::string>& messages);
     static void stopThreads(bool end_binaries, int signal);
@@ -151,6 +151,7 @@ private:
 
     //! \brief static end flag
     static bool _master_terminating;
+
     //! \brief This just means that an end request has arrived.
     static bool _end_requested;
     static bool _start_servers;
@@ -159,8 +160,10 @@ private:
     static bool _master_db;
     static bool _stop_once;
     static bool _start_once;
+
     //! \brief error message ring buffer
     static LockingStringRingBuffer _err_buff;
+
     //! \brief history ring buffer
     static LockingStringRingBuffer _history_buff;
     static std::chrono::system_clock::time_point _start_time;

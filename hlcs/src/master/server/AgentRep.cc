@@ -192,7 +192,7 @@ AgentRep::stopBin_nl(
             } else {
                 details["SIGNAL"] = std::to_string(rsignal);
             }
-            MasterController::putRAS(BINARY_STOP_RAS, details);
+
             std::ostringstream stopmsg;
             stopmsg << "Binary id " << bid.str() << " alias " << alias_name << " stopped on " << _agent_id.str();
             LOG_INFO_MSG(stopmsg.str());
@@ -236,7 +236,7 @@ AgentRep::agentAbend(
     LOG_ERROR_MSG(msg.str());
     std::map<std::string, std::string> details;
     details["AGENT_ID"] = get_agent_id();
-    MasterController::putRAS(AGENT_FAIL_RAS, details);
+
     MasterController::handleErrorMessage(msg.str());
     _ending = true;
 }
@@ -316,7 +316,7 @@ AgentRep::startBin_nl(
         std::map<std::string, std::string> details;
         details["BIN"] = bid.str();
         details["ALIAS"] = startreq._alias;
-        MasterController::putRAS(BINARY_START_RAS, details);
+
         std::ostringstream startmsg;
         startmsg << "Started alias " << al->get_name() << " with binary id " << bid.str() << " on agent " << _agent_id.str() << ".";
         MasterController::addHistoryMessage(startmsg.str());
@@ -353,7 +353,6 @@ AgentRep::startBin_nl(
         details["ESTAT"] = std::to_string(estat);
         details["EMSG"] = startrep._rt;
         MasterController::handleErrorMessage(msg.str());
-        MasterController::putRAS(BINARY_FAIL_RAS, details);
     }
     return bid;
 }
@@ -579,7 +578,7 @@ AgentRep::doCompleteRequest(
     details["ALIAS"] = bptr->get_alias_name();
     std::string signal = "0";
     details["SIGNAL"] = signal;
-    MasterController::putRAS(BINARY_STOP_RAS, details);
+
     std::ostringstream startmsg;
     startmsg << "Binary id " << reqbid.str() << " for alias " << bptr->get_alias_name() << " stopped on " << _agent_id.str();
     MasterController::addHistoryMessage(startmsg.str());
@@ -645,7 +644,7 @@ AgentRep::doFailedRequest(
         details["SIGNAL"] = std::to_string(signo);
         details["ESTAT"] = std::to_string(estat);
         details["EMSG"] = msg.str();
-        MasterController::putRAS(BINARY_FAIL_RAS, details);
+
         MasterController::handleErrorMessage(msg.str());
     } else {
         // Whoa!  We don't know about this binary?

@@ -86,7 +86,7 @@ ClientController::doStartRequest(
         std::map<std::string, std::string> details;
         details["USER"] = "unknown";
         details["COMMAND"] = "master_start";
-        MasterController::putRAS(AUTHORITY_FAIL_RAS, details);
+
     } else {
         if (startreq._alias.empty()) {
             // Not an error! This tells us to start 'em all up.
@@ -346,7 +346,7 @@ ClientController::doStopRequest(
         std::map<std::string, std::string> details;
         details["USER"] = "unknown";
         details["COMMAND"] = "master_stop";
-        MasterController::putRAS(AUTHORITY_FAIL_RAS, details);
+
     } else {
         // We can have a list of aliases or specific binary ids to stop. Do both.
         if (stopreq._binary_ids.size() == 0 && stopreq._aliases.size() == 0) {
@@ -646,7 +646,7 @@ ClientController::doFailRequest(
         std::map<std::string, std::string> details;
         details["USER"] = "unknown";
         details["COMMAND"] = "fail_over";
-        MasterController::putRAS(AUTHORITY_FAIL_RAS, details);
+
     } else {
         for(const std::string& strbid : failreq._binary_ids) {
             // For every bin in the list, do the failover action, update

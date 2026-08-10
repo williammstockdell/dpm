@@ -72,7 +72,7 @@ Alias::remove_binary(
 {
     _halt_waiting_for_agent = true; // If anyone is waiting, STOP!
     LOG_DEBUG_MSG("Removing binary id " << id.str() << " from alias.");
-    boost::mutex::scoped_lock scoped_lock(_mutex);
+    std::scoped_lock scoped_lock(_mutex);
     _binaries.remove(id);
 }
 
@@ -106,7 +106,7 @@ Alias::runPolicy(
         MasterController::handleErrorMessage(msg.str());
         std::map<std::string, std::string> details;
         details["ALIAS"] = get_name();
-        MasterController::putRAS(ALIAS_FAIL_RAS, details);
+
         throw exceptions::InternalError(exceptions::WARN, msg.str());
     }
 
@@ -121,7 +121,7 @@ Alias::runPolicy(
             msg <<"Bad agent " << agent_id.str() << " specified";
             std::map<std::string, std::string> details;
             details["ALIAS"] = get_name();
-            MasterController::putRAS(ALIAS_FAIL_RAS, details);
+
             MasterController::handleErrorMessage(msg.str());
             if (restart) {
                 // The selected agent doesn't exist. Need to wait to see if another one comes up with the same IP address.
@@ -154,7 +154,7 @@ Alias::runPolicy(
                     msg << "Bad agent " << agent_id.str() << " specified. Policy does not allow alias to run on this agent.";
                     std::map<std::string, std::string> details;
                     details["ALIAS"] = get_name();
-                    MasterController::putRAS(ALIAS_FAIL_RAS, details);
+
                     MasterController::handleErrorMessage(msg.str());
                     throw exceptions::InternalError(exceptions::WARN, msg.str());
                 }
@@ -240,7 +240,7 @@ Alias::validateStartAgent(
     }
     LOGGING_DECLARE_ALIAS_MDC(_name);
     // This just locks and calls the non-locking private method
-    boost::mutex::scoped_lock scoped_lock(_mutex);
+    std::scoped_lock scoped_lock(_mutex);
     return runPolicy(agent_id);
 }
 
@@ -254,7 +254,7 @@ Alias::evaluatePolicy(
 {
     LOGGING_DECLARE_ALIAS_MDC(_name);
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_mutex);
+    std::scoped_lock scoped_lock(_mutex);
 
     AgentRepPtr rep;
 
@@ -331,7 +331,7 @@ Alias::evaluatePolicy(
                     MasterController::handleErrorMessage(msg.str());
                     std::map<std::string, std::string> details;
                     details["ALIAS"] = get_name();
-                    MasterController::putRAS(ALIAS_FAIL_RAS, details);
+
                     _retry_count = 0;
                     done = true;
                 }
@@ -345,7 +345,7 @@ Alias::evaluatePolicy(
                 details["ALIAS"] = get_name();
                 details["SOURCE"] = agent.get_host().fqhn();
                 details["TARGET"] = target.fqhn();
-                MasterController::putRAS(ALIAS_FAILOVER_RAS, details);
+
                 done = true;
             } else {
                 std::ostringstream msg;
@@ -355,7 +355,7 @@ Alias::evaluatePolicy(
                 MasterController::handleErrorMessage(msg.str());
                 std::map<std::string, std::string> details;
                 details["ALIAS"] = get_name();
-                MasterController::putRAS(ALIAS_FAIL_RAS, details);
+
                 _retry_count = 0;
                 done = true;
             }
@@ -371,7 +371,7 @@ Alias::evaluatePolicy(
             // Update database with RAS message
             std::map<std::string, std::string> details;
             details["ALIAS"] = get_name();
-            MasterController::putRAS(ALIAS_RESTART_RAS, details);
+
             rep = runPolicy(agent, true);
         } else {
             std::ostringstream msg;
@@ -381,7 +381,7 @@ Alias::evaluatePolicy(
             MasterController::handleErrorMessage(msg.str());
             std::map<std::string, std::string> details;
             details["ALIAS"] = get_name();
-            MasterController::putRAS(ALIAS_FAIL_RAS, details);
+
             _retry_count = 0;
         }
     } else if (bvr.get_action() == Behavior::CLEANUP) {

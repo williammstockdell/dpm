@@ -25,6 +25,9 @@
 #define ALIAS_H
 
 
+#include <list>
+#include <string>
+
 #include "common/Ids.h"
 #include "Policy.h"
 #include "types.h"
@@ -36,8 +39,6 @@
 #include <boost/utility.hpp>
 #include <boost/date_time/posix_time/ptime.hpp>
 
-#include <list>
-#include <string>
 
 
 //! \brief Alias class.  Represents the association between a name,
@@ -46,36 +47,36 @@ class Alias : private boost::noncopyable
 {
 public:
     Alias(
-            const std::string& name, 
-            const std::string& path, 
-            const Policy& p, 
+            const std::string& name,
+            const std::string& path,
+            const Policy& p,
             const std::string& user = std::string(),
             const std::string& logdir = std::string(),
             const int preferredHostWait = int()
          );
 
     void set_path(const std::string& path) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         _path = path;
     }
     void set_args(const std::string& args) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         _args = args;
     }
     void set_user(const std::string& uid) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         _user = uid;
     }
     void set_logdir(const std::string& logdir) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         _logdir = logdir;
     }
     void add_host(const CxxSockets::Host& host) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         _hosts.push_back(host);
     }
     void add_binary(const BinaryId& id) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         _binaries.push_back(id);
     }
 
@@ -97,7 +98,7 @@ public:
     //! \param id Binary id to look for
     //! \return true if found, false if not
     bool find_binary(const BinaryId& id) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         BOOST_FOREACH(BinaryId idit, _binaries) {
             if (id == idit) return true;
         }
@@ -108,7 +109,7 @@ public:
     //! \param id ID of first binary running under this alias will be returned
     //! \return true if we have an associated binary id
     bool running(BinaryId& id) const {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         if (!_binaries.empty()) {
             id = _binaries.front();
             return true;
@@ -119,13 +120,13 @@ public:
     //! \brief See if there are any running binaries, don't return any either.
     //! \return true if there are any associated binaries.
     bool running() const {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         return !_binaries.empty();
     }
 
     //! \brief If the passed host is in our list return true
     bool find_host(const CxxSockets::Host& host) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+        std::scoped_lock scoped_lock(_mutex);
         return find_host_internal(host);
     }
 
@@ -141,7 +142,7 @@ public:
 
 private:
     AgentRepPtr runPolicy(const BGAgentId& agent_id, bool restart);
-    
+
     //! \brief If the passed host is in our list return true
     bool find_host_internal(const CxxSockets::Host& host) {
         BOOST_FOREACH(CxxSockets::Host h, _hosts) {
@@ -171,7 +172,7 @@ private:
     //! \brief List of binary instances associated with this alias
     std::list<BinaryId> _binaries;
 
-    mutable boost::mutex _mutex;
+    mutable std::mutex _mutex;
 
     //! \brief policy associated with this binary
     Policy _my_policy;
@@ -181,7 +182,7 @@ private:
     bool _waiting_for_agent;
     //! \brief This flag is set if we need to stop waiting for an agent to start.
     bool _halt_waiting_for_agent;
-    
+
     //! \brief The time we failed to start this alias on its preferred host
     boost::posix_time::ptime _preferred_start_time;
 };

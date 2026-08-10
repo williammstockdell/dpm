@@ -257,7 +257,7 @@ main(int argc, const char** argv)
         std::map<std::string, std::string> details;
         details["PID"] = std::to_string(getpid());
         details["ERROR"] = e.what();
-        MasterController::putRAS(MASTER_CONFIG_RAS, details);
+
     }
 
     // Stop threads

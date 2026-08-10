@@ -73,8 +73,6 @@ std::mutex MasterController::_monitor_prots_mutex;
 AgentManager MasterController::_agent_manager;
 ClientManager MasterController::_client_manager;
 
-DBUpdater MasterController::_updater;
-
 Registrar MasterController::_agent_registrar;
 Registrar MasterController::_client_registrar;
 
@@ -85,33 +83,6 @@ MasterController::MasterController(
     _props = properties;
 }
 
-void
-MasterController::putRAS(
-        const unsigned int id,
-        const std::map<std::string, std::string>& details
-        )
-{
-    return;
-    // if (_master_db) { // Only bother with RAS if we've got a DB
-    //     RasEventImpl event(id);
-    //     for (std::map<std::string, std::string>::const_iterator it = details.begin(); it != details.end(); ++it) {
-    //         event.setDetail(it->first, it->second);
-    //     }
-
-    //     RasEventHandlerChain::handle(event);
-
-    //     std::string rasMessage("insert into tbgqeventlog (msg_id,component,category,severity,message) values(");
-    //     rasMessage.append("'").append(event.getDetail(RasEvent::MSG_ID)).append("'");
-    //     rasMessage.append(",'").append(event.getDetail(RasEvent::COMPONENT)).append("'");
-    //     rasMessage.append(",'").append(event.getDetail(RasEvent::CATEGORY)).append("'");
-    //     rasMessage.append(",'").append(event.getDetail(RasEvent::SEVERITY)).append("'");
-    //     rasMessage.append(",'").append(event.getDetail(RasEvent::MESSAGE)).append("'");
-    //     rasMessage.append(")");
-
-    //     LOG_DEBUG_MSG("Sending RAS request to DB updater: " << rasMessage);
-    //     _updater.addMsg(rasMessage);
-    // }
-}
 
 void
 MasterController::stopThreads(
@@ -142,9 +113,6 @@ MasterController::stopThreads(
     std::map<std::string, std::string> details;
     details["PID"] = std::to_string(getpid());
 
-    putRAS(MASTER_SHUTDOWN_RAS, details);
-    // End the DB updater.
-    _updater.end();
 }
 
 void
@@ -159,6 +127,7 @@ MasterController::handleErrorMessage(
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     errmsg << time_to_string(now) << ": " << msg;
     _err_buff.push_back(errmsg.str());
+
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::ErrorMessage error(errmsg.str());
     std::scoped_lock scoped_lock(_monitor_prots_mutex);
@@ -166,12 +135,14 @@ MasterController::handleErrorMessage(
         try {
             prot->sendOnly(error.getClassName(), error);
         } catch (const CxxSockets::Error& e) {
+
             // If we get an error we assume that the client has been killed and should be removed
             // otherwise we have a potential memory leak.
             LOG_WARN_MSG(e.what());
             deadClients.push_back(prot);
         }
     }
+
     // Loop through the deadClients and remove them from _monitor_prots container.
     for (unsigned i = 0; i < deadClients.size(); ++i) {
         LOG_WARN_MSG("Removing master_monitor client instance after socket error ...");
@@ -193,6 +164,7 @@ MasterController::getErrorMessages(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
+
     // Going to pop items out of the circular buffer.
     _err_buff.getContents(messages);
 }
@@ -210,6 +182,7 @@ MasterController::addHistoryMessage(
     msg << time_to_string(now) << ": " << message;
 
     _history_buff.push_back(msg.str());
+
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::EventMessage event(msg.str());
     std::scoped_lock scoped_lock(_monitor_prots_mutex);
@@ -217,12 +190,14 @@ MasterController::addHistoryMessage(
         try {
             prot->sendOnly(event.getClassName(), event);
         } catch (const CxxSockets::Error& e) {
+
             // If we get an error we assume that the client has been killed and should be removed
             // otherwise we have a potential memory leak.
             LOG_WARN_MSG(e.what());
             deadClients.push_back(prot);
         }
     }
+
     // Loop through the deadClients and remove them from _monitor_prots container.
     for (unsigned i = 0; i < deadClients.size(); ++i) {
         LOG_WARN_MSG("Removing master_monitor client instance after socket error ...");
@@ -265,6 +240,7 @@ MasterController::buildHostList(
             if (keyval.first == al->get_name()) {
                 std::vector<std::string>::const_iterator it = std::find(exclude_list.begin(), exclude_list.end(), al->get_name());
                 if (it != exclude_list.end()) {
+
                     // This was defined previously.  Refresh is additive.  We don't want to mess with this on a running system.
                     if (firstdup) {
                         firstdup = false;
@@ -522,7 +498,7 @@ MasterController::buildInstances(
                 } else {
                     // Found an existing alias so update the policy
                     try {
-                        const int ip = boost::lexical_cast<int>(instance_policy);
+                        const int ip = stoi(instance_policy);
                         al->policy().changeInstances(static_cast<unsigned short>(ip));
                         if (ip <= 0 || ip > std::numeric_limits<unsigned short>::max()) {
                             std::ostringstream msg;
@@ -530,12 +506,18 @@ MasterController::buildInstances(
                             LOG_WARN_MSG(msg.str());
                             throw exceptions::ConfigError(exceptions::WARN, msg.str());
                         }
-                    } catch (const boost::bad_lexical_cast& e) {
+                    } catch (const std::invalid_argument& e) {
                         std::ostringstream msg;
                         msg << "Bad instance value " << instance_policy << " defined. " << e.what();
                         LOG_WARN_MSG(msg.str());
                         throw exceptions::ConfigError(exceptions::WARN, msg.str());
+                    } catch (const std::out_of_range& e) {
+                        std::ostringstream msg;
+                        msg << "Out of range instance value " << instance_policy << " defined. " << e.what();
+                        LOG_WARN_MSG(msg.str());
+                        throw exceptions::ConfigError(exceptions::WARN, msg.str());
                     }
+
                     LOG_DEBUG_MSG("Found instance of " << instance_policy << " for alias " << al->get_name());
                 }
                 found = true;
@@ -578,8 +560,7 @@ MasterController::buildArgs(
     }
 }
 
-void
-MasterController::addBehaviors(
+void MasterController::addBehaviors(
         const bgq::utility::Properties::Section& failmap,
         std::multimap<Policy::Trigger,Behavior>& behaviors
         )
@@ -650,6 +631,7 @@ MasterController::addBehaviors(
                     }
                 }
             }
+
             if (!policy_found) {
                 // Didn't find a policy, Assume the [master.binmap] entry has been commented out.
                 // Log warning message in case something else is going on.
