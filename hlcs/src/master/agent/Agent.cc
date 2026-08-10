@@ -30,7 +30,6 @@
 
 #include <utility/include/ExitStatus.h>
 
-#include <boost/asio/io_service.hpp>
 
 #include <grp.h>
 #include <stdlib.h>
@@ -38,6 +37,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+std::string ghn() {
+
+    char hn[256] = {};
+    assert(gethostname(hn, sizeof(hn)));
+    return std::string(hn);
+}
 
 LOG_DECLARE_FILE( "master" );
 
@@ -46,7 +51,7 @@ Agent::Agent(
         ) :
     _uid_mutex(),
     _user_list(),
-    _hostname( boost::asio::ip::host_name() ),
+    _hostname( ghn() ),
     _properties( props ),
     _buffered_messages_mutex(),
     _buffered_messages()
@@ -96,7 +101,7 @@ Agent::start(
             }
             // Extract gid_t from each group returned in the UserId object
             std::vector<gid_t> groups;
-            BOOST_FOREACH( const bgq::utility::UserId::Group& i, uid.getGroups() ) {
+            for( const bgq::utility::UserId::Group& i : uid.getGroups() ) {
                 groups.push_back( i.first );
                 LOG_DEBUG_MSG( "secondary group: " << i.second << " (" << i.first << ")" );
             }
@@ -152,7 +157,7 @@ Agent::build_join_request(
     LOG_TRACE_MSG(__FUNCTION__);
     // For each running binary, add it to the join request.
     BGMasterAgentProtocolSpec::JoinRequest joinreq(hostaddr, servname, "agent", _host.uhn());
-    BOOST_FOREACH( const BinaryControllerPtr& pbin, this->get_binaries() ) {
+    for( const BinaryControllerPtr& pbin : this->get_binaries() ) {
         const BGMasterAgentProtocolSpec::JoinRequest::WorkingBins bin(
                 pbin->get_binid().str(),
                 pbin->get_binary_bin_path(),
@@ -230,12 +235,12 @@ int Agent::join(const bgq::utility::PortConfiguration::Pair& port)
     LOG_DEBUG_MSG("Group joined");
 
     // Now look at the join reply to see if we need to kill any binaries
-    BOOST_FOREACH(const std::string& badbin, joinrep._bad_bins) {
+    for(const std::string& badbin : joinrep._bad_bins) {
         const BinaryId bid(badbin);
         BinaryControllerPtr ptr;
         if (find_binary(bid, ptr)) {
             // Only one at a time because we are switching uids
-            boost::mutex::scoped_lock lock(_uid_mutex);
+            std::scoped_lock lock(_uid_mutex);
             ptr->stop(SIGTERM);
             LOG_INFO_MSG("Stopped binary id " << bid.str());
             // Now take it out of the list
@@ -264,7 +269,7 @@ int Agent::join(const bgq::utility::PortConfiguration::Pair& port)
 
     // Spawn a thread to send any old buffered up messages so that we can immediately handle
     // incoming requests without deadlock.
-    boost::thread t(&Agent::sendBuffered, this);
+    std::thread t(&Agent::sendBuffered, this);
     t.detach();
 
     return 0;
@@ -275,7 +280,7 @@ Agent::sendBuffered()
 {
     std::list<MsgBasePtr> buffered_messages;
     {
-        boost::mutex::scoped_lock lock( _buffered_messages_mutex );
+        std::scoped_lock lock( _buffered_messages_mutex );
         std::swap( buffered_messages, _buffered_messages );
     }
 
@@ -367,7 +372,7 @@ Agent::processStartRequest(
     rep._rc = exceptions::OK;
 
     try {
-        boost::mutex::scoped_lock lock(_uid_mutex);
+        std::scoped_lock lock(_uid_mutex);
         bid = bin->startBinary(
                 _user_list,
                 _properties->getFilename()
@@ -446,7 +451,7 @@ Agent::processStartRequest(
             // Server aborted with an incomplete transmission
             LOG_WARN_MSG("Connection to bgmaster_server ended while sending ending request for alias " << bin->get_alias_name() << " in method " <<  __FUNCTION__);
             const MsgBasePtr bp(new BGMasterAgentProtocolSpec::FailedRequest(binstat));
-            boost::mutex::scoped_lock lock( _buffered_messages_mutex );
+            std::scoped_lock lock( _buffered_messages_mutex );
             _buffered_messages.push_back(bp);
         }
     } else {
@@ -471,7 +476,7 @@ Agent::processStartRequest(
                 // Server aborted with an incomplete transmission
                 LOG_WARN_MSG("Connection to bgmaster_server ended while sending complete request for alias in method " <<  __FUNCTION__);
                 const MsgBasePtr bp(new BGMasterAgentProtocolSpec::CompleteRequest(binstat, exit_status));
-                boost::mutex::scoped_lock lock( _buffered_messages_mutex );
+                std::scoped_lock lock( _buffered_messages_mutex );
                 _buffered_messages.push_back(bp);
             }
         }
@@ -494,7 +499,7 @@ Agent::doStopRequest(
     BinaryControllerPtr ptr;
     if (find_binary(bid, ptr)) {
         // Only one at a time because we are switching uids
-        boost::mutex::scoped_lock lock(_uid_mutex);
+        std::scoped_lock lock(_uid_mutex);
         const int stop_sig = ptr->stop(stopreq._signal);
         if (stop_sig == 0) {
             LOG_INFO_MSG("Failed to stop binary id " << bid.str());
@@ -542,7 +547,7 @@ Agent::doEndAgentRequest(
     const Binaries binaries = this->get_binaries();
     for ( Binaries::const_iterator i = binaries.begin(); i != binaries.end(); ++i ) {
         // Only one at a time because we are switching uids
-        boost::mutex::scoped_lock lock(_uid_mutex);
+        std::scoped_lock lock(_uid_mutex);
         const BinaryControllerPtr ptr = *i;
         ptr->stop(signal);
         this->removeController( ptr );
@@ -588,7 +593,7 @@ Agent::processRequest()
             LOG_WARN_MSG("Connection to bgmaster_server ended while handling StartRequest in method " <<  __FUNCTION__);
             return;
         }
-        boost::thread startthread(&Agent::processStartRequest, this, startreq);
+        std::thread startthread(&Agent::processStartRequest, this, startreq);
     } else if (request_name == "StopRequest") {
         BGMasterAgentProtocolSpec::StopRequest stopreq;
         try {

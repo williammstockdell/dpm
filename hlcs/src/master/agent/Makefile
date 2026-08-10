@@ -30,7 +30,7 @@ MODULE_INIT_DIR=$(TOP_INSTALL_DIR)/etc/init
 
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR) \
+ -isystem $(BGQ_INSTALL_DIR)/hlcs \
  -iquote .. \
  -W \
  -Wall \
@@ -52,6 +52,8 @@ LDFLAGS += \
  -lexpat \
  -lssl \
  -lcrypto
+
+LDFLAGS  += -lboost_program_options
 
 
 parts := \

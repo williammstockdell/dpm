@@ -26,6 +26,7 @@ include ../../Make.hlcs.rules
 DIRS = $(subst /Makefile,,$(wildcard */Makefile))
 
 CXXFLAGS += -std=c++20
+CXXFLAGS += -isystem $(BGQ_INSTALL_DIR)/utility/include
 
 DIR_TARGS_ALL		= $(addsuffix .all,$(DIRS))
 DIR_TARGS_CLEAN		= $(addsuffix .clean,$(DIRS))

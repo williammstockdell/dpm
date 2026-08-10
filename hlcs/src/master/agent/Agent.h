@@ -35,8 +35,6 @@
 
 #include <utility/include/portConfiguration/PortConfiguration.h>
 
-#include <boost/thread.hpp>
-
 #include <list>
 #include <string>
 
@@ -89,11 +87,11 @@ public:
 
 private:
 
-    boost::mutex _uid_mutex;
+    std::mutex _uid_mutex;
     std::string _user_list;
     const CxxSockets::Host _hostname;
     const bgq::utility::Properties::ConstPtr _properties;
-    boost::mutex _buffered_messages_mutex;
+    std::mutex _buffered_messages_mutex;
     std::list<MsgBasePtr> _buffered_messages; //! \brief When the master goes down, buffer messages here
 };
 
