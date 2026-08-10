@@ -21,12 +21,16 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <ranges>
+#include <string_view>
 #include <barrier>
 #include <poll.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <utility/include/version.h>
+#include <utility/include/TimeStuff.h>
 
 #include "AgentManager.h"
 #include "AgentRep.h"
@@ -39,9 +43,6 @@
 #include "Registrar.h"
 
 #include "../lib/exceptions.h"
-
-#include <utility/include/version.h>
-
 
 LOG_DECLARE_FILE( "master" );
 
@@ -154,8 +155,9 @@ MasterController::handleErrorMessage(
     LOG_ERROR_MSG( __FUNCTION__ << ": " << msg);
     std::ostringstream errmsg;
     std::vector<ClientProtocolPtr> deadClients;
-    boost::posix_time::ptime now(boost::posix_time::second_clock::local_time());
-    errmsg << now << ": " << msg;
+
+    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    errmsg << time_to_string(now) << ": " << msg;
     _err_buff.push_back(errmsg.str());
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::ErrorMessage error(errmsg.str());
@@ -203,8 +205,10 @@ MasterController::addHistoryMessage(
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream msg;
     std::vector<ClientProtocolPtr> deadClients;
-    boost::posix_time::ptime now(boost::posix_time::second_clock::local_time());
-    msg << now << ": " << message;
+
+    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    msg << time_to_string(now) << ": " << message;
+
     _history_buff.push_back(msg.str());
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::EventMessage event(msg.str());
@@ -272,22 +276,34 @@ MasterController::buildHostList(
                     msg << "Host list previously set for " << al->get_name();
                     handleErrorMessage(msg.str());
                 } else {
+
                     // Found an existing alias so parse out the hosts and update the alias
-                    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-                    boost::char_separator<char> sep(","); // comma separated
-                    tokenizer tok(all_hosts, sep);
                     bool first = true;
-                    BOOST_FOREACH(const std::string& curr_host, tok) {
+
+                    for (auto&& part : all_hosts | std::views::split(',')) {
+                        const std::string curr_host(part.begin(), part.end());
+
+                        if (curr_host.empty()) {
+                            continue;
+                        }
+
                         try {
                             CxxSockets::Host h(curr_host);
+
                             if (first) {
                                 LOG_DEBUG_MSG("Host " << h.uhn() << " is the preferred host.");
                                 h.set_primary(true);
                             }
+
                             first = false;
-                            LOG_DEBUG_MSG("Adding host " << h.uhn() << " to alias " << al->get_name());
+
+                            LOG_DEBUG_MSG(
+                                          "Adding host " << h.uhn() << " to alias " << al->get_name()
+                                          );
+
                             al->add_host(h);
-                        } catch ( const CxxSockets::Error& e ) {
+
+                        } catch (const CxxSockets::Error& e) {
                             throw exceptions::APIUserError(exceptions::INFO, e.what());
                         }
                     }
@@ -316,146 +332,163 @@ MasterController::buildFailover(
     // Finally, go through the failover list
     for(const bgq::utility::Properties::Pair& keyval : failover) {
 
-        LOG_DEBUG_MSG("Building policy for " << keyval.first << "="  << keyval.second);
+        LOG_DEBUG_MSG("Building policy for " << keyval.first << "=" << keyval.second);
 
-        // First create a policy object, then assign to an alias.
-        // Tokenize the policy.
-        const std::string failover_policy = boost::algorithm::erase_all_copy(keyval.second, " ");
-        typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-        boost::char_separator<char> sep(","); // Comma separated
-        tokenizer tok(failover_policy, sep);
-        tokenizer::iterator curr_tok = tok.begin();
+        std::string failover_policy = keyval.second;
+        std::erase(failover_policy, ' ');
 
-        if (curr_tok == tok.end()) {
-            // No policy
-            // Bad news, config file is wrong
+        std::vector<std::string> tokens;
+
+        for (auto&& part : failover_policy | std::views::split(',')) {
+            if (!part.empty()) {
+                tokens.emplace_back(part.begin(), part.end());
+            }
+        }
+
+        if (tokens.empty()) {
             std::ostringstream msg;
-            msg << "Invalid failover policy configuration. No policy specified for " << keyval.first;
+            msg << "Invalid failover policy configuration. No policy specified for "
+                << keyval.first;
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
         // Trigger is first
-        Policy::Trigger my_trigger = Policy::string_to_trigger(*curr_tok);
+        const Policy::Trigger my_trigger = Policy::string_to_trigger(tokens[0]);
+
         if (my_trigger == Policy::INVALID_TRIGGER) {
-            // Bad news, config file is wrong
             std::ostringstream msg;
-            msg << "Invalid failover trigger " << my_trigger << " specified.";
+            msg << "Invalid failover trigger " << tokens[0] << " specified.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
-        ++curr_tok; // second is the action to take
-        if (curr_tok == tok.end()) {
-            // Bad. No action specified
+        // Second is the action to take
+        if (tokens.size() < 2) {
             std::ostringstream msg;
-            msg << "Invalid failure configuration for " << keyval.first <<  " . No action specified.";
+            msg << "Invalid failure configuration for " << keyval.first
+                << ". No action specified.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
-        Behavior::Action act = Behavior::string_to_action(*curr_tok);
+        const Behavior::Action act = Behavior::string_to_action(tokens[1]);
+
         if (act == Behavior::INVALID_ACTION) {
             std::ostringstream msg;
-            msg << "Invalid failure action '" << *curr_tok << "' specified.";
+            msg << "Invalid failure action '" << tokens[1] << "' specified.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
-        ++curr_tok; // third is the number of retries
-        if (curr_tok == tok.end()) {
-            // Bad.  No action specified
+        // Third is number of retries
+        if (tokens.size() < 3) {
             std::ostringstream msg;
-            msg << "Invalid failure configuration for " << keyval.first <<  " . No retries specified.";
+            msg << "Invalid failure configuration for " << keyval.first
+                << ". No retries specified.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
-        std::ostringstream msg;
         unsigned short retries = 0;
+
         try {
-            retries = boost::lexical_cast<unsigned short>(*curr_tok);
-        } catch (const boost::bad_lexical_cast& e) {
+            const unsigned long value = std::stoul(tokens[2]);
+
+            if (value > std::numeric_limits<unsigned short>::max()) {
+                throw std::out_of_range("retry count out of range");
+            }
+
+            retries = static_cast<unsigned short>(value);
+        } catch (const std::exception& e) {
+            std::ostringstream msg;
             msg << e.what();
+            handleErrorMessage(msg.str());
+            throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
         if (retries == 0) {
-            // Bad.  No action specified
-            msg << "Invalid retry configuration for " << keyval.first <<  ". Number of retries, " << retries << ", must be greater than zero.";
+            std::ostringstream msg;
+            msg << "Invalid retry configuration for " << keyval.first
+                << ". Number of retries, " << retries
+                << ", must be greater than zero.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
 
-        ++curr_tok; // fourth is the associated host pairs
-
         std::map<CxxSockets::Host, CxxSockets::Host> failpairs;
 
-        if (curr_tok == tok.end()) {
-            // We're at the end.  This is OK.  If our action is failover,
-            // we'll do the default of picking a random target, but note it in the log.
+        // Fourth is associated host pairs
+        if (tokens.size() < 4) {
             if (act == Behavior::FAILOVER) {
-                std::ostringstream msg;
-                msg << "Failure configuration for " << keyval.first <<  " 'failover' action specified, but no failover pair specified.";
-                LOG_INFO_MSG(msg.str());
+                LOG_INFO_MSG(
+                             "Failure configuration for " << keyval.first
+                             << " 'failover' action specified, but no failover pair specified."
+                             );
             }
         } else {
             if (act == Behavior::RESTART) {
-                // If there's a restart action, failover pairs make no sense!
                 std::ostringstream msg;
-                msg << "Bad policy configuration specified, cannot specify failover pairs"  << " for a \"restart\" policy.";
+                msg << "Bad policy configuration specified, cannot specify failover pairs"
+                    << " for a \"restart\" policy.";
                 handleErrorMessage(msg.str());
                 throw exceptions::ConfigError(exceptions::WARN, msg.str());
             }
 
-            // We have failover pairs to check. Parse it to a list of failover pairs.
-            std::string host_pairs = *curr_tok;
+            const std::string& host_pairs = tokens[3];
 
-            // Host pair is in the format of host:host|host:host
-            // So loop through all tokens separated by a '|' and build a pair for each.
-            boost::char_separator<char> bar_sep("|");
-            tokenizer bar_tok(host_pairs, bar_sep);
+            // host:host|host:host
+            for (auto&& part : host_pairs | std::views::split('|')) {
+                const std::string current(part.begin(), part.end());
 
-            for(const std::string& current : bar_tok) {
-                if (current.find_first_of(":") == std::string::npos) {
+                const auto first_colon = current.find(':');
+
+                if (first_colon == std::string::npos) {
                     std::ostringstream msg;
                     msg << "Failover configuration syntax incorrect. Missing \":\"";
                     handleErrorMessage(msg.str());
                     throw exceptions::ConfigError(exceptions::WARN, msg.str());
                 }
 
-                if (current.find_first_of(":") != current.find_last_of(":")) {
-                    // More than one ':' in this failover pair!!!
+                if (first_colon != current.rfind(':')) {
                     std::ostringstream msg;
-                    msg << "Failover configuration syntax incorrect. More than one ':' in the pair \"" << current << " \"";
+                    msg << "Failover configuration syntax incorrect. More than one ':' in the pair \""
+                        << current << "\"";
                     handleErrorMessage(msg.str());
                     throw exceptions::ConfigError(exceptions::WARN, msg.str());
                 }
 
-                boost::char_separator<char> col_sep(":");
-                tokenizer col_tok(current, col_sep);
-                tokenizer::iterator col_tok_it = col_tok.begin();
+                const std::string from = current.substr(0, first_colon);
+                const std::string to   = current.substr(first_colon + 1);
+
+                if (to.empty()) {
+                    std::ostringstream msg;
+                    msg << "Failover pair for policy " << keyval.first
+                        << " missing a target.";
+                    handleErrorMessage(msg.str());
+                    throw exceptions::ConfigError(exceptions::WARN, msg.str());
+                }
+
                 try {
-                    CxxSockets::Host from_host(*col_tok_it);
-                    ++col_tok_it;
-                    if (col_tok_it == col_tok.end()) {
-                        std::ostringstream msg;
-                        msg << "Failover pair for policy " << keyval.first << " missing a target.";
-                        handleErrorMessage(msg.str());
-                        throw exceptions::ConfigError(exceptions::WARN, msg.str());
-                    }
-                    CxxSockets::Host to_host(*col_tok_it);
-                    LOG_DEBUG_MSG("Created failover pair for " << from_host.uhn() << " to "
-                                  << to_host.uhn() << " for alias " << keyval.first);
+                    CxxSockets::Host from_host(from);
+                    CxxSockets::Host to_host(to);
+
+                    LOG_DEBUG_MSG(
+                                  "Created failover pair for " << from_host.uhn()
+                                  << " to " << to_host.uhn()
+                                  << " for alias " << keyval.first
+                                  );
+
                     failpairs[from_host] = to_host;
-                } catch ( const CxxSockets::Error& e ) {
+
+                } catch (const CxxSockets::Error& e) {
                     throw exceptions::APIUserError(exceptions::INFO, e.what());
                 }
             }
-
         }
-        // Now create the behavior to associate with the trigger
+
         Behavior my_behavior(keyval.first, act, failpairs, retries);
-        behaviors.insert(std::pair<Policy::Trigger,Behavior>(my_trigger,my_behavior));
+        behaviors.emplace(my_trigger, my_behavior);
     }
 }
 
@@ -1064,7 +1097,7 @@ MasterController::startup(
                 reregister = true;
             }
             if (reregister) {  // Only barrier wait if we restarted registrars
-                _start_barrier.wait();
+                _start_barrier.arrive_and_wait();
             }
         }
     }
