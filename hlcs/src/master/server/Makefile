@@ -24,7 +24,7 @@
 include ../../../Make.hlcs.rules
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR) \
+ -isystem $(BGQ_INSTALL_DIR)/hlcs \
  -iquote .. \
  -W \
  -Wall \
@@ -37,20 +37,16 @@ CXXFLAGS += \
 
 
 LDFLAGS += \
- -L$(BGQ_INSTALL_DIR)/db/lib -lbgdb \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/db/lib \
- -L$(BGQ_INSTALL_DIR)/ras/lib -lras \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/ras/lib \
- -L$(BGQ_INSTALL_DIR)/utility/lib -lbgutility -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/cxxsockets -lcxxsockets \
+ -L $(BGQ_INSTALL_DIR)/hlcs/utility/src/ -lbgutility \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
- -L$(BGQ_INSTALL_DIR)/xml/lib -lXML \
+ -L $(BGQ_INSTALL_DIR)/hlcs/xml/src/library -lXML \
  -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
- -lboost_program_options-mt \
- -lboost_date_time-mt \
- -lboost_system-mt \
- -lboost_thread-mt \
- -lboost_filesystem-mt \
- -llog4cxx
+ -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
+ -llog4cxx \
+ -lexpat\
+ -lssl \
+ -lcrypto
 
 
 parts := \

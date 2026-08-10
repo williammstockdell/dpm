@@ -239,17 +239,20 @@ SecureTCPSocket::ServerHandshake(
         throw HardError(0, "No User ID size received on this connection." );
     } else if ( rc != sizeof(buffer) - 1 ) {
         throw HardError(0,
-                "Received " + boost::lexical_cast<std::string>(rc) + " bytes of expected " +
-                boost::lexical_cast<std::string>(sizeof(buffer) - 1) + " user ID size bytes"
+                        "Received " + std::to_string(rc) + " bytes of expected " +
+                        std::to_string(sizeof(buffer) - 1) + " user ID size bytes"
                 );
     }
 
     uint32_t user_id_size;
     try {
-        user_id_size = boost::lexical_cast<uint32_t>(buffer);
-    } catch (const boost::bad_lexical_cast& e) {
+        user_id_size = std::stoi(buffer);
+    } catch (const std::invalid_argument& e) {
         throw HardError(0, std::string() + "Could not convert user size (" + buffer + ") to a number: " + e.what());
+    } catch (const std::out_of_range& e) {
+        throw HardError(0, std::string() + "Could not convert user size (" + buffer + ") to a number (out of range): " + e.what());
     }
+
 
     if ( user_id_size == 0 ) {
         // No user info provided. Only if using administrative certificate is this ok.
@@ -275,8 +278,8 @@ SecureTCPSocket::ServerHandshake(
         throw HardError(0, "No User ID received on this connection." );
     } else if ( static_cast<uint32_t>(rc) != user_id_size ) {
         throw HardError(0,
-                "Received " + boost::lexical_cast<std::string>(rc) + " bytes of expected " +
-                boost::lexical_cast<std::string>(user_id_size) + " bytes"
+                        "Received " + std::to_string(rc) + " bytes of expected " +
+                        std::to_string(user_id_size) + " bytes"
                 );
     }
 

@@ -24,33 +24,33 @@
 #ifndef MASTER_SERVER_TYPES_H_
 #define MASTER_SERVER_TYPES_H_
 
-#include "common/types.h"
-
-#include <boost/shared_ptr.hpp>
-
+#include <memory>
 #include <utility>
 
+#include "common/types.h"
+
+
 class AgentManager;
-typedef boost::shared_ptr<AgentManager> AgentManagerPtr;
+typedef std::shared_ptr<AgentManager> AgentManagerPtr;
 
 class AgentRep;
-typedef boost::shared_ptr<AgentRep> AgentRepPtr;
+typedef std::shared_ptr<AgentRep> AgentRepPtr;
 typedef std::pair<BinaryControllerPtr, AgentRepPtr> BinaryLocation;
 
 
 class Alias;
-typedef boost::shared_ptr<Alias> AliasPtr;
+typedef std::shared_ptr<Alias> AliasPtr;
 
 class AliasList;
 
 class Behavior;
-typedef boost::shared_ptr<Behavior> BehaviorPtr;
+typedef std::shared_ptr<Behavior> BehaviorPtr;
 
 class ClientController;
-typedef boost::shared_ptr<ClientController> ClientControllerPtr;
+typedef std::shared_ptr<ClientController> ClientControllerPtr;
 
 class ClientManager;
-typedef boost::shared_ptr<ClientManager> ClientManagerPtr;
+typedef std::shared_ptr<ClientManager> ClientManagerPtr;
 
 class Policy;
 

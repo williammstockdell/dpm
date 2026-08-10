@@ -21,6 +21,13 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <pthread.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <utility/include/ScopeExit.h>
+
 #include "AgentRep.h"
 #include "AgentManager.h"
 #include "Alias.h"
@@ -33,15 +40,6 @@
 #include "../lib/exceptions.h"
 
 
-
-#include <boost/scope_exit.hpp>
-
-
-#include <pthread.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
 
 LOG_DECLARE_FILE( "master" );
 
@@ -68,7 +66,7 @@ AgentRep::AgentRep(
     // Spin through the list of existing binaries and create binary controllers and alias entries.
     // We'll run through this code if bgmaster_server is restarted while servers are running under the control of agents.
     // We'll also do this if the connection to the agent goes down and gets restarted.
-    BOOST_FOREACH(const BGMasterAgentProtocolSpec::JoinRequest::WorkingBins& wb, joinreq._running_binaries) {
+    for(const BGMasterAgentProtocolSpec::JoinRequest::WorkingBins& wb : joinreq._running_binaries) {
         // First, we need to check the list of aliases to determine if it is valid.
         // Then check to see if this binary id is already under accounting.  Then, if not, update the alias.
         // After that, we need to update the list of managed binaries for the agent
@@ -79,7 +77,7 @@ AgentRep::AgentRep(
             continue;
         }
 
-        BOOST_ASSERT( alias );
+        assert( alias );
         LOG_INFO_MSG("Found running binary id " << wb._binary_id << " for alias " << alias->get_name());
 
         BinaryLocation unused;
@@ -92,8 +90,8 @@ AgentRep::AgentRep(
         const BinaryControllerPtr binary(
                 new BinaryController(
                     wb._binary_id,
-                    wb._name, 
-                    wb._alias, 
+                    wb._name,
+                    wb._alias,
                     alias->get_user(),
                     0,
                     BinaryController::RUNNING
@@ -119,7 +117,7 @@ AgentRep::stopBin(
         bool failover = false
         )
 {
-    boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+    std::scoped_lock scoped_lock(_agent_mutex);
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
     stopBin_nl(bid, location, signal, stoprep, failover);
@@ -176,7 +174,7 @@ AgentRep::stopBin_nl(
             this->removeController( location.first );
             // Update database with ras message
             AliasPtr alptr;
-            BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+            for(const AliasPtr& al : MasterController::_aliases) {
                 if (al->find_binary(bid)) {
                     alptr = al;
                 }
@@ -190,9 +188,9 @@ AgentRep::stopBin_nl(
             details["ALIAS"] = alias_name;
             int rsignal = stoprep._status._exit_status;
             if (!rsignal) {
-                details["SIGNAL"] = boost::lexical_cast<std::string>(0);
+                details["SIGNAL"] = std::to_string(0);
             } else {
-                details["SIGNAL"] = boost::lexical_cast<std::string>(rsignal);
+                details["SIGNAL"] = std::to_string(rsignal);
             }
             MasterController::putRAS(BINARY_STOP_RAS, details);
             std::ostringstream stopmsg;
@@ -205,7 +203,7 @@ AgentRep::stopBin_nl(
 
         // Now find my alias and decrement
         if (failover) {
-            BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+            for(const AliasPtr& al : MasterController::_aliases) {
                 if (al->find_binary(myid)) {
                     al->remove_binary(myid);  // Remove the id from the alias' list.
                 }
@@ -225,7 +223,7 @@ AgentRep::startBin(
     if (MasterController::get_end_requested()) {
         return bid;  // Don't do anything if we're ending.
     }
-    boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+    std::scoped_lock scoped_lock(_agent_mutex);
     return startBin_nl(startreq, startrep);
 }
 
@@ -262,7 +260,7 @@ AgentRep::startBin_nl(
     // We already lock this method so we can't have two threads in this code.
     // We just need to be sure we don't stack up a start from a failover/restart
     // and a new agent connection.
-    BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+    for(const AliasPtr& al : MasterController::_aliases) {
         if (al->get_name() == startreq._alias) {
             if (al->check_instances() == false) {
                 LOG_ERROR_MSG("Cannot start an additional instance of " << al->get_name());
@@ -304,7 +302,7 @@ AgentRep::startBin_nl(
         MasterController::_aliases.find_alias(startreq._alias, al);
         const BinaryControllerPtr bincont(
                 new BinaryController(
-                    bid, 
+                    bid,
                     al->get_path(),
                     startreq._alias,
                     al->get_user(),
@@ -351,8 +349,8 @@ AgentRep::startBin_nl(
         std::map<std::string, std::string> details;
         details["ALIAS"] = startreq._alias;
         details["BIN"] = startrep._status._binary_id;
-        details["SIGNAL"] = boost::lexical_cast<std::string>(signo);
-        details["ESTAT"] = boost::lexical_cast<std::string>(estat);
+        details["SIGNAL"] = std::to_string(signo);
+        details["ESTAT"] = std::to_string(estat);
         details["EMSG"] = startrep._rt;
         MasterController::handleErrorMessage(msg.str());
         MasterController::putRAS(BINARY_FAIL_RAS, details);
@@ -409,9 +407,9 @@ AgentRep::stopBinaryAndExecutePolicy(
 {
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+    std::scoped_lock scoped_lock(_agent_mutex);
     // First see if there's a policy.
-    BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+    for(const AliasPtr& al : MasterController::_aliases) {
         if (al->find_binary(bid)) {
             al->remove_binary(bid);
             Policy::Trigger t;
@@ -451,11 +449,12 @@ AgentRep::executePolicy_nl(
     LOG_TRACE_MSG(__FUNCTION__);
 
     bool i_unlocked = false;
-    BOOST_SCOPE_EXIT( (&i_unlocked) (&_agent_mutex) ) {
-        if (i_unlocked) { // Make sure we're locked again when we get out of here.
+
+    ScopeExit relock([this, &i_unlocked] {
+        if (i_unlocked) {
             _agent_mutex.lock();
         }
-    } BOOST_SCOPE_EXIT_END;
+    });
 
     try {
         if (!rep_p) {
@@ -511,7 +510,7 @@ AgentRep::executePolicy_nl(
 void
 AgentRep::executePolicyAndClear_nl(
         BinaryControllerPtr binptr,
-        AgentRepPtr rep_p, 
+        AgentRepPtr rep_p,
         const int signo
         )
 {
@@ -520,7 +519,7 @@ AgentRep::executePolicyAndClear_nl(
     const BinaryId reqbid = binptr->get_binid();
     if (binptr->stopping() != true) {
         // We haven't explicitly stopped, so we have to check our policy
-        BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+        for(const AliasPtr& al : MasterController::_aliases) {
             if (al->find_binary(reqbid)) {
                 // This alias has my binary id, so remove my id and execute the policy
                 al->remove_binary(reqbid);
@@ -529,7 +528,7 @@ AgentRep::executePolicyAndClear_nl(
         }
     } else {
         // No policy, so remove only.
-        BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+        for(const AliasPtr& al : MasterController::_aliases) {
             al->remove_binary(reqbid);
         }
     }
@@ -543,7 +542,7 @@ AgentRep::doCompleteRequest(
         const BGMasterAgentProtocolSpec::CompleteRequest& compreq
         )
 {
-    boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+    std::scoped_lock scoped_lock(_agent_mutex);
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
     // First, find our binary id
@@ -559,7 +558,7 @@ AgentRep::doCompleteRequest(
         this->removeController( bptr );
 
         // Now find my alias and decrement
-        BOOST_FOREACH(const AliasPtr& al, MasterController::_aliases) {
+        for(const AliasPtr& al : MasterController::_aliases) {
             if (al->find_binary(reqbid)) {
                 al->remove_binary(reqbid);
                 break;
@@ -608,7 +607,7 @@ AgentRep::doFailedRequest(
         const BGMasterAgentProtocolSpec::FailedRequest& failreq
         )
 {
-    boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+    std::scoped_lock scoped_lock(_agent_mutex);
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
     // First, find our binary id
@@ -643,8 +642,8 @@ AgentRep::doFailedRequest(
         std::map<std::string, std::string> details;
         details["ALIAS"] = binptr->get_alias_name();
         details["BIN"] = reqbid.str();
-        details["SIGNAL"] = boost::lexical_cast<std::string>(signo);
-        details["ESTAT"] = boost::lexical_cast<std::string>(estat);
+        details["SIGNAL"] = std::to_string(signo);
+        details["ESTAT"] = std::to_string(estat);
         details["EMSG"] = msg.str();
         MasterController::putRAS(BINARY_FAIL_RAS, details);
         MasterController::handleErrorMessage(msg.str());
@@ -793,7 +792,7 @@ AgentRep::startPoller()
 {
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
-    _agent_socket_poller = boost::thread(&AgentRep::waitMessages, this);
+    _agent_socket_poller = std::thread(&AgentRep::waitMessages, this);
 }
 
 void
@@ -817,7 +816,7 @@ AgentRep::cancel(
         stopAllBins(reply, signal);
     } else {
         // Mark all bins UNINITIALIZED to free all waiters.
-        boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+        std::scoped_lock scoped_lock(_agent_mutex);
         const Binaries binaries = this->get_binaries();
         for ( Binaries::const_iterator i = binaries.begin(); i != binaries.end(); ++i ) {
             BinaryControllerPtr rit = *i;
@@ -845,7 +844,7 @@ AgentRep::stopAllBins(
 
     Binaries binaries;
     {
-        boost::mutex::scoped_lock scoped_lock(_agent_mutex);
+        std::scoped_lock scoped_lock(_agent_mutex);
         binaries = this->get_binaries();
     }
 

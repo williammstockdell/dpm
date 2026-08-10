@@ -34,8 +34,6 @@
 
 #include "PortConfiguration.h"
 
-#include <boost/program_options.hpp>
-
 #include <string>
 
 #include <stdint.h>
@@ -175,10 +173,10 @@ public:
      *
      *  --listen-ports can be supplied multiple times.
      */
-    void addTo(
-            boost::program_options::options_description& visible_options,
-            boost::program_options::options_description& hidden_options
-        );
+    // void addTo(
+    //         boost::program_options::options_description& visible_options,
+    //         boost::program_options::options_description& hidden_options
+    //     );
 
     ConnectionType::Value getConnectionType() const { return _connection_type; }
 

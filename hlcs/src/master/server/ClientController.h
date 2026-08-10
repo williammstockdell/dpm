@@ -31,20 +31,17 @@
 
 #include <utility/include/cxxsockets/SecureTCPSocket.h>
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
+#include <memory>
+#include <thread>
 
 #include <string>
-
-#include <pthread.h>
 
 
 //! \brief One ClientController for each client connected to BGMaster.
 //!
 //! Client Controller owns the sockets connected to the client and all
 //! messages to and from the client flow through it.
-class ClientController : public boost::enable_shared_from_this<ClientController>
+class ClientController : public std::enable_shared_from_this<ClientController>
 {
     //! \brief Protocol management object
     const ClientProtocolPtr _prot;
@@ -54,7 +51,7 @@ class ClientController : public boost::enable_shared_from_this<ClientController>
     const ClientId _client_id;
 
     //! \brief Thread to wait for requests
-    boost::thread _client_socket_poller;
+    std::thread _client_socket_poller;
 
     //! \brief my socket poller thread id
     pthread_t _my_tid;
@@ -100,7 +97,7 @@ class ClientController : public boost::enable_shared_from_this<ClientController>
 public:
     ClientController(
             const ClientProtocolPtr& prot,
-            const std::string& ipaddr, 
+            const std::string& ipaddr,
             const int port,
             const CxxSockets::UserType _utype
             );

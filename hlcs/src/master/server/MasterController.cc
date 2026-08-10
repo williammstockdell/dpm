@@ -21,6 +21,13 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <barrier>
+#include <poll.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "Alias.h"
@@ -36,13 +43,6 @@
 #include <utility/include/version.h>
 
 
-
-
-#include <poll.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 LOG_DECLARE_FILE( "master" );
 
 const int CIRC_BUFFER_SIZE = 50;
@@ -50,23 +50,24 @@ const int CIRC_BUFFER_SIZE = 50;
 extern LockFile* lock_file;
 
 //! \brief static member instantiations
-boost::mutex MasterController::_policy_build_mutex;
+std::mutex MasterController::_policy_build_mutex;
 bgq::utility::Properties::Ptr MasterController::_props;
 bool MasterController::_master_terminating = false;
 bool MasterController::_end_requested = false;
 bool MasterController::_start_servers = false;
 AliasList MasterController::_aliases;
-boost::barrier MasterController::_start_barrier(3);
+
+std::barrier<> MasterController::_start_barrier(3);
 std::string MasterController::_master_logdir;
 bool MasterController::_master_db;
 bool MasterController::_stop_once = false;
 bool MasterController::_start_once = true;
-boost::posix_time::ptime MasterController::_start_time;
+std::chrono::system_clock::time_point MasterController::_start_time;
 std::string MasterController::_version_string;
 LockingStringRingBuffer MasterController::_err_buff(CIRC_BUFFER_SIZE);
 LockingStringRingBuffer MasterController::_history_buff(CIRC_BUFFER_SIZE);
 std::vector<ClientProtocolPtr> MasterController::_monitor_prots;
-boost::mutex MasterController::_monitor_prots_mutex;
+std::mutex MasterController::_monitor_prots_mutex;
 
 AgentManager MasterController::_agent_manager;
 ClientManager MasterController::_client_manager;
@@ -138,7 +139,7 @@ MasterController::stopThreads(
     // Stop the client registrar.
     _client_registrar.cancel();
     std::map<std::string, std::string> details;
-    details["PID"] = boost::lexical_cast<std::string>(getpid());
+    details["PID"] = std::to_string(getpid());
 
     putRAS(MASTER_SHUTDOWN_RAS, details);
     // End the DB updater.
@@ -158,8 +159,8 @@ MasterController::handleErrorMessage(
     _err_buff.push_back(errmsg.str());
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::ErrorMessage error(errmsg.str());
-    boost::mutex::scoped_lock scoped_lock(_monitor_prots_mutex);
-    BOOST_FOREACH(const ClientProtocolPtr& prot, _monitor_prots) {
+    std::scoped_lock scoped_lock(_monitor_prots_mutex);
+    for(const ClientProtocolPtr& prot : _monitor_prots) {
         try {
             prot->sendOnly(error.getClassName(), error);
         } catch (const CxxSockets::Error& e) {
@@ -207,8 +208,8 @@ MasterController::addHistoryMessage(
     _history_buff.push_back(msg.str());
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::EventMessage event(msg.str());
-    boost::mutex::scoped_lock scoped_lock(_monitor_prots_mutex);
-    BOOST_FOREACH(const ClientProtocolPtr& prot, _monitor_prots) {
+    std::scoped_lock scoped_lock(_monitor_prots_mutex);
+    for(const ClientProtocolPtr& prot : _monitor_prots) {
         try {
             prot->sendOnly(event.getClassName(), event);
         } catch (const CxxSockets::Error& e) {
@@ -252,10 +253,10 @@ MasterController::buildHostList(
     LOG_TRACE_MSG(__FUNCTION__);
     bool firstdup = true;
 
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, hosts) {
+    for(const bgq::utility::Properties::Pair& keyval : hosts) {
         bool found = false;
 
-        BOOST_FOREACH(const AliasPtr& al, _aliases) {
+        for(const AliasPtr& al : _aliases) {
             const std::string &all_hosts(keyval.second);
             if (keyval.first == al->get_name()) {
                 std::vector<std::string>::const_iterator it = std::find(exclude_list.begin(), exclude_list.end(), al->get_name());
@@ -313,7 +314,7 @@ MasterController::buildFailover(
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Finally, go through the failover list
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, failover) {
+    for(const bgq::utility::Properties::Pair& keyval : failover) {
 
         LOG_DEBUG_MSG("Building policy for " << keyval.first << "="  << keyval.second);
 
@@ -414,7 +415,7 @@ MasterController::buildFailover(
             boost::char_separator<char> bar_sep("|");
             tokenizer bar_tok(host_pairs, bar_sep);
 
-            BOOST_FOREACH(const std::string& current, bar_tok) {
+            for(const std::string& current : bar_tok) {
                 if (current.find_first_of(":") == std::string::npos) {
                     std::ostringstream msg;
                     msg << "Failover configuration syntax incorrect. Missing \":\"";
@@ -468,10 +469,10 @@ MasterController::buildInstances(
     LOG_TRACE_MSG(__FUNCTION__);
     // Update the alias object for each instance found
     bool firstdup = true;
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, instances) {
+    for(const bgq::utility::Properties::Pair& keyval : instances) {
         bool found = false;
 
-        BOOST_FOREACH(const AliasPtr& al, _aliases) {
+        for(const AliasPtr& al : _aliases) {
             const std::string &instance_policy(keyval.second);
             if (keyval.first == al->get_name()) {
                 const std::vector<std::string>::const_iterator it = std::find(exclude_list.begin(), exclude_list.end(), al->get_name());
@@ -527,9 +528,9 @@ MasterController::buildArgs(
 {
     LOG_TRACE_MSG(__FUNCTION__);
     // Args are optional. Don't complain if we find nothing.
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, args) {
+    for(const bgq::utility::Properties::Pair& keyval : args) {
         bool found = false;
-        BOOST_FOREACH(const AliasPtr& al, _aliases) {
+        for(const AliasPtr& al : _aliases) {
             if (keyval.first == al->get_name()) {
                 found = true;
                 LOG_DEBUG_MSG("Adding args " << keyval.second << " for " << keyval.first);
@@ -558,7 +559,7 @@ MasterController::addBehaviors(
 
     // For each entry in the failmap, find the related behavior and the related alias, and put it in the alias list.
 
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, failmap) {
+    for(const bgq::utility::Properties::Pair& keyval : failmap) {
         // There can be several policies related to the alias represented by keyval.first.
         // So, tokenize and find each one and put it in the right alias.
         const std::string &current_alias(keyval.first);
@@ -568,7 +569,7 @@ MasterController::addBehaviors(
         boost::char_separator<char> sep(",");
         tokenizer tok(policy_set, sep);
         LOG_TRACE_MSG("Checking for policies for alias " << current_alias << " against " << policy_set);
-        BOOST_FOREACH(const std::string& current_policy, tok) {
+        for(const std::string& current_policy : tok) {
             // Now find the policy in the behavior list
             LOG_TRACE_MSG("Evaluating policy " << current_policy << " against alias " << current_alias);
             bool policy_found = false;
@@ -577,7 +578,7 @@ MasterController::addBehaviors(
                     // Got a match.  Now find the alias with the name that matches keyval.first and insert the behavior.
                     policy_found = true;
                     std::ostringstream logmsg;
-                    BOOST_FOREACH(const AliasPtr& al, _aliases) {
+                    for(const AliasPtr& al : _aliases) {
                         LOG_TRACE_MSG("Comparing alias " << al->get_name() << " to policy alias " << keyval.first);
                         if (keyval.first == al->get_name()) {
                             // Found an existing alias so update the policy
@@ -593,7 +594,7 @@ MasterController::addBehaviors(
                                 // Now check to make sure that if there are failover pairs,
                                 // all hosts are in the alias' host list.
                                 typedef std::pair<CxxSockets::Host, CxxSockets::Host> HostPair;
-                                BOOST_FOREACH(const HostPair& pair, it->second.get_host_pairs()) {
+                                for(const HostPair& pair : it->second.get_host_pairs()) {
                                     std::string failname = "";
                                     if (al->find_host(pair.first) == false) {
                                         failname = pair.first.fqhn();
@@ -637,7 +638,7 @@ MasterController::buildStartList(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, startlist) {
+    for(const bgq::utility::Properties::Pair& keyval : startlist) {
         if (keyval.first == "start_servers") {
             if (keyval.second == "true") {
                 _start_servers = true;
@@ -655,9 +656,9 @@ MasterController::buildUidList(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, uidlist) {
+    for(const bgq::utility::Properties::Pair& keyval : uidlist) {
         bool found = false;
-        BOOST_FOREACH(const AliasPtr& al, _aliases) {
+        for(const AliasPtr& al : _aliases) {
             if (keyval.first == al->get_name()) {
                 found = true;
                 LOG_DEBUG_MSG("Adding user id " << keyval.second << " for " << keyval.first);
@@ -679,9 +680,9 @@ MasterController::buildLogDirs(
 {
     LOG_TRACE_MSG(__FUNCTION__);
     // For each alias/directory pair, find the alias.
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, logdirs) {
+    for(const bgq::utility::Properties::Pair& keyval : logdirs) {
         bool found = false;
-        BOOST_FOREACH(const AliasPtr& al, _aliases) {
+        for(const AliasPtr& al : _aliases) {
             if (keyval.first == al->get_name()) {
                 found = true;
                 LOG_DEBUG_MSG("Adding log directory " << keyval.second << " for " << keyval.first);
@@ -708,7 +709,7 @@ MasterController::buildPolicies(
     int preferredHostWait;
 
     // Protect the policy building process
-    boost::mutex::scoped_lock scoped_lock(_policy_build_mutex);
+    std::scoped_lock scoped_lock(_policy_build_mutex);
 
     Sect master, args, hosts, instances, failover, failmap, startlist, uidlist, logdirs;
     try {
@@ -783,7 +784,7 @@ MasterController::buildPolicies(
 
 
     // Create an alias object for every alias in the master map
-    BOOST_FOREACH(const bgq::utility::Properties::Pair& keyval, master) {
+    for(const bgq::utility::Properties::Pair& keyval : master) {
         AliasPtr alp;
         if (_aliases.find_alias(keyval.first, alp) == false) {
             // Alias doesn't yet exist, make it so.
@@ -935,7 +936,7 @@ MasterController::startup(
     LOG_INFO_MSG("Using " << _props->getFilename() << " for properties.");
     _master_db = false;
     std::string db_val = "true";
-    _start_time = boost::posix_time::second_clock::local_time();
+    _start_time = std::chrono::system_clock::time_point.now()
 
     try {
         db_val = _props->getValue("master.server", "db");
@@ -992,7 +993,7 @@ MasterController::startup(
 
     // Update database with ras message
     std::map<std::string, std::string> details;
-    details["PID"] = boost::lexical_cast<std::string>(getpid());
+    details["PID"] = std::to_string(getpid());
     putRAS(MASTER_STARTUP_RAS, details);
     std::ostringstream startmsg;
     startmsg << "bgmaster_server startup completed";
@@ -1035,8 +1036,8 @@ MasterController::startup(
                 LOG_FATAL_MSG("bgmaster_server ending due to signal " << siginfo.si_signo << " from " << siginfo.si_pid << ".");
                 // Send RAS
                 std::map<std::string, std::string> details;
-                details["PID"] = boost::lexical_cast<std::string>(getpid());
-                details["SIGNAL"] = boost::lexical_cast<std::string>(siginfo.si_signo);
+                details["PID"] = std::to_string(getpid());
+                details["SIGNAL"] = std::to_string(siginfo.si_signo);
                 putRAS(MASTER_FAIL_RAS, details);
 
                 if (lock_file) {

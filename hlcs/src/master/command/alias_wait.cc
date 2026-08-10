@@ -43,12 +43,11 @@ doAliasWait(
     int to = 0;
     if (timeout.length() != 0) {
         try {
-            to = boost::lexical_cast<int>(timeout);
-        } catch (const boost::bad_lexical_cast& e) {
+            to = std::stoi(timeout);
+        } catch (const std::invalid_argument& e) {
             std::cerr << "Invalid timeout value " << timeout << ". " << e.what() << std::endl;
             exit(EXIT_FAILURE);
-        }
-        if (to < 0) {
+        } catch (const std::out_of_range& e) {
             std::cerr << "Invalid timeout " << to << std::endl;
             exit(EXIT_FAILURE);
         }

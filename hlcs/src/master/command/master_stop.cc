@@ -74,7 +74,7 @@ doStop(
         break;
     case BGAGENT:
         std::cerr << "\n\nStopping bgagent via master_stop is no longer supported. " << std::endl;
-        std::cerr << "\tUse '/etc/init.d/bgagent stop' to stop bgagentd. \n" << std::endl; 
+        std::cerr << "\tUse '/etc/init.d/bgagent stop' to stop bgagentd. \n" << std::endl;
         return EXIT_FAILURE;
     default:
         // Default behavior is BGMASTER and BINARIES
@@ -202,12 +202,15 @@ stringSigToIntSig(
     else if (strsig == "SIGWINCH")
         intsig = SIGWINCH;
     else if (strsig == "SIGUNUSED")
-        intsig = SIGUNUSED;
+        intsig = SIGSYS;
     else {
         try {
-            intsig = boost::lexical_cast<int>(strsig);
-        } catch (const boost::bad_lexical_cast& e) {
+            intsig = std::stoi(strsig);
+        } catch (const std::invalid_argument& e) {
             std::cerr << "Invalid signal \"" << strsig << "\" specified." << std::endl;
+            exit(EXIT_FAILURE);
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Invalid signal, out of range, \"" << strsig << "\" specified." << std::endl;
             exit(EXIT_FAILURE);
         }
     }

@@ -24,24 +24,21 @@
 #ifndef MASTER_AGENT_REP_H_
 #define MASTER_AGENT_REP_H_
 
+#include <iosfwd>
+#include <string>
+#include <thread>
+#include <mutex>
+
 #include "common/AgentBase.h"
 #include "common/AgentProtocol.h"
 #include "common/ClientProtocol.h"
 #include "common/Ids.h"
 #include "types.h"
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/thread.hpp>
-
-#include <iosfwd>
-#include <string>
-
-#include <pthread.h>
-
 
 //! \brief Representation of a bgagent internal to bgmaster_server
 //! Also available to the client api.
-class AgentRep : public AgentBase, public boost::enable_shared_from_this<AgentRep>
+class AgentRep : public AgentBase, public std::enable_shared_from_this<AgentRep>
 {
     //! \brief allows agent to fail over its processes to another
     bool _failover;
@@ -50,11 +47,11 @@ class AgentRep : public AgentBase, public boost::enable_shared_from_this<AgentRe
     bool _orderly;
 
     //! \brief Thread to wait for requests
-    boost::thread _agent_socket_poller;
+    std::thread _agent_socket_poller;
 
     pthread_t _my_tid;
 
-    boost::mutex _agent_mutex;
+    std::mutex _agent_mutex;
 
     void doCompleteRequest(
             const BGMasterAgentProtocolSpec::CompleteRequest& compreq
@@ -66,15 +63,15 @@ class AgentRep : public AgentBase, public boost::enable_shared_from_this<AgentRe
 
     //! These functions are non-locking.  Functions that call them must lock the agent object!
     void executePolicyAndClear_nl(
-            BinaryControllerPtr binptr, 
-            AgentRepPtr rep_p, 
+            BinaryControllerPtr binptr,
+            AgentRepPtr rep_p,
             int signo = 0
             );
 
     //! \brief Just execute the policy, don't clear.
     void executePolicy_nl(
             const BinaryId& reqbid, AgentRepPtr rep_p,
-            AliasPtr al, 
+            AliasPtr al,
             int signo = 0
             );
 
@@ -137,7 +134,7 @@ public:
 
     //! \brief Stop all binaries running on this agent.  Locking.
     void stopAllBins(
-            BGMasterClientProtocolSpec::StopReply& stoprep, 
+            BGMasterClientProtocolSpec::StopReply& stoprep,
             int signal
             );
 
@@ -145,7 +142,7 @@ public:
     //! \param binaries Also end the managed binaries.
     //! \param signal Signal to use to end the binaries.
     void cancel(
-            bool binaries, 
+            bool binaries,
             int signal
             );
 

@@ -21,6 +21,8 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <string.h>
+
 #include "common/ArgParse.h"
 
 #include "lib/BGMasterClient.h"

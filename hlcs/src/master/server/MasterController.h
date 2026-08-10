@@ -35,8 +35,8 @@
 
 #include <utility/include/cxxsockets/Host.h>
 
-#include <boost/date_time.hpp>
-#include <boost/thread.hpp>
+#include <thread>
+#include <barrier>
 
 #include <iosfwd>
 #include <map>
@@ -99,18 +99,18 @@ public:
 
     static void startServers(std::map<std::string,std::string>& failed_aliases, AgentRepPtr agent);
 
-    static void waitStartBarrier()  { _start_barrier.wait(); }
+    static void waitStartBarrier()  { _start_barrier.arrive_and_wait(); }
 
     //! \brief Build the policies from the config files by calling the various internal methods.
     static void buildPolicies(std::ostringstream& failmsg);
-    static const boost::posix_time::ptime& get_start_time() { return _start_time; }
+    static const std::chrono::system_clock::time_point& get_start_time() { return _start_time; }
     static AgentManager& get_agent_manager() { return _agent_manager; }
     static ClientManager& get_client_manager() { return _client_manager; }
     static const std::string& get_master_logdir() { return _master_logdir; }
     static AliasList _aliases;
 
     //! \brief monitor_prots container mutex
-    static boost::mutex _monitor_prots_mutex;
+    static std::mutex _monitor_prots_mutex;
 
 private:
     //! Parse alias args from config file.
@@ -144,7 +144,7 @@ private:
     static AgentManager _agent_manager;
 
     //! \brief policy builder mutex
-    static boost::mutex _policy_build_mutex;
+    static std::mutex _policy_build_mutex;
 
     //! \brief properties object
     static bgq::utility::Properties::Ptr _props;
@@ -155,7 +155,7 @@ private:
     static bool _end_requested;
     static bool _start_servers;
     static std::string _master_logdir;
-    static boost::barrier _start_barrier;
+    static std::barrier<> _start_barrier;
     static bool _master_db;
     static bool _stop_once;
     static bool _start_once;
@@ -163,7 +163,7 @@ private:
     static LockingStringRingBuffer _err_buff;
     //! \brief history ring buffer
     static LockingStringRingBuffer _history_buff;
-    static boost::posix_time::ptime _start_time;
+    static std::chrono::system_clock::time_point _start_time;
     static std::vector<ClientProtocolPtr> _monitor_prots;
 };
 

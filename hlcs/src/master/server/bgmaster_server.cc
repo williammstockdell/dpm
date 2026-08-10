@@ -31,10 +31,9 @@
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/version.h>
+#include <utility/include/ScopeExit.h>
+#include <filesystem>
 
-#include <boost/assign/list_of.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/scope_exit.hpp>
 
 #include <openssl/conf.h>
 #include <openssl/engine.h>
@@ -47,7 +46,7 @@ LOG_DECLARE_FILE( "master" );
 
 namespace {
 
-const std::vector<int> signals = boost::assign::list_of(SIGINT)(SIGUSR1)(SIGTERM)(SIGPIPE);
+const std::vector<int> signals{SIGINT, SIGUSR1, SIGTERM, SIGPIPE };
 
 int signal_fd;
 
@@ -187,10 +186,10 @@ main(int argc, const char** argv)
         // Don't care if it isn't there.
     }
 
-    BOOST_SCOPE_EXIT( ( &lock_file ) ) {
+    ScopeExit cleanup( []  {
         delete lock_file;
         lock_file = 0;
-    } BOOST_SCOPE_EXIT_END;
+    });
 
     if (!debug._value) {
         if (master_instances == "1") {
@@ -256,7 +255,7 @@ main(int argc, const char** argv)
     } catch (const exceptions::ConfigError& e) {
         LOG_ERROR_MSG("Invalid configuration file entry: " << e.what());
         std::map<std::string, std::string> details;
-        details["PID"] = boost::lexical_cast<std::string>(getpid());
+        details["PID"] = std::to_string(getpid());
         details["ERROR"] = e.what();
         MasterController::putRAS(MASTER_CONFIG_RAS, details);
     }

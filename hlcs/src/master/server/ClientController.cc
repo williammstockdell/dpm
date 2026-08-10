@@ -204,13 +204,13 @@ ClientController::doAgentRequest(
     // Got an agent request. Build up a reply which means going through all of the agents and all of their
     // binaries, and shoving it in the message. First, iterate through the agent manager:
     BGMasterClientProtocolSpec::AgentlistReply agentrep(exceptions::OK, "success");
-    BOOST_FOREACH(const AgentRepPtr& agent, MasterController::get_agent_manager().get_agent_list()) {
+    for(const AgentRepPtr& agent : MasterController::get_agent_manager().get_agent_list()) {
         // Build our corresponding protocol agent object
         BGMasterClientProtocolSpec::AgentlistReply::Agent reply_agent(agent->get_agent_id());
 
         // Now iterate through binaries and add them. This gets a COPY of the binary list which could change, but that's OK.
         std::vector<BinaryControllerPtr> binaries = agent->get_binaries();
-        BOOST_FOREACH(const BinaryControllerPtr& binary, binaries) {
+        for(const BinaryControllerPtr& binary : binaries) {
             typedef BGMasterClientProtocolSpec::AgentlistReply::Agent::Binary AgentBin;
             LOG_DEBUG_MSG("Found binary " << binary);
             const std::string t = time_to_string(binary->get_start_time());
@@ -354,7 +354,7 @@ ClientController::doStopRequest(
             // Stop them all if nothing is passed
             ++binsfound;  // Assume at least one is running.
             std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
-            BOOST_FOREACH(const AgentRepPtr& rep, agents) {
+            for(const AgentRepPtr& rep : agents) {
                 if (rep) // The iterator may have gone stale.  Check the rep ptr.
                     rep->stopAllBins(reply_to_client, stopreq._signal);
             }
@@ -490,13 +490,13 @@ ClientController::doStatusRequest(
     } else {
         // Need them ALL. Loop through agents.
         const std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
-        BOOST_FOREACH(const AgentRepPtr& rep, agents) {
+        for(const AgentRepPtr& rep : agents) {
             if (!rep) {
                 continue;
             }
             const std::vector<BinaryControllerPtr> binaries = rep->get_binaries();
             // Now loop through binaries
-            BOOST_FOREACH(const BinaryControllerPtr& pbase, binaries) {
+            for(const BinaryControllerPtr& pbase : binaries) {
                 if (pbase->valid()) {
                     const std::string t = time_to_string(pbase->get_start_time());
                     const BinCont bin(
@@ -648,7 +648,7 @@ ClientController::doFailRequest(
         details["COMMAND"] = "fail_over";
         MasterController::putRAS(AUTHORITY_FAIL_RAS, details);
     } else {
-        BOOST_FOREACH(const std::string& strbid, failreq._binary_ids) {
+        for(const std::string& strbid : failreq._binary_ids) {
             // For every bin in the list, do the failover action, update
             // the status in the reply, and return it.
             // First, find out if we still have the binary.  If we do,
@@ -705,7 +705,7 @@ ClientController::doMasterStatRequest(
             exceptions::OK,
             std::string(),
             getpid(),
-            boost::posix_time::to_simple_string(MasterController::get_start_time()),
+            time_to_string(MasterController::get_start_time()),
             MasterController::_version_string,
             MasterController::getProps()->getFilename()
             );
@@ -828,7 +828,7 @@ ClientController::doEndmonitorRequest(
         // Client aborted with an incomplete transmission
         LOG_ERROR_MSG("Client connection ended during end monitor reply.");
     }
-    boost::mutex::scoped_lock scoped_lock(MasterController::_monitor_prots_mutex);
+    std::scoped_lock scoped_lock(MasterController::_monitor_prots_mutex);
     MasterController::get_monitor_prots().erase(
             std::remove(
                 MasterController::get_monitor_prots().begin(),
@@ -850,7 +850,7 @@ ClientController::doLoglevelRequest(
 
     // If there are any changes in the request, apply them.
     bgq::utility::LoggingProgramOptions::Strings logstrings;
-    BOOST_FOREACH(const std::string& logger, loglevreq._loggers) {
+    for(const std::string& logger : loglevreq._loggers) {
         logstrings.push_back( logger );
     }
     // Set logging level
@@ -897,7 +897,7 @@ ClientController::doGetidleRequest(
     // Make a local copy because we don't really care about updates and we are going to destroy it when we're done.
     const std::vector<AliasPtr> alist = MasterController::_aliases.get_list_copy();
     BGMasterClientProtocolSpec::GetidleReply idlerep;
-    BOOST_FOREACH(const AliasPtr& al, alist) {
+    for(const AliasPtr& al : alist) {
         if (!al->running()) {
             // Nothing running, put it in the reply.
             idlerep._aliases.push_back(al->get_name());
@@ -924,13 +924,13 @@ ClientController::doMonitorRequest(
     BGMasterClientProtocolSpec::MonitorReply monrep(exceptions::OK, "success");
     std::vector<std::string> history_messages;
     MasterController::getHistoryMessages(history_messages);
-    BOOST_FOREACH(const std::string& curr_message, history_messages) {
+    for(const std::string& curr_message : history_messages) {
         BGMasterClientProtocolSpec::MonitorReply::EventMessage em(curr_message);
         monrep._eventmessages.push_back(em);
     }
     std::vector<std::string> error_messages;
     MasterController::getErrorMessages(error_messages);
-    BOOST_FOREACH(const std::string& curr_message, error_messages) {
+    for(const std::string& curr_message : error_messages) {
         BGMasterClientProtocolSpec::MonitorReply::ErrorMessage em(curr_message);
         monrep._errormessages.push_back(em);
     }
@@ -945,7 +945,7 @@ ClientController::doMonitorRequest(
     }
     _prot->setRequester(_prot->getResponder());
     // Now add the protocol object to the master controller
-    boost::mutex::scoped_lock scoped_lock(MasterController::_monitor_prots_mutex);
+    std::scoped_lock scoped_lock(MasterController::_monitor_prots_mutex);
     MasterController::get_monitor_prots().push_back(_prot);
 }
 
@@ -1189,7 +1189,7 @@ ClientController::waitMessages()
 void
 ClientController::startPoller()
 {
-    _client_socket_poller = boost::thread(&ClientController::waitMessages, this);
+    _client_socket_poller = std::thread(&ClientController::waitMessages, this);
 }
 
 void

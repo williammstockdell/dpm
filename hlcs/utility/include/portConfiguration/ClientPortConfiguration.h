@@ -32,7 +32,7 @@
 
 #include "PortConfiguration.h"
 
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 
 #include <string>
 #include <stdint.h>
@@ -169,9 +169,9 @@ public:
      *  The --host option can be supplied multiple times to attempt
      *  to connect to multiple ports.
      */
-    void addTo(
-            boost::program_options::options_description& options
-        );
+    // void addTo(
+    //         boost::program_options::options_description& options
+    //     );
 
     ConnectionType::Value getConnectionType() const  { return _connection_type; }
 
