@@ -52,27 +52,27 @@ public:
          );
 
     void set_path(const std::string& path) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard scoped_lock(_mutex);
         _path = path;
     }
     void set_args(const std::string& args) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard scoped_lock(_mutex);
         _args = args;
     }
     void set_user(const std::string& uid) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         _user = uid;
     }
     void set_logdir(const std::string& logdir) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         _logdir = logdir;
     }
     void add_host(const CxxSockets::Host& host) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         _hosts.push_back(host);
     }
     void add_binary(const BinaryId& id) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         _binaries.push_back(id);
     }
 
@@ -94,7 +94,7 @@ public:
     //! \param id Binary id to look for
     //! \return true if found, false if not
     bool find_binary(const BinaryId& id) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         for(BinaryId idit : _binaries) {
             if (id == idit) return true;
         }
@@ -105,7 +105,7 @@ public:
     //! \param id ID of first binary running under this alias will be returned
     //! \return true if we have an associated binary id
     bool running(BinaryId& id) const {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         if (!_binaries.empty()) {
             id = _binaries.front();
             return true;
@@ -116,13 +116,13 @@ public:
     //! \brief See if there are any running binaries, don't return any either.
     //! \return true if there are any associated binaries.
     bool running() const {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         return !_binaries.empty();
     }
 
     //! \brief If the passed host is in our list return true
     bool find_host(const CxxSockets::Host& host) {
-        std::scoped_lock scoped_lock(_mutex);
+        std::lock_guard lock_guard(_mutex);
         return find_host_internal(host);
     }
 

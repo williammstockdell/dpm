@@ -173,19 +173,19 @@ Alias::runPolicy(
                         << curr_host.uhn() << " found.");
                 // Now we need to find out if we care whether it's a preferred host.
                 if (curr_host.get_primary() == false) {
-                    if ( _preferred_start_time.is_not_a_date_time() ) {
+                    if (!_preferred_start_time.has_value() ) {
                         LOG_INFO_MSG( "waiting " << _preferredHostWait << " seconds for primary host" );
                         _preferred_start_time = std::chrono::system_clock::now();
                     }
                     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
                     const std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(now - *_preferred_start_time);
-                    if ( duration.total_seconds() > _preferredHostWait ) {
+                    if ( duration.count() > _preferredHostWait ) {
                         winner = true;
                         LOG_INFO_MSG("Giving up after " << _preferredHostWait << " seconds waiting for the preferred agent host.");
                         LOG_INFO_MSG("Starting on agent " << curr_host.uhn() << ".");
                     } else {
                         LOG_INFO_MSG("Agent " << curr_host.uhn() << " is not the preferred agent host.");
-                        LOG_INFO_MSG("waiting " << _preferredHostWait - duration.total_seconds() << " seconds");
+                        LOG_INFO_MSG("waiting " << _preferredHostWait - duration.count() << " seconds");
                     }
                 } else {
                     winner = true;
