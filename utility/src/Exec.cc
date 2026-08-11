@@ -26,12 +26,10 @@
 #include "Log.h"
 #include "Properties.h"
 #include "UserId.h"
-
-#include <boost/foreach.hpp>
-#include <boost/tokenizer.hpp>
-
+#include <string>
+#include <sstream>
 #include <iostream>
-
+#include <filesystem>
 #include <csignal>
 #include <cerrno>
 #include <unistd.h>
@@ -90,7 +88,7 @@ logoutput(
         ::write(errorfd, msg.str().c_str(), msg.str().length());
         return 0;
     }
-    
+
     return logfd;
 }
 
@@ -100,7 +98,7 @@ Exec::fexec(
         const std::string& path_and_args,
         std::string& errorstring,
         const bool managed,
-        const std::string& logfilename, 
+        const std::string& logfilename,
         const std::string& propfile,
         const std::string& userid
         )
@@ -111,32 +109,45 @@ Exec::fexec(
     char* arg_array[128] = { NULL };
     std::vector<std::string> arg_vector;
 
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    std::istringstream args_stream(path_and_args);
 
-    // pull out the full path
-    const tokenizer nametok(path_and_args, boost::char_separator<char>(" "));
-    const std::string path = *nametok.begin();
+    std::vector<std::string> args;
+    std::string arg;
 
-    // now just the executable name
-    const tokenizer pathtok(path, boost::char_separator<char>("/"));
-    for (tokenizer::const_iterator i = pathtok.begin(); i != pathtok.end(); ++i) {
-        arg_vector.clear();
-        arg_vector.push_back( *i );
-        arg_array[0] = const_cast<char*>(arg_vector[0].c_str());
+    while (args_stream >> arg) {
+        args.push_back(arg);
     }
 
-    for (tokenizer::const_iterator i = nametok.begin(); i != nametok.end(); ++i) {
-        const size_t position = static_cast<size_t>(std::distance( nametok.begin(), i ));
-        if ( position == 0 ) {
-            // already got this guy
-        } else if ( position >= sizeof(arg_array) - 1 ) {
-            LOG_ERROR_MSG( "more than " << sizeof(arg_array) - 1 << " arguments is not supported" );
+    if (args.empty()) {
+        LOG_ERROR_MSG("No executable specified");
+        return -1;
+    }
+
+    const std::string path = args[0];
+
+    const std::string executable =
+        std::filesystem::path(path).filename().string();
+
+    arg_vector.clear();
+    arg_vector.push_back(executable);
+
+    arg_array[0] = arg_vector[0].data();
+
+
+    for (std::size_t position = 1; position < args.size(); ++position) {
+        if (position >= std::size(arg_array) - 1) {
+            LOG_ERROR_MSG(
+                          "more than " << std::size(arg_array) - 1
+                          << " arguments is not supported"
+                          );
             return -1;
-        } else {
-            arg_vector.push_back( *i );
-            arg_array[position] = const_cast<char*>(arg_vector[position].c_str());
         }
+
+        arg_vector.push_back(args[position]);
+        arg_array[position] = arg_vector[position].data();
     }
+
+    arg_array[arg_vector.size()] = nullptr;
 
     for ( std::vector<std::string>::iterator i = arg_vector.begin(); i != arg_vector.end(); ++i ) {
         const size_t position = static_cast<size_t>(std::distance( arg_vector.begin(), i ));
@@ -178,7 +189,7 @@ Exec::fexec(
         }
         isroot = true;
     }
-    
+
     // Fork the new process.
     pid_t pid = fork();
 
@@ -191,7 +202,7 @@ Exec::fexec(
 
     if (pid == 0) {
         // child process
-        
+
         // Set the bg.properties file if we have one
         if (!propfile.empty())
             setenv(bgq::utility::Properties::EnvironmentalName.c_str(), propfile.c_str(), true);
@@ -209,7 +220,7 @@ Exec::fexec(
                 }
                 // Extract gid_t from each group returned in the UserId object
                 std::vector<gid_t> groups;
-                BOOST_FOREACH( const bgq::utility::UserId::Group& i, uid.getGroups() ) {
+                for( const bgq::utility::UserId::Group& i : uid.getGroups() ) {
                     groups.push_back( i.first );
                 }
                 // Assuming the storage of a std::vector is contiguous memory
@@ -262,11 +273,11 @@ Exec::fexec(
 
                 // Don't need the read side.
                 close(pipeFromChild[0]);
-            
+
                 // send stdout and stderr to the pipe
                 dup2(pipeFromChild[1], STDOUT_FILENO);
                 dup2(pipeFromChild[1], STDERR_FILENO);
-            
+
                 // Since we've rerouted stdout, close the pipe fd.
                 ::close(pipeFromChild[1]);
             } else {
@@ -300,7 +311,7 @@ Exec::fexec(
             ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
             _exit(EXIT_FAILURE);
         }
-    
+
         // If the parent dies, kill the child
         if (managed && prctl(PR_SET_PDEATHSIG, SIGKILL) != 0) {
             std::ostringstream msg;

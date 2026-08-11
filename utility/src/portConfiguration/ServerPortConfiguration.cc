@@ -28,8 +28,6 @@
 
 #include "Log.h"
 
-#include <boost/bind.hpp>
-
 #include <sstream>
 
 

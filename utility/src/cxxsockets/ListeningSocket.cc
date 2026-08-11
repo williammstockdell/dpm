@@ -30,8 +30,6 @@
 
 #include "Log.h"
 
-#include <boost/lexical_cast.hpp>
-
 #include <netinet/tcp.h>
 
 LOG_DECLARE_FILE( "utility.cxxsockets" );
@@ -115,9 +113,9 @@ ListeningSocket::Accept()
 
     try {
         my_host = my_addr.getHostAddr();
-        my_sport = boost::lexical_cast<std::string>(my_addr.getServicePort());
+        my_sport = std::to_string(my_addr.getServicePort());
         peer_addr = addr.getHostAddr();
-        peer_port = boost::lexical_cast<std::string>(addr.getServicePort());
+        peer_port = std::to_string(addr.getServicePort());
     } catch (const Error& e) {
         LOG_WARN_MSG(e.what());
         // Should we rethrow the exception here?
@@ -135,7 +133,7 @@ ListeningSocket::AcceptNew(
         const TCPSocketPtr& sock
         )
 {
-    BOOST_ASSERT( sock );
+    assert( sock );
     FileLocker locker;
     LockFile(locker);
     const int fd = Accept();

@@ -28,8 +28,6 @@
 
 #include "Log.h"
 
-#include <boost/throw_exception.hpp>
-
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -140,7 +138,7 @@ SslConfiguration::SslConfiguration(
     if (  (! _ca_certificates_path) &&
           (! _ca_certificate_filename) &&
           (! _use_default_paths) ) {
-        BOOST_THROW_EXCEPTION( runtime_error( "the SSl configuration is not valid, no CA certificate is configured" ) );
+        throw( runtime_error( "the SSl configuration is not valid, no CA certificate is configured" ) );
     }
 
     LOG_DEBUG_MSG(

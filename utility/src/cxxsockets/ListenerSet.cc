@@ -29,8 +29,6 @@
 
 #include "Log.h"
 
-#include <boost/foreach.hpp>
-
 #include <vector>
 
 #include <errno.h>
@@ -96,7 +94,7 @@ ListenerSet::AcceptNew(
     typedef vector<struct pollfd> Fds;
     Fds fds;
 
-    BOOST_FOREACH( const FilePtr& f_ptr, _filevec ) {
+    for( const FilePtr& f_ptr : _filevec ) {
         struct pollfd pfd = { f_ptr->getFileDescriptor(), POLLIN, 0 };
         fds.push_back( pfd );
     }
@@ -127,7 +125,7 @@ ListenerSet::AcceptNew(
     vector<FilePtr> remove_ptrs;
     ListeningSocketPtr accept_ptr;
 
-    BOOST_FOREACH( const struct pollfd &pfd, fds ) {
+    for( const struct pollfd &pfd : fds ) {
 
         bool remove_listener(false);
 
@@ -166,7 +164,7 @@ ListenerSet::AcceptNew(
             continue;
         }
 
-        BOOST_FOREACH( FilePtr f_ptr, _filevec ) {
+        for( FilePtr f_ptr : _filevec ) {
             const ListeningSocketPtr p = std::static_pointer_cast<ListeningSocket>(f_ptr);
 
             if ( p->getFileDescriptor() != pfd.fd )  {
@@ -179,7 +177,7 @@ ListenerSet::AcceptNew(
     }
 
     // Remove the listening sockets with errors.
-    BOOST_FOREACH( FilePtr f_ptr, remove_ptrs ) {
+    for( FilePtr f_ptr : remove_ptrs ) {
         RemoveFile( f_ptr );
     }
 

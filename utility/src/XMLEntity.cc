@@ -31,7 +31,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-
+#include <vector>
 #include <cassert>
 #include <cerrno>
 #include <cstring>
@@ -151,12 +151,21 @@ XMLEntity::dumpXML(const std::stringstream& os, const char* description, const b
         filenameString << description << "_";
     }
     filenameString << pid << ".XXXXXX";
-    boost::scoped_array<char> tempFilename( new char[filenameString.str().size()] );
-    snprintf(tempFilename.get(), filenameString.str().size() + 1, "%s", filenameString.str().c_str());
-    const int tempFileFd = mkstemp(tempFilename.get());
+
+
+    const std::string filename = filenameString.str();
+
+    std::vector<char> tempFilename(filename.begin(), filename.end());
+    tempFilename.push_back('\0');
+
+    const int tempFileFd = mkstemp(tempFilename.data());
+
     if (tempFileFd == -1) {
         char buf[256];
-        LOG_ERROR_MSG("Could not create temp XML file: " << strerror_r(errno, buf, sizeof(buf)));
+        LOG_ERROR_MSG(
+                      "Could not create temp XML file: "
+                      << strerror_r(errno, buf, sizeof(buf))
+                      );
         return;
     }
 
@@ -175,6 +184,7 @@ XMLEntity::dumpXML(const std::stringstream& os, const char* description, const b
         LOG_ERROR_MSG("Error writing to XML file: " << strerror_r(errno, buf, sizeof(buf)));
         return;
     }
+
     unsigned int bytesWritten = static_cast<unsigned int>(write_rc);
 
     // Close XML file
@@ -182,8 +192,8 @@ XMLEntity::dumpXML(const std::stringstream& os, const char* description, const b
 
     // Rename the file
     std::ostringstream newFilename;
-    newFilename << tempFilename.get() << ".xml";
-    rename(tempFilename.get(), newFilename.str().c_str());
+    newFilename << tempFilename.data() << ".xml";
+    rename(tempFilename.data(), newFilename.str().c_str());
 
     // Check we wrote everything
     if (bytesWritten != os.str().size()) {

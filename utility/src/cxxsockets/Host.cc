@@ -27,8 +27,6 @@
 
 #include "Log.h"
 
-#include <boost/tokenizer.hpp>
-
 #include <sstream>
 
 LOG_DECLARE_FILE( "utility.cxxsockets" );
@@ -73,11 +71,14 @@ Host::uhn() const
     if (_name == _ip) {
         return _ip;
     }
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    boost::char_separator<char> sep(".");
-    tokenizer tok(_name, sep);
-    tokenizer::iterator name_it = tok.begin();
-    return *name_it;
+
+    const std::size_t dot = _name.find('.');
+
+    if (dot == std::string::npos) {
+        return _name;
+    }
+
+    return _name.substr(0, dot);
 }
 
 }

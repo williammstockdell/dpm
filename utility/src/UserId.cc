@@ -32,7 +32,6 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
-#include <boost/assert.hpp>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/scoped_array.hpp>
