@@ -32,10 +32,6 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
-#include <boost/scoped_array.hpp>
-
 #include <cerrno>
 #include <sstream>
 #include <stdexcept>
@@ -45,22 +41,23 @@ LOG_DECLARE_FILE( "utility" );
 namespace bgq {
 namespace utility {
 
-UserId::UserId(
-        const uid_t uid
-        ) :
-    _name(),
-    _uid(uid),
-    _groups()
+UserId::UserId(const uid_t uid) : _name(), _uid(uid), _groups()
 {
     // get username
     LOG_DEBUG_MSG("Getting username for uid " << _uid);
+
     const long usernameLength = sysconf(_SC_GETPW_R_SIZE_MAX);
-    const boost::scoped_array<char> buf( new char[usernameLength] );
-    struct passwd mypwent;
-    memset(&mypwent, 0, sizeof(mypwent));
-    struct passwd* mypwent_p = NULL;
+    const std::size_t bufferSize = usernameLength > 0 ? static_cast<std::size_t>(usernameLength) : 16384;
+
+    std::vector<char> buf(bufferSize);
+
+    struct passwd mypwent {};
+    struct passwd* mypwent_p = nullptr;
+
     errno = 0;
-    const int result = getpwuid_r(_uid, &mypwent, buf.get(), static_cast<size_t>(usernameLength), &mypwent_p);
+
+    const int result = getpwuid_r(_uid, &mypwent, buf.data(), buf.size(), &mypwent_p);
+
     if ( !result && mypwent_p ) {
         _name = mypwent_p->pw_name;
         LOG_DEBUG_MSG("username " << _name);
@@ -81,22 +78,22 @@ UserId::UserId(
     this->setGroupList(mypwent_p->pw_gid);
 }
 
-UserId::UserId(
-        const std::string& user,
-        const bool allowRemoteUser
-        ) :
-    _name(user),
-    _uid(),
-    _groups()
+UserId::UserId(const std::string& user, const bool allowRemoteUser) : _name(user), _uid(), _groups()
 {
     // get uid
     LOG_DEBUG_MSG("Getting uid for username " << _name);
-    long usernameLength = sysconf(_SC_GETPW_R_SIZE_MAX);
-    boost::scoped_array<char> buf(new char[usernameLength]);
+    const long usernameLength = sysconf(_SC_GETPW_R_SIZE_MAX);
+    const std::size_t bufferSize = usernameLength > 0 ? static_cast<std::size_t>(usernameLength) : 16384;
+
+    std::vector<char> buf(bufferSize);
+
     struct passwd mypwent;
     memset(&mypwent, 0, sizeof(mypwent));
+
     struct passwd* mypwent_p = NULL;
-    const int result = getpwnam_r(_name.c_str(), &mypwent, buf.get(), static_cast<size_t>(usernameLength), &mypwent_p);
+
+    const int result = getpwnam_r(_name.c_str(), &mypwent, buf.data(), buf.size(), &mypwent_p);
+
     if ( !result && mypwent_p ) {
         _uid = mypwent_p->pw_uid;
         LOG_DEBUG_MSG("uid " << _uid);
@@ -141,7 +138,7 @@ UserId::isMember(
         const std::string& group
         ) const
 {
-    BOOST_FOREACH( const Group& g, _groups ) {
+    for( const Group& g : _groups ) {
         LOG_DEBUG_MSG("Comparing " << group << " to " << g.second);
         if (g.second == group) {
             return true;
@@ -159,46 +156,48 @@ UserId::setGroupList(
 {
     LOG_DEBUG_MSG( "Getting secondary group list for '" << _name << "' gid '" << gid << "'" );
     // get supplementary group list
-    boost::scoped_array<gid_t> grouplist;
     int group_count = 0;
-    if (getgrouplist(_name.c_str(), gid, NULL, &group_count) < 0) {
-        grouplist.reset(new gid_t[group_count]);
-        getgrouplist(_name.c_str(), gid, grouplist.get(), &group_count);
+    std::vector<gid_t> grouplist;
+
+    if (getgrouplist(_name.c_str(), gid, nullptr, &group_count) < 0) {
+        grouplist.resize(static_cast<std::size_t>(group_count));
+
+        if (getgrouplist(_name.c_str(), gid, grouplist.data(), &group_count) < 0) {
+            // FIXME: handle failure
+            assert(false);
+        }
     }
+
     LOG_TRACE_MSG("Secondary group list " << group_count);
 
     // add each group
     for ( int i = 0; i < group_count; ++i ) {
+
         // get gid
         const gid_t gid = grouplist[i];
 
         // allocate storage for group name
         long group_buffer_length = sysconf(_SC_GETPW_R_SIZE_MAX);
         LOG_TRACE_MSG( "Group buffer length " << group_buffer_length );
-        boost::scoped_array<char> buf(new char[group_buffer_length]);
 
-        // create variables for getgrgid_r
-        struct group mygroup;
-        memset( &mygroup, 0, sizeof(mygroup) );
-        struct group* group_p = NULL;
+        std::vector<char> buf(static_cast<std::size_t>(group_buffer_length));
+
+        struct group mygroup {};
+        struct group* group_p = nullptr;
         errno = 0;
         int rc = 0;
 
-        // as long as rc == ERANGE, try to increase the buffer size
-        while (
-            ( rc = getgrgid_r(gid, &mygroup, buf.get(), static_cast<size_t>(group_buffer_length), &group_p) )
-            ==
-            ERANGE
-            )
-        {
+        while ((rc = getgrgid_r(gid, &mygroup, buf.data(), buf.size(), &group_p)) == ERANGE) {
             group_buffer_length *= 2;
-            LOG_TRACE_MSG( "Increasing group buffer length to " << group_buffer_length );
-            buf.reset( new char[group_buffer_length] );
+
+            LOG_TRACE_MSG("Increasing group buffer length to " << group_buffer_length);
+
+            buf.resize(static_cast<std::size_t>(group_buffer_length));
         }
 
         if (rc == 0 && group_p) {
             // add to list
-            BOOST_ASSERT( mygroup.gr_name );
+            assert( mygroup.gr_name );
             _groups.push_front(GroupList::value_type(gid, mygroup.gr_name));
             LOG_DEBUG_MSG("Added group " << mygroup.gr_name << " with " << gid);
         } else if ( !rc ) {
@@ -218,18 +217,10 @@ UserId::setGroupList(
     }
 
     // primary gid needs to be at the front
-    const GroupList::iterator primary = std::find_if(
-            _groups.begin(),
-            _groups.end(),
-            boost::bind(
-                std::equal_to<gid_t>(),
-                gid,
-                boost::bind(
-                    &Group::first,
-                    _1
-                    )
-                )
-            );
+    const GroupList::iterator primary = std::find_if(_groups.begin(), _groups.end(), [gid](const Group& group) {
+        return group.first == gid;
+    });
+
     if ( primary == _groups.end() ) {
         LOG_WARN_MSG( "Could not find primary gid " << gid << " in secondary group list" );
     } else if ( primary != _groups.begin() ) {
