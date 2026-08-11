@@ -28,9 +28,7 @@
 #include <utility/include/cxxsockets/types.h>
 
 #include <utility/include/portConfiguration/PortConfiguration.h>
-
-#include <boost/thread.hpp>
-
+#include <thread>
 #include <pthread.h>
 
 
@@ -53,7 +51,7 @@ private:
     void processNew(CxxSockets::TCPSocketPtr sock);
 
     //! \brief Listen for new agents in this thread.
-    boost::thread _listenerThread;
+    std::thread _listenerThread;
 
     //! \brief listener for new connections
     CxxSockets::ListenerSetPtr _registrationListener;

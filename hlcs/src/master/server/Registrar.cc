@@ -160,7 +160,7 @@ Registrar::processNew(
             CxxSockets::SockAddr myaddr;
             prot->getResponder()->getSockName(myaddr);
             joinreply._master_ip = myaddr.getHostAddr();
-            joinreply._master_port = boost::lexical_cast<std::string>(requestObject._port);
+            joinreply._master_port = std::to_string(requestObject._port);
 
             pt->sendReply(joinreply.getClassName(), joinreply);
             LOG_DEBUG_MSG("Sent join reply to agent " << requestObject._ip_address << ":" << requestObject._port);
@@ -168,10 +168,10 @@ Registrar::processNew(
             // Initialize the requester. This will connect back to the agent's listener.
             try {
                 pt->initializeRequester(
-                        MasterController::getProps(), 
-                        AF_UNSPEC, 
-                        requestObject._ip_address, 
-                        boost::lexical_cast<std::string>(requestObject._port)
+                        MasterController::getProps(),
+                        AF_UNSPEC,
+                        requestObject._ip_address,
+                        std::to_string(requestObject._port)
                         );
             } catch (const CxxSockets::HardError& err) {
                 // Something bad happened on the reply or connecting back
@@ -261,9 +261,9 @@ Registrar::listenForNew(
         _failed = true;
         MasterController::waitStartBarrier();
         std::map<std::string, std::string> details;
-        details["PID"] = boost::lexical_cast<std::string>(getpid());
+        details["PID"] = std::to_string(getpid());
         details["ERROR"] = msg.str();
-        MasterController::putRAS(MASTER_CONFIG_RAS, details);
+
         return;
     }
 
@@ -305,7 +305,7 @@ Registrar::listenForNew(
 
             if (accepted) {
                 LOG_DEBUG_MSG("Accepted a new connection");
-                boost::thread procthread(&Registrar::processNew, this, sock);
+                std::thread procthread(&Registrar::processNew, this, sock);
             }
         }
     }
@@ -348,5 +348,5 @@ Registrar::run(
         }
     }
 
-    _listenerThread = boost::thread(&Registrar::listenForNew, this, portpairs);
+    _listenerThread = std::thread(&Registrar::listenForNew, this, portpairs);
 }

@@ -30,5 +30,6 @@ hlcs/src/master/command/master_start
 hlcs/src/master/command/master_status
 hlcs/src/master/command/master_stop
 hlcs/src/master/command/monitor_master
-hlcs/html
 hlcs/latex
+hlcs/src/master/server/bgmaster_server
+hlcs/html

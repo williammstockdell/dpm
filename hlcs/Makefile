@@ -3,7 +3,7 @@ DIRS += xml
 DIRS += utility
 DIRS += include
 DIRS += src
-DIRS += docs
+DIRS += src/docs
 
 TARGETS_ALL       = $(addsuffix .all,$(DIRS))
 TARGETS_CLEAN     = $(addsuffix .clean,$(DIRS))

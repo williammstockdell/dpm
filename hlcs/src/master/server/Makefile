@@ -58,7 +58,6 @@ parts := \
  bgmaster_server \
  ClientController \
  ClientManager \
- DBUpdater \
  MasterController \
  Registrar \
 

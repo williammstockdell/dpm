@@ -561,33 +561,41 @@ MasterController::buildArgs(
 }
 
 void MasterController::addBehaviors(
-        const bgq::utility::Properties::Section& failmap,
-        std::multimap<Policy::Trigger,Behavior>& behaviors
-        )
+    const bgq::utility::Properties::Section& failmap,
+    std::multimap<Policy::Trigger, Behavior>& behaviors)
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    typedef std::multimap<Policy::Trigger, Behavior> Bevmap;
+
+    using Bevmap = std::multimap<Policy::Trigger, Behavior>;
 
     bool firstdup = true;
 
-    // For each entry in the failmap, find the related behavior and the related alias, and put it in the alias list.
-
-    for(const bgq::utility::Properties::Pair& keyval : failmap) {
-        // There can be several policies related to the alias represented by keyval.first.
-        // So, tokenize and find each one and put it in the right alias.
-        const std::string &current_alias(keyval.first);
-        const std::string &policy_set(keyval.second);
+    for (const bgq::utility::Properties::Pair& keyval : failmap) {
+        const std::string& current_alias = keyval.first;
+        const std::string& policy_set = keyval.second;
         bool alias_found = false;
 
-        boost::char_separator<char> sep(",");
-        tokenizer tok(policy_set, sep);
-        LOG_TRACE_MSG("Checking for policies for alias " << current_alias << " against " << policy_set);
-        for(const std::string& current_policy : tok) {
-            // Now find the policy in the behavior list
-            LOG_TRACE_MSG("Evaluating policy " << current_policy << " against alias " << current_alias);
+        LOG_TRACE_MSG(
+            "Checking for policies for alias "
+            << current_alias << " against " << policy_set
+        );
+
+        for (auto&& part : policy_set | std::views::split(',')) {
+            const std::string current_policy(part.begin(), part.end());
+
+            if (current_policy.empty()) {
+                continue;
+            }
+
+            LOG_TRACE_MSG(
+                "Evaluating policy "
+                << current_policy << " against alias " << current_alias
+            );
+
             bool policy_found = false;
+
             for (Bevmap::iterator it = behaviors.begin(); it != behaviors.end(); ++it) {
+
                 if (current_policy == it->second.get_name()) {
                     // Got a match.  Now find the alias with the name that matches keyval.first and insert the behavior.
                     policy_found = true;
@@ -621,7 +629,7 @@ void MasterController::addBehaviors(
                                     }
                                 }
                                 LOG_DEBUG_MSG("Added trigger " << it->first << " and behavior "
-                                             << it->second.get_name() << " to " << al->get_name());
+                                              << it->second.get_name() << " to " << al->get_name());
                             }
                             break;
                         }
@@ -647,8 +655,8 @@ void MasterController::addBehaviors(
     }
 }
 
-void
-MasterController::buildStartList(
+
+void MasterController::buildStartList(
         const bgq::utility::Properties::Section& startlist
         )
 {
@@ -773,7 +781,7 @@ MasterController::buildPolicies(
 
     // Need to get preferred_host_wait time to send to the alias constructor.
     try {
-        preferredHostWait = boost::lexical_cast<int>(_props->getValue("master.server", "preferred_host_wait"));
+        preferredHostWait = std::stoi(_props->getValue("master.server", "preferred_host_wait"));
         if (  preferredHostWait <= 0 ) {
             std::ostringstream msg;
             msg << "Invalid preferred_host_wait setting in [master.server] section: Value must be an integer greater than 0.";
@@ -790,9 +798,9 @@ MasterController::buildPolicies(
         msg << "Did not find optional preferred_host_wait key in [master.server] section. Setting default of 15 seconds.";
         LOG_DEBUG_MSG(msg.str());
         preferredHostWait=15;
-    } catch (const boost::bad_lexical_cast& e) {
+    } catch (const std::out_of_range& e) {
         std::ostringstream msg;
-        msg << "Invalid preferred_host_wait setting in [master.server] section: " << e.what();
+        msg << "Out of range: Invalid preferred_host_wait setting in [master.server] section: " << e.what();
         LOG_ERROR_MSG(msg.str());
         throw exceptions::ConfigError(exceptions::WARN, msg.str());
     }
@@ -826,7 +834,7 @@ MasterController::buildPolicies(
 
     try {
         const std::string value( _props->getValue("master.server","max_agents_per_host") );
-        const int max_agents( boost::lexical_cast<int>(value) );
+        const int max_agents( std::stoi(value) );
         if ( max_agents <= 0 ) {
             std::ostringstream msg;
             msg << "Invalid max_agents_per_host setting in [master.server] section: value must be greater than zero";
@@ -837,9 +845,9 @@ MasterController::buildPolicies(
     } catch (const std::invalid_argument& e) {
         // this is OK, missing means default to 1
         LOG_DEBUG_MSG( "missing max_agents_per_host setting in [master.server] section, using default value of 1" );
-    } catch (const boost::bad_lexical_cast& e) {
+    } catch (const std::out_of_range& e) {
         std::ostringstream msg;
-        msg << "Invalid max_agents_per_host setting in [master.server] section: " << e.what();
+        msg << "Out of range: Invalid max_agents_per_host setting in [master.server] section: " << e.what();
         LOG_ERROR_MSG(msg.str());
         throw exceptions::ConfigError(exceptions::WARN, msg.str());
     }
@@ -924,7 +932,6 @@ MasterController::startServers(
                 handleErrorMessage(msg.str());
                 std::map<std::string, std::string> details;
                 details["ALIAS"] = al->get_name();
-                putRAS(ALIAS_FAIL_RAS, details);
             }
         } else {
             // Didn't start it, so put it back in the list.
@@ -943,42 +950,15 @@ MasterController::startup(
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream version;
     version << "Blue Gene/Q";
-    version << " " << bgq::utility::DriverName;
-    version << "(revision " << bgq::utility::Revision << ")";
+    version << " " << "fred";
+    version << "(revision " << "barney" << ")";
     version << " " << __DATE__ << " " << __TIME__;
     _version_string = version.str();
     LOG_INFO_MSG("bgmaster_server [" << getpid() << "] " << _version_string << " starting...");;
     LOG_INFO_MSG("Using " << _props->getFilename() << " for properties.");
     _master_db = false;
     std::string db_val = "true";
-    _start_time = std::chrono::system_clock::time_point.now()
-
-    try {
-        db_val = _props->getValue("master.server", "db");
-    } catch (const std::invalid_argument& e) {
-        LOG_DEBUG_MSG("Invalid or missing db parameter in [master.server] section of properties file: " << e.what());
-    }
-
-    if (db_val.empty()) {
-        db_val = "true";
-    }
-
-    if (db_val == "true") {
-        // Initialize the database for the process
-        // This must be done before starting any threads, due to the initialization of static variables
-        LOG_DEBUG_MSG("Initializing database connection pool");
-        // BGQDB::DBConnectionPool::reset();
-        // We aren't cutting RAS very often, just one DB pool thread.
-        // BGQDB::DBConnectionPool::init(_props, 1);
-        _updater.start(); // Start the DB updater.
-        _master_db = true;
-    } else {
-        if (db_val != "false") {
-            LOG_WARN_MSG("Value " << "\"" << db_val << "\" " << "for \"db\" in bg.properties' \"master.server\" section "
-                         << " is invalid. It must be either \"true\" or \"false\". Will not log RAS to the database.");
-        }
-        _master_db = false;
-    }
+    _start_time = std::chrono::system_clock::now();
 
     try {
         _master_logdir = _props->getValue("master.server", "logdir");
@@ -1009,12 +989,12 @@ MasterController::startup(
     // Update database with ras message
     std::map<std::string, std::string> details;
     details["PID"] = std::to_string(getpid());
-    putRAS(MASTER_STARTUP_RAS, details);
+
     std::ostringstream startmsg;
     startmsg << "bgmaster_server startup completed";
     addHistoryMessage(startmsg.str());
 
-    _start_barrier.wait();
+    _start_barrier.arrive_and_wait();
 
     while ( !_master_terminating ) {
         struct pollfd pollfd;
@@ -1053,7 +1033,6 @@ MasterController::startup(
                 std::map<std::string, std::string> details;
                 details["PID"] = std::to_string(getpid());
                 details["SIGNAL"] = std::to_string(siginfo.si_signo);
-                putRAS(MASTER_FAIL_RAS, details);
 
                 if (lock_file) {
                     delete lock_file;
