@@ -28,9 +28,8 @@
 #ifndef CXXSOCKET_TYPES_H
 #define CXXSOCKET_TYPES_H
 
-#include <boost/shared_ptr.hpp>
-
 #include <sstream>
+#include <memory>
 
 namespace CxxSockets {
 
@@ -45,13 +44,13 @@ class SockAddrList;
 class Socket;
 class TCPSocket;
 
-typedef boost::shared_ptr<File> FilePtr;
-typedef boost::shared_ptr<FileSet> FileSetPtr;
-typedef boost::shared_ptr<ListenerSet> ListenerSetPtr;
-typedef boost::shared_ptr<ListeningSocket> ListeningSocketPtr;
-typedef boost::shared_ptr<SecureTCPSocket> SecureTCPSocketPtr;
-typedef boost::shared_ptr<Socket> SocketPtr;
-typedef boost::shared_ptr<TCPSocket> TCPSocketPtr;
+typedef std::shared_ptr<File> FilePtr;
+typedef std::shared_ptr<FileSet> FileSetPtr;
+typedef std::shared_ptr<ListenerSet> ListenerSetPtr;
+typedef std::shared_ptr<ListeningSocket> ListeningSocketPtr;
+typedef std::shared_ptr<SecureTCPSocket> SecureTCPSocketPtr;
+typedef std::shared_ptr<Socket> SocketPtr;
+typedef std::shared_ptr<TCPSocket> TCPSocketPtr;
 
 typedef std::stringstream Message;
 

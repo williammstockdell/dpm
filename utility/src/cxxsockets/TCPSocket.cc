@@ -21,12 +21,14 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <unistd.h>
+#include <netinet/tcp.h>
+
 #include "cxxsockets/TCPSocket.h"
 
 #include "cxxsockets/FileLocker.h"
 #include "cxxsockets/SockAddr.h"
 
-#include <netinet/tcp.h>
 
 namespace CxxSockets {
 
@@ -64,8 +66,7 @@ TCPSocket::TCPSocket(
     }
 }
 
-void
-TCPSocket::replaceFd(
+void TCPSocket::replaceFd(
         const int fd
         )
 {

@@ -33,7 +33,7 @@
 
 namespace CxxSockets {
 
-struct FileLocker : boost::noncopyable
+struct FileLocker
 {
     PthreadMutexHolder _all;
     PthreadMutexHolder _send;

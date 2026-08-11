@@ -25,10 +25,6 @@
 
 #include <utility/include/SignalHandler.h>
 
-#include <boost/asio/io_service.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <unistd.h>
 
 typedef bgq::utility::SignalHandler<SIGINT,SIGUSR1,SIGUSR2,SIGPIPE,SIGHUP,SIGABRT,SIGALRM,SIGTERM,SIGSYS,SIGQUIT> Signals;

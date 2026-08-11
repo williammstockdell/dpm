@@ -86,8 +86,6 @@ ar_srcs += LoggingProgramOptions.cc
 ar_srcs += Properties.cc
 ar_srcs += XMLEntity.cc
 ar_srcs += Exec.cc
-ar_srcs += performance/Mode.cc
-ar_srcs += performance/properties.cc
 
 ar_objs=${ar_srcs:%.cc=%.o}
 
@@ -97,7 +95,6 @@ so_srcs += BoolAlpha.cc
 so_srcs += ExitStatus.cc
 so_srcs += Symlink.cc
 so_srcs += UserId.cc
-so_srcs += portConfiguration/pc_util.cc
 so_srcs += portConfiguration/PortConfiguration.cc
 so_srcs += portConfiguration/ssl_util.cc
 so_srcs += portConfiguration/SslConfiguration.cc

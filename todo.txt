@@ -1,0 +1,20 @@
+Create a real build/install layout. I’d make this the next step, as you said: build artifacts stay in build directories, install stages into something like $(PREFIX)/bin, $(PREFIX)/sbin, $(PREFIX)/lib, maybe share/ for properties/docs. At the same time, clean up the remaining bogus rpaths and make each library explicitly link its direct dependencies.
+Establish a clean-build baseline. Before changing much else, verify that make clean && make -jN from the repo root works repeatedly, with no dependency on stale .o, generated XML, or files left by an earlier install. Given what we just found in those Makefiles, I’d consider this a separate milestone.
+
+Finish dependency/Boost removal inventory. You’ve removed a lot, but I’d do one deliberate sweep:
+
+grep -RIn 'boost::\|#include <boost' .
+
+Then classify what remains: things to remove immediately, things temporarily retained (program_options, serialization), and things that are truly still needed. Same for Asio specifically.
+
+Warnings → -Werror. Definitely. I’d also normalize compiler flags centrally while you’re doing this instead of letting every leaf Makefile have its own 2011-vintage collection.
+Replace the removed Asio behavior. The important part here is not “replace Asio”; it’s restore the actual semantics you need: master/agent connection handling, retry/wait behavior, signal handling, and whatever cxxsockets functionality was deleted. Keep it boring—poll/threads/condition variables/signal primitives rather than inventing another framework.
+Tests — but I’d split this into two stages. Before the Asio replacement, write a few characterization/smoke tests around whatever still runs so you have a behavioral baseline. After the networking work, add proper unit/integration tests, especially loopback connection, disconnect/reconnect, timeout, shutdown, failover policy parsing, properties parsing, and protocol round trips. I agree with not resurrecting the entire old Boost.Test graveyard; mine it for useful cases.
+Formatting. Yes. I’d do this after the code is structurally stable, probably with clang-format, and make it mechanically enforceable rather than hand-fixing 15 years of style drift.
+Protocol/serialization modernization. Yes, and I’d intentionally defer this until the existing protocol has tests. The XML-generated protocol classes are exactly the sort of thing where you want golden-message/round-trip tests before changing representation.
+
+The other things I’d put on the backlog are CI, sanitizers/static analysis, and versioning. Once it builds cleanly, get a GitHub Actions build running GCC 14 with -Werror, then add ASan/UBSan builds. And at some point replace the removed SVN Revision/DriverName mechanism with something very simple based on a release version plus optional Git commit ID.
+
+Roadmap:
+
+build/install cleanup → reproducible clean build → warning cleanup/Werror → baseline tests → Asio/cxxsockets surgery → expanded tests → formatting → protocol/serialization work → CI/sanitizers/release packaging.

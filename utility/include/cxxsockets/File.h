@@ -27,25 +27,24 @@
 #ifndef CXXSOCKET_FILE_H
 #define CXXSOCKET_FILE_H
 
+#include <memory>
+
 #include <utility/include/pthreadmutex.h>
 
 #include <utility/include/cxxsockets/types.h>
 
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/utility.hpp>
 
 namespace CxxSockets {
 
-class File : boost::noncopyable
+class File
 {
 private:
     mutable PthreadMutex _fileLock;
 
 protected:
     int _fileDescriptor;
-    boost::scoped_ptr<PthreadMutex> _receiver;
-    boost::scoped_ptr<PthreadMutex> _sender;
+    std::unique_ptr<PthreadMutex> _receiver;
+    std::unique_ptr<PthreadMutex> _sender;
 
     //! \brief Mutual exclusion for all operations on this file.
     void LockFile(FileLocker& locker) const;

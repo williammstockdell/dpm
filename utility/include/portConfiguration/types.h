@@ -29,23 +29,12 @@
 #define BGQ_UTILITY_PC_TYPES_H_
 
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/shared_ptr.hpp>
-
 #include <iosfwd>
 
 
 namespace bgq {
 namespace utility {
 namespace portConfig {
-
-
-/*! \brief The socket type. */
-typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> Socket;
-
-/*! \brief A shared pointer to the socket, because Sockets can't be copied. */
-typedef boost::shared_ptr<Socket> SocketPtr;
 
 
 /*! \brief The type of user that's connected. */

@@ -167,7 +167,7 @@ ListenerSet::AcceptNew(
         }
 
         BOOST_FOREACH( FilePtr f_ptr, _filevec ) {
-            const ListeningSocketPtr p = boost::static_pointer_cast<ListeningSocket>(f_ptr);
+            const ListeningSocketPtr p = std::static_pointer_cast<ListeningSocket>(f_ptr);
 
             if ( p->getFileDescriptor() != pfd.fd )  {
                 continue;

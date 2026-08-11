@@ -39,7 +39,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
 
 namespace hlcs {
 namespace security {
@@ -48,7 +47,7 @@ namespace security {
  * \brief Policy enforcement.
  *
  * \section thread_safety Thread Safety
- * When not using a persistent database connection, it is safe to invoke members from distinct 
+ * When not using a persistent database connection, it is safe to invoke members from distinct
  * Enforcer objects from multiple threads.
  *
  *  \pre BGQDB::init was successful.
@@ -99,7 +98,7 @@ private:
     /*!
      * \brief Pointer to implementation type.
      */
-    typedef boost::scoped_ptr<Impl> Pimpl;
+    typedef std::scoped_ptr<Impl> Pimpl;
 
 private:
     const Pimpl _impl;

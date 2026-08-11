@@ -21,6 +21,8 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <algorithm>
+
 #include "cxxsockets/FileSet.h"
 
 #include "cxxsockets/exception.h"
