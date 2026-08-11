@@ -33,7 +33,6 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/utility.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <list>
 #include <string>
@@ -50,8 +49,8 @@ class UserId
 public:
     typedef std::pair<gid_t, std::string> Group;
     typedef std::list<Group> GroupList;
-    typedef boost::shared_ptr<UserId> Ptr;
-    typedef boost::shared_ptr<const UserId> ConstPtr;
+    typedef std::shared_ptr<UserId> Ptr;
+    typedef std::shared_ptr<const UserId> ConstPtr;
 
 public:
     /*!
