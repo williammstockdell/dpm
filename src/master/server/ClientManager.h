@@ -27,8 +27,8 @@
 
 #include "types.h"
 
-#include <boost/thread.hpp>
-
+#include <thread>
+#include <mutex>
 #include <vector>
 
 
@@ -49,7 +49,7 @@ public:
     std::vector<ClientControllerPtr> getClients();
     bool _ending;
 private:
-    boost::mutex _clientMutex;
+    std::mutex _clientMutex;
     std::vector<ClientControllerPtr> _clients;
 };
 

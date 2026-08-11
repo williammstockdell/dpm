@@ -23,8 +23,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <boost/scope_exit.hpp>
-#include <boost/foreach.hpp>
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/portConfiguration/ClientPortConfiguration.h>
@@ -45,7 +43,7 @@ void
 server_names()
 {
     std::cerr << "Valid server names are:" << std::endl;
-    BOOST_FOREACH(const std::string& curr_server, valid_server_names) {
+    for(const std::string& curr_server : valid_server_names) {
         std::cout << curr_server << std::endl;
     }
 }
@@ -110,7 +108,7 @@ doOthers()
         int i = 0;
         while(true) {  // Exception will end this loop.
             std::string subnet = "machinecontroller.subnet.";
-            subnet += boost::lexical_cast<std::string>(i);
+            subnet += std::to_string(i);
             std::string subnet_id = props->getValue(subnet, "Name");
             subnet_names.push_back(subnet_id);
             ++i;
@@ -122,9 +120,9 @@ doOthers()
     // Now get the alias list from master.binmap
     bgq::utility::Properties::Section binmap = props->getValues("master.binmap");
     // Finally, make sure that each subnet name is in master.binmap.
-    BOOST_FOREACH(const std::string& curr_subnet, subnet_names) {
+    for(const std::string& curr_subnet : subnet_names) {
         bool found = false;
-        BOOST_FOREACH(const bgq::utility::Properties::Pair& key_val, binmap) {
+        for(const bgq::utility::Properties::Pair& key_val : binmap) {
             if (key_val.first == curr_subnet) found = true;
         }
         if (!found) {
@@ -210,7 +208,7 @@ main(int argc, const char** argv)
         servers = valid_server_names;
     }
 
-    BOOST_FOREACH(const std::string& curr_server, servers) {
+    for(const std::string& curr_server : servers) {
         if (curr_server == "bgmaster_server") {
             doBGMaster();
         } else if (curr_server == "mmcs_server") {
@@ -225,7 +223,7 @@ main(int argc, const char** argv)
         exit(EXIT_FAILURE);
     }
     std::cout << "No errors detected for servers ";
-    BOOST_FOREACH(const std::string& curr_server, servers) {
+    for(const std::string& curr_server : servers) {
         std::cout << curr_server << " ";
     }
     std::cout << std::endl;

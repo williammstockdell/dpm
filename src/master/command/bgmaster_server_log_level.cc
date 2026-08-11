@@ -28,9 +28,6 @@
 
 #include <utility/include/Log.h>
 
-#include <boost/foreach.hpp>
-#include <boost/tokenizer.hpp>
-
 
 LOG_DECLARE_FILE( "master" );
 
@@ -62,7 +59,7 @@ doLoglevel(
         typedef std::map<BGMasterClient::LogName,BGMasterClient::LogLevel> Output;
         Output output;
         client.log_level(input, output);
-        BOOST_FOREACH(const Output::value_type& i, output) {
+        for(const Output::value_type& i : output) {
             if (i.first.empty()) continue;
             std::cout << std::setw(40) << std::left
                 << i.first << std::right

@@ -29,7 +29,6 @@
 #include <utility/include/Exec.h>
 #include <utility/include/Log.h>
 
-#include <boost/tokenizer.hpp>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -70,22 +69,16 @@ doStart(
         }
     }
 
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    boost::char_separator<char> sep(" ");
-    tokenizer tok(commandstring, sep);
+#include <sstream>
 
-    int i = 0;
+    std::istringstream stream(commandstring);
+
     std::string path;
     std::string arguments;
-    for (tokenizer::const_iterator beg=tok.begin(); beg!=tok.end();++beg){
-        if (i == 0) {
-            path = (*beg);
-        } else {
-            arguments += (*beg);
-            arguments += " ";
-        }
-        ++i;
-    }
+
+    stream >> path;
+
+    std::getline(stream >> std::ws, arguments);
 
     if (target == "bgmaster_server" || target == "bgmaster") { // bgmaster_server
         const std::string propstr = "--properties";

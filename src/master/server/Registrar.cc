@@ -35,8 +35,6 @@
 #include <utility/include/cxxsockets/ListenerSet.h>
 #include <utility/include/cxxsockets/SockAddrList.h>
 
-#include <boost/foreach.hpp>
-
 
 #include <pthread.h>
 #include <signal.h>
@@ -237,11 +235,11 @@ Registrar::listenForNew(
     // connections.  The new connections will be validated and
     // inserted into the agent vector in a separate thread.
     CxxSockets::SockAddrList masterlist; // One big list to rule them all!
-    BOOST_FOREACH(const bgq::utility::PortConfiguration::Pair& curr_pair, portpairs) {
+    for(const bgq::utility::PortConfiguration::Pair& curr_pair : portpairs) {
         LOG_DEBUG_MSG("Listening on " << curr_pair.first << ":" << curr_pair.second);
         try {
             CxxSockets::SockAddrList salist(AF_UNSPEC, curr_pair.first, curr_pair.second);
-            BOOST_FOREACH(const CxxSockets::SockAddr& curr_sockaddr, salist) {
+            for(const CxxSockets::SockAddr& curr_sockaddr : salist) {
                 // Now copy every SockAddr in to the master list
                 masterlist.push_back(curr_sockaddr);
             }

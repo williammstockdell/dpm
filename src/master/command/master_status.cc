@@ -29,8 +29,6 @@
 
 #include <utility/include/Log.h>
 
-#include <boost/foreach.hpp>
-
 #include <iostream>
 
 LOG_DECLARE_FILE( "master" );
@@ -59,7 +57,7 @@ doStat(
         if (!idles.empty()) {
             std::cout << "Aliases not currently running" << std::endl;
             std::cout << "-----------------------------" << std::endl;
-            BOOST_FOREACH(std::string& al, idles) {
+            for(std::string& al : idles) {
                 if (al != "bgmaster_server") {
                     std::cout << al << std::endl;
                 }

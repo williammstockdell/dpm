@@ -25,8 +25,6 @@
 
 #include <utility/include/cxxsockets/SockAddrList.h>
 
-#include <boost/foreach.hpp>
-
 
 #include <unistd.h>
 
@@ -44,8 +42,7 @@ Protocol::~Protocol()
     // If the op is hung on a blocking send/receive,
     // we can't destruct, but if that ever happens,
     // we've got bigger problems that need to be addressed.
-    boost::mutex::scoped_lock scoped_lock(_sr_lock);
-    scoped_lock.unlock();
+    std::lock_guard scoped_lock(_sr_lock);
 }
 
 void
@@ -55,7 +52,7 @@ Protocol::sendOnly(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_sr_lock);
+    std::lock_guard scoped_lock(_sr_lock);
     if (!_requester) {
         throw CxxSockets::Error(-1, "No requester socket.");
     }
@@ -80,7 +77,7 @@ Protocol::sendReceive(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_sr_lock);
+    std::lock_guard scoped_lock(_sr_lock);
     if (!_requester) {
         throw CxxSockets::Error(-1, "No requester socket.");
     }
@@ -136,7 +133,7 @@ Protocol::initializeRequester(
     // Normally, we pass socket exceptions back to the client.
     // Here, however, we make use of them.
     bool connected = false;
-    BOOST_FOREACH(const CxxSockets::SockAddr& remote, remote_list) {
+    for(const CxxSockets::SockAddr& remote : remote_list) {
         if (connected) {
             break;
         }

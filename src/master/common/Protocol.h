@@ -31,7 +31,7 @@
 
 #include <xml/include/library/XML.h>
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #include <string>
 
@@ -50,13 +50,13 @@ public:
      */
     virtual void initializeRequester(
             const bgq::utility::Properties::ConstPtr& props,
-            int ipv, 
-            const std::string& host, 
-            const std::string& port, 
+            int ipv,
+            const std::string& host,
+            const std::string& port,
             unsigned attempts = 1
             );
 
-    /*! 
+    /*!
      * Set a previously connected socket as the request socket.
      */
     virtual void setRequester(
@@ -85,7 +85,7 @@ public:
      * Send a reply on the responder socket
      */
     void sendReply(
-            const std::string& requestName, 
+            const std::string& requestName,
             const XML::Serializable& replyObject
             );
 
@@ -94,22 +94,22 @@ public:
     CxxSockets::SecureTCPSocketPtr& getResponder() { return _responder; }
 
     void sendOnly(
-            const std::string& requestName, 
+            const std::string& requestName,
             const XML::Serializable& requestObject
             );
 
 protected:
     //! \brief send our message and receive our reply
     void sendReceive(
-            const std::string& requestName, 
-            const XML::Serializable& requestObject, 
-            const std::string& replyName, 
+            const std::string& requestName,
+            const XML::Serializable& requestObject,
+            const std::string& replyName,
             XML::Serializable& replyObject
             );
 
     CxxSockets::SecureTCPSocketPtr _requester;
     CxxSockets::SecureTCPSocketPtr _responder;
-    boost::mutex _sr_lock;
+    std::mutex _sr_lock;
 };
 
 #endif
