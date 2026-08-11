@@ -22,14 +22,10 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 
-#include "ExitStatus.h"
-
-#include <boost/lexical_cast.hpp>
-
 #include <iostream>
+#include <string>
 
-
-using boost::lexical_cast;
+#include "ExitStatus.h"
 
 using std::string;
 
@@ -43,9 +39,9 @@ const ExitStatus ExitStatus::Normal(0);
 
 std::ostream& operator<<( std::ostream& os, const ExitStatus& exit_status )
 {
-    os << (exit_status.exited() ? (string() + "status " + lexical_cast<string>(exit_status.getExitStatus())) :
-           exit_status.signaled() ? (string() + "signal " + lexical_cast<string>(exit_status.getSignal())) :
-           (string() + "unknown " + lexical_cast<string>(exit_status.get())));
+    os << (exit_status.exited() ? (string() + "status " + std::to_string(exit_status.getExitStatus())) :
+           exit_status.signaled() ? (string() + "signal " + std::to_string(exit_status.getSignal())) :
+           (string() + "unknown " + std::to_string(exit_status.get())));
 
     return os;
 }

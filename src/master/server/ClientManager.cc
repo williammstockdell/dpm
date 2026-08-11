@@ -42,7 +42,7 @@ ClientManager::cancel()
 
     std::vector<ClientControllerPtr> clients;
     {
-        boost::mutex::scoped_lock lock( _clientMutex );
+        std::lock_guard lock( _clientMutex );
         clients = _clients;
     }
 
@@ -56,7 +56,7 @@ ClientManager::removeClient(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock lock( _clientMutex );
+    std::lock_guard lock( _clientMutex );
     _clients.erase(remove(_clients.begin(), _clients.end(), c), _clients.end());
 }
 
@@ -64,7 +64,7 @@ std::vector<ClientControllerPtr>
 ClientManager::getClients()
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock lock( _clientMutex );
+    std::lock_guard lock( _clientMutex );
     return _clients;
 }
 
@@ -76,7 +76,7 @@ ClientManager::addClient(
     LOG_TRACE_MSG(__FUNCTION__);
     if (_ending)
         return;  // Don't accept anybody new if we're going away.
-    boost::mutex::scoped_lock lock( _clientMutex );
+    std::lock_guard lock( _clientMutex );
     _clients.push_back(c);
     LOG_DEBUG_MSG( _clients.size() << " clients managed");
     c->startPoller();

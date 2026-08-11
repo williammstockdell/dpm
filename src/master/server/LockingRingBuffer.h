@@ -24,36 +24,45 @@
 #ifndef MASTER_LOCKING_RING_BUFFER_H_
 #define MASTER_LOCKING_RING_BUFFER_H_
 
-
-#include <boost/circular_buffer.hpp>
-#include <boost/thread/mutex.hpp>
-
 #include <algorithm>
+#include <deque>
 #include <iterator>
+#include <mutex>
 #include <string>
 #include <vector>
 
-
-//! \brief This is just a locking version of boost's
-//! ring buffer.  It is specialized for strings.
+//! \brief Fixed-size locking ring buffer specialized for strings.
 class LockingStringRingBuffer
 {
-    boost::circular_buffer<std::string> _ring_buff;
-    boost::mutex _mutex;
+    std::deque<std::string> _ring_buff;
+    std::size_t _capacity;
+    std::mutex _mutex;
+
 public:
-    LockingStringRingBuffer(unsigned buffsize) : _ring_buff(buffsize) {
-        // Nothing to do.
-    }
-    void push_back(const std::string& item) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
+    explicit LockingStringRingBuffer(unsigned buffsize) : _capacity(buffsize) { }
+
+    void push_back(const std::string& item)
+    {
+        std::lock_guard scoped_lock(_mutex);
+
+        if (_ring_buff.size() == _capacity) {
+            _ring_buff.pop_front();
+        }
+
         _ring_buff.push_back(item);
     }
 
     //! \brief Get the contents of the ring buffer in a string vector.
-    //! \parm messages The string vector to fill.
-    void getContents(std::vector<std::string>& messages) {
-        boost::mutex::scoped_lock scoped_lock(_mutex);
-        std::copy(_ring_buff.begin(), _ring_buff.end(), std::back_inserter(messages) );
+    //! \param messages The string vector to fill.
+    void getContents(std::vector<std::string>& messages)
+    {
+        std::lock_guard scoped_lock(_mutex);
+
+        std::copy(
+            _ring_buff.begin(),
+            _ring_buff.end(),
+            std::back_inserter(messages)
+        );
     }
 };
 

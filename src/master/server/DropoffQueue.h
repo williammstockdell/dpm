@@ -22,16 +22,16 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 //! \brief A container class for nonblocking thread communications.
-//! Multiple threads may send but only a single receiver is supported.  
-//! It's called a "dropoff queue" because the senders "drop off" messages 
-//! and the receiver "picks up" messages from the other end.  
+//! Multiple threads may send but only a single receiver is supported.
+//! It's called a "dropoff queue" because the senders "drop off" messages
+//! and the receiver "picks up" messages from the other end.
 
 //! It's a templated class so a "message" may be any kind of object.
 
 //! The receiver only writes to an atomic flag maintained for each
 //! message.  The flag indicates that the entry has been received.
-//! Every time a dropoff is perfromed (a send), every flagged entry 
-//! is removed. The existence of the entry and its flag are protected 
+//! Every time a dropoff is perfromed (a send), every flagged entry
+//! is removed. The existence of the entry and its flag are protected
 //! internally by a smart pointer.
 
 //! Send side actions (dropoff and clearing) are controlled with locks.
@@ -42,14 +42,14 @@
 //! The send side locks and the atomic read flag mean that the integrity
 //! of the queue is protected in even highly concurrent environments.
 
-//! Be aware that dropping off a message doesn't guarantee that it will 
+//! Be aware that dropping off a message doesn't guarantee that it will
 //! ever be picked up by the receiver.  The receiver still has to do
-//! the work of calling pickUp().  
+//! the work of calling pickUp().
 
 #include <ostream>
 #include <iostream>
-#include <boost/thread.hpp>
-#include <boost/detail/atomic_count.hpp>
+#include <thread>
+#include <atomic>
 
 #ifndef MASTER_DROPOFFQUEUE_H
 #define MASTER_DROPOFFQUEUE_H
@@ -62,28 +62,29 @@ template<class Type> class DropoffQueue
         friend class DropoffQueue;
         template<class NT>
         // Print the node data for debug.
-        friend std::ostream& operator<<(std::ostream& os, const boost::shared_ptr<Node<NT> >& n) {
+        friend std::ostream& operator<<(std::ostream& os, const std::shared_ptr<Node<NT> >& n) {
             if(n)
-                os << n->_element << "::" << n->_prev.get() << "<-" << n.get() 
+                os << n->_element << "::" << n->_prev.get() << "<-" << n.get()
                    << "->" << n->_next.get() << "::" << n->_dirtybit;
             return os;
         }
 
-        boost::detail::atomic_count _dirtybit;
+
+        std::atomic<bool> _dirtybit{false};
         NodeType _element;
-        boost::shared_ptr<Node> _next, _prev;
+        std::shared_ptr<Node> _next, _prev;
     public:
-        Node(NodeType element) : _dirtybit(0), _element(element) { _next.reset(); _prev.reset(); }
-        Node(const Node& n) : _dirtybit(0) { _element = n._element; };
+        Node(NodeType element) : _dirtybit(false), _element(element) { _next.reset(); _prev.reset(); }
+        Node(const Node& n) : _dirtybit(false) { _element = n._element; };
         NodeType getElement() { return _element; }
         ~Node() {}
         std::string print();
     };
 
 
-    boost::shared_ptr<Node<Type> > _head;
-    boost::shared_ptr<Node<Type> > _tail;
-    boost::mutex _dropofflock;
+    std::shared_ptr<Node<Type> > _head;
+    std::shared_ptr<Node<Type> > _tail;
+    std::mutex _dropofflock;
     unsigned _removed;
     unsigned _dropped_off;
     unsigned clearRead_nl();
@@ -95,7 +96,7 @@ public:
     ~DropoffQueue() { clear(); }
 
     //! \brief Write a new node to the dropoff queue.
-    //! This will also do a lazy cleanup of picked up Nodes. 
+    //! This will also do a lazy cleanup of picked up Nodes.
     //! \param newnode The message object to drop off
     void dropOff(Type newnode);
 
@@ -135,7 +136,7 @@ DropoffQueue<Type>::DropoffQueue() : _removed(0), _dropped_off(0) {
 
 template<class Type>
 unsigned int DropoffQueue<Type>::clearRead_nl() {
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
+    typedef std::shared_ptr<Node<Type> > NodePtr;
     // Now loop through the list and remove anything that has
     // been read by the pickup side.
     NodePtr prev = _head;
@@ -144,13 +145,13 @@ unsigned int DropoffQueue<Type>::clearRead_nl() {
     unsigned unread = 0;
     while(curr != 0) {
         NodePtr removed_node;
-        if(curr->_dirtybit != 0) {
+        if(curr->_dirtybit) {
             // Remove it because it has been picked up.
             prev->_next = curr->_next;
             if(prev->_next) {
                 prev->_next->_prev = prev;
             }
-            if(curr == _tail) 
+            if(curr == _tail)
                 _tail = prev; // If we're picking off the last one, move the tail pointer.
             if(curr == _head)
                 curr->_prev.reset();
@@ -177,19 +178,19 @@ unsigned int DropoffQueue<Type>::clearRead_nl() {
 
 template<class Type>
 unsigned int DropoffQueue<Type>::clearRead() {
-    boost::mutex::scoped_lock scope_lock(_dropofflock);
+    std::lock_guard scope_lock(_dropofflock);
     return clearRead_nl();
 }
 
 // Dropoff side places a new element in the queue
-// and then removes anything that has already 
+// and then removes anything that has already
 // been read.
 template<class Type>
 void DropoffQueue<Type>::dropOff(const Type element) {
     ++_dropped_off;
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
+    typedef std::shared_ptr<Node<Type> > NodePtr;
     NodePtr newnode(new Node<Type>(element));
-    boost::mutex::scoped_lock scope_lock(_dropofflock);
+    std::lock_guard scope_lock(_dropofflock);
     // Put it in the head of the list.
     if(_head == 0) {
         // First add.
@@ -210,11 +211,11 @@ void DropoffQueue<Type>::dropOff(const Type element) {
 // away.
 template<class Type>
 bool DropoffQueue<Type>::pickUp(Type& pu) {
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
+    typedef std::shared_ptr<Node<Type> > NodePtr;
     NodePtr retptr, tmp;
     for(tmp = _tail; tmp != 0; tmp = tmp->_prev) {
-        if(tmp->_dirtybit == 0) {
-            ++tmp->_dirtybit;
+        if(!tmp->_dirtybit) {
+            tmp->_dirtybit = true;
             retptr = tmp;
             break;
         }
@@ -228,7 +229,7 @@ bool DropoffQueue<Type>::pickUp(Type& pu) {
 
 template<class Type>
 void DropoffQueue<Type>::printChain() {
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
+    typedef std::shared_ptr<Node<Type> > NodePtr;
     for(NodePtr curr = _head; curr != _tail; curr = curr->_next) {
         std::cout << curr.get() << "->";
     }
@@ -237,8 +238,8 @@ void DropoffQueue<Type>::printChain() {
 
 template<class Type>
 unsigned DropoffQueue<Type>::clear() {
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
-    boost::mutex::scoped_lock scope_lock(_dropofflock);
+    typedef std::shared_ptr<Node<Type> > NodePtr;
+    std::lock_guard scope_lock(_dropofflock);
     unsigned cleared = 0;
     unsigned db = 0;
     NodePtr curr = _head;
@@ -259,8 +260,8 @@ unsigned DropoffQueue<Type>::clear() {
 
 template<class Type>
 unsigned DropoffQueue<Type>::size() {
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
-    boost::mutex::scoped_lock scope_lock(_dropofflock);
+    typedef std::shared_ptr<Node<Type> > NodePtr;
+    std::lock_guard scope_lock(_dropofflock);
     unsigned size = 0;
     NodePtr curr = _head;
     while(curr != 0) {
@@ -272,12 +273,12 @@ unsigned DropoffQueue<Type>::size() {
 
 template<class Type>
 unsigned DropoffQueue<Type>::get_unread() {
-    typedef boost::shared_ptr<Node<Type> > NodePtr;
-    boost::mutex::scoped_lock scope_lock(_dropofflock);
+    typedef std::shared_ptr<Node<Type> > NodePtr;
+    std::lock_guard scope_lock(_dropofflock);
     unsigned unread_count = 0;
     NodePtr curr = _head;
     while(curr != 0) {
-        if(curr->_dirtybit == 0)
+        if(!curr->_dirtybit)
             ++unread_count;
         curr = curr->_next;
     }

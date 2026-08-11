@@ -24,7 +24,8 @@
 #ifndef ALIAS_H
 #define ALIAS_H
 
-
+#include <chrono>
+#include <optional>
 #include <list>
 #include <string>
 
@@ -34,16 +35,11 @@
 
 #include <utility/include/cxxsockets/Host.h>
 
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
-#include <boost/utility.hpp>
-#include <boost/date_time/posix_time/ptime.hpp>
-
 
 
 //! \brief Alias class.  Represents the association between a name,
 //! an executable, its policies, and its active instances.
-class Alias : private boost::noncopyable
+class Alias
 {
 public:
     Alias(
@@ -99,7 +95,7 @@ public:
     //! \return true if found, false if not
     bool find_binary(const BinaryId& id) {
         std::scoped_lock scoped_lock(_mutex);
-        BOOST_FOREACH(BinaryId idit, _binaries) {
+        for(BinaryId idit : _binaries) {
             if (id == idit) return true;
         }
         return false;
@@ -145,7 +141,7 @@ private:
 
     //! \brief If the passed host is in our list return true
     bool find_host_internal(const CxxSockets::Host& host) {
-        BOOST_FOREACH(CxxSockets::Host h, _hosts) {
+        for(CxxSockets::Host h : _hosts) {
             if (h == host) return true;
         }
         return false;
@@ -184,7 +180,7 @@ private:
     bool _halt_waiting_for_agent;
 
     //! \brief The time we failed to start this alias on its preferred host
-    boost::posix_time::ptime _preferred_start_time;
+    std::optional<std::chrono::system_clock::time_point> _preferred_start_time;
 };
 
 #endif

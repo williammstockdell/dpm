@@ -24,13 +24,12 @@
 #ifndef MASTER_AGENT_MANAGER_H_
 #define MASTER_AGENT_MANAGER_H_
 
-
+#include <mutex>
 #include "common/Ids.h"
 #include "types.h"
 
 #include <utility/include/cxxsockets/Host.h>
 
-#include <boost/thread/mutex.hpp>
 
 #include <string>
 #include <vector>
@@ -84,7 +83,7 @@ private:
 
     //! \brief vector of BGAgents
     std::vector<AgentRepPtr> _agents;
-    boost::mutex _agent_manager_mutex;
+    std::mutex _agent_manager_mutex;
     bool _ending_agents;
     unsigned int _agents_per_host;
 };

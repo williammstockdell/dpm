@@ -55,7 +55,7 @@ AgentManager::addNew(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     LOG_DEBUG_MSG("Adding agent " << agent->get_agent_id().str() << " from list.");
     unsigned agent_count = 0;
     BOOST_FOREACH(const AgentRepPtr& ptr, _agents) {
@@ -145,7 +145,7 @@ AgentManager::findAgentRep(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
     BOOST_FOREACH(const AgentRepPtr& agent, _agents) {
         if (agent->get_agent_id() == aid) {
@@ -161,7 +161,7 @@ AgentManager::findAgentId(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     BGAgentId p;
 
     // Find and return the =first= active agent on this host
@@ -180,7 +180,7 @@ AgentManager::findAgentRep(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
     BOOST_FOREACH(const AgentRepPtr& agent, _agents) {
         const CxxSockets::Host lname = agent->get_host();
@@ -195,7 +195,7 @@ AgentRepPtr
 AgentManager::pickAgent()
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     // We'll start simple and use either the first one with zero
     // binaries or the one with the smallest number of binaries.
     std::vector<AgentRepPtr>::const_iterator smallest = _agents.begin();
@@ -218,7 +218,7 @@ AgentManager::findBinary(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     BinaryControllerPtr ptr;
     AgentRepPtr foundagent;
 
@@ -248,7 +248,7 @@ AgentManager::findBinary(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
-    boost::mutex::scoped_lock scoped_lock(_agent_manager_mutex);
+    std::lock_guard scoped_lock(_agent_manager_mutex);
     bool found = false;
 
     BOOST_FOREACH(const AgentRepPtr& agent, _agents) {
@@ -277,7 +277,7 @@ AgentManager::cancel(
     // Loop through the agents and call the cancel for each
     std::vector<AgentRepPtr> agents;
     {
-        boost::mutex::scoped_lock lock(_agent_manager_mutex);
+        std::lock_guard lock(_agent_manager_mutex);
         BOOST_FOREACH(const AgentRepPtr& agent, _agents) {
             agents.push_back(agent);
         }

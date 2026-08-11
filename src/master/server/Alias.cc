@@ -165,7 +165,7 @@ Alias::runPolicy(
         // Keep checking hosts until we get either the host we want (preferred or self)
         // or a backup host with an attempt timeout.
         bool winner = false;
-        BOOST_FOREACH(const CxxSockets::Host& curr_host, _hosts) {
+        for(const CxxSockets::Host& curr_host : _hosts) {
             // Loop through hosts and the first one that has a valid associated agent is our winner.
             agent_to_run = MasterController::get_agent_manager().findAgentRep(curr_host);
             if (agent_to_run) {
@@ -175,11 +175,10 @@ Alias::runPolicy(
                 if (curr_host.get_primary() == false) {
                     if ( _preferred_start_time.is_not_a_date_time() ) {
                         LOG_INFO_MSG( "waiting " << _preferredHostWait << " seconds for primary host" );
-                        _preferred_start_time = boost::posix_time::microsec_clock::local_time();
+                        _preferred_start_time = std::chrono::system_clock::now();
                     }
-
-                    const boost::posix_time::ptime now( boost::posix_time::microsec_clock::local_time() );
-                    const boost::posix_time::time_duration duration( now - _preferred_start_time );
+                    const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+                    const std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(now - *_preferred_start_time);
                     if ( duration.total_seconds() > _preferredHostWait ) {
                         winner = true;
                         LOG_INFO_MSG("Giving up after " << _preferredHostWait << " seconds waiting for the preferred agent host.");
@@ -211,7 +210,7 @@ Alias::runPolicy(
                 std::ostringstream msg;
                 std::ostringstream hosts;
                 bool first = true;
-                BOOST_FOREACH(const CxxSockets::Host& curr_host, _hosts) {
+                for(const CxxSockets::Host& curr_host : _hosts) {
                     if (!first) {
                         hosts << ", " << curr_host.uhn();
                     } else {
@@ -225,7 +224,7 @@ Alias::runPolicy(
             }
         }
     }
-    _preferred_start_time = boost::posix_time::ptime();
+    _preferred_start_time.reset();
     return agent_to_run;
 }
 
