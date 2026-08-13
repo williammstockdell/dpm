@@ -110,6 +110,13 @@ default: all
 all: $(TARGETS_ALL)
 
 
+install:
+	install -d $(LIBDIR)
+	install -m 755 libbgutility.so.1.0.0 $(LIBDIR)
+	ln -sf libbgutility.so.1.0.0 $(LIBDIR)/libbgutility.so.1
+	ln -sf libbgutility.so.1 $(LIBDIR)/libbgutility.so
+	$(MAKE) --directory cxxsockets install
+
 $(lib_short): $(lib_vers)
 	ln -sf $< $@
 
@@ -124,8 +131,6 @@ $(lib_full): $(so_objs) Makefile
 
 $(static_lib): $(ar_objs) Makefile
 	$(AR) crv  $@ $(ar_objs)
-
-install: $(TARGETS_INSTALL) $(INSTALL_LIST)
 
 
 clean: $(TARGETS_CLEAN)

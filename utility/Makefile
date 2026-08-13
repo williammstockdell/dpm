@@ -32,10 +32,9 @@ endif
 TARGETS_ALL		= $(addsuffix .all,$(DIRS))
 TARGETS_CLEAN		= $(addsuffix .clean,$(DIRS))
 TARGETS_DISTCLEAN	= $(addsuffix .distclean,$(DIRS))
-
+TARGETS_INSTALL         = src
 
 TARGETS  = $(TARGETS_ALL)
-TARGETS += $(TARGETS_INSTALL)
 TARGETS += $(TARGETS_CLEAN)
 TARGETS += $(TARGETS_DISTCLEAN)
 
@@ -50,7 +49,10 @@ required_doxygen_version := 1.6
 # make the all also do an install so the top level default make works
 all:  $(TARGETS_ALL)
 
-install:		$(TARGETS_INSTALL) docs $(call TLD_INSTALL_PACKAGING_TARGET, utility.specsrc)
+
+install:
+	$(MAKE) --directory src install
+
 clean:			$(TARGETS_CLEAN) docs.clean
 distclean:	clean   $(TARGETS_DISTCLEAN)
 

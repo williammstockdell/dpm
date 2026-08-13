@@ -76,9 +76,11 @@ exes := $(bin_exes) $(sbin_exes)
 build_cmd = $(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 
-installs := \
- $(call INSTALL_SBIN_TARGET, $(sbin_exes)) \
- $(call INSTALL_BIN_TARGET, $(bin_exes))
+install:
+	install -d $(SBINDIR)
+	install -m 755 $(sbin_exes) $(SBINDIR)
+	install -d $(BINDIR)
+	install -m 755 $(bin_exes) $(BINDIR)
 
 bg_sbin_links = $(sbin_exes)
 bg_bin_links = $(bin_exes)

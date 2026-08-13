@@ -43,9 +43,12 @@ TARGETS += $(TARGETS_UNINSTALL)
 .PHONY: $(DIRS) clean docs install distclean
 
 
-default:        install
-all:            install $(TARGETS_ALL)
-install:		$(TARGETS_INSTALL)
+default:        all
+all:            all $(TARGETS_ALL)
+
+install:
+	$(MAKE) --directory master install
+
 clean:			$(TARGETS_CLEAN)
 distclean:	clean   $(TARGETS_DISTCLEAN)
 uninstall:              $(TARGETS_UNINSTALL)

@@ -70,10 +70,11 @@ protocol_parts := \
 protocol_objs := ${protocol_parts:%=../protocol/%.o}
 
 
-$(BGQ_INSTALL_DIR)//lib/%: %
-	$(MKDIR) ${dirname $@}
-	$(CP) $< $@
-
+install:
+	install -d $(LIBDIR)
+	install -m 755 $(lib) $(LIBDIR)
+	ln -sf $(lib) $(LIBDIR)/$(lib_soname)
+	ln -sf $(lib_soname) $(LIBDIR)/$(lib_dev)
 
 default: all
 
@@ -89,8 +90,6 @@ $(lib_dev): $(lib_soname)
 	ln -sf $(lib_soname) $@
 
 
-
-install: $(BGQ_INSTALL_DIR)//lib/$(lib) $(BGQ_INSTALL_DIR)/lib/$(lib_soname) $(BGQ_INSTALL_DIR)//lib/$(lib_dev)
 
 clean:
 	$(RM) *.o *.d $(lib) $(lib_soname) $(lib_dev)

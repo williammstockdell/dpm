@@ -78,7 +78,7 @@ protocol_parts := \
 protocol_objs := ${protocol_parts:%=../protocol/%.o}
 
 
-exe := bgmaster_server
+exe := dpm_server
 bg_sbin_links = $(exe)
 
 
@@ -89,7 +89,9 @@ all: $(exe)
 $(exe): $(objs) $(common_objs) $(protocol_objs)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-install: $(call INSTALL_SBIN_TARGET, $(exe)) $(bg_links_targets) all ras_scan
+install:
+	install -d $(SBINDIR)
+	install -m 755 $(exe) $(SBINDIR)
 
 clean:
 	$(RM) *.o *.d $(exe)

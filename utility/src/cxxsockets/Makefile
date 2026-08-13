@@ -83,7 +83,9 @@ $(lib_vers): $(lib_full)
 $(lib_full): $(OBJS)
 	$(CXX) -o $@ $^ $(SHARED_LDFLAGS)
 
-install: $(install_list)
+install:
+	install -d $(LIBDIR)
+	install -m 755 libcxxsockets.a $(LIBDIR)
 
 uninstall:
 	$(RM) $(install_list)

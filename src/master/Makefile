@@ -65,7 +65,11 @@ bg_bin_links := \
 
 all: $(DIR_TARGS_ALL)
 
-#install: $(DIR_TARGS_INSTALL)
+install:
+	$(MAKE) --directory lib install
+	$(MAKE) --directory server install
+	$(MAKE) --directory agent install
+	$(MAKE) --directory command install
 
 clean: $(DIR_TARGS_CLEAN)
 

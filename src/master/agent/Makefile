@@ -57,7 +57,7 @@ LDFLAGS  += -lboost_program_options
 
 
 parts := \
- bgagentd \
+ dpm_agentd \
  Agent
 
 objs := ${parts:%=%.o}
@@ -76,7 +76,7 @@ protocol_parts := \
 protocol_objs := ${protocol_parts:%=../protocol/%.o}
 
 
-exe := bgagentd
+exe := dpm_agentd
 bg_sbin_links = $(exe)
 
 
@@ -86,7 +86,9 @@ default: all
 
 all: $(exe)
 
-install: $(call INSTALL_SBIN_TARGET, $(exe)) $(bg_links_targets) $(MODULE_INIT_DIR)/bgagent $(MODULE_INIT_DIR)/bgagent.v1r1m0 $(MODULE_INIT_DIR)/bgagent.v1r1m1 $(MODULE_INIT_DIR)/bgagent.v1r1m2 $(MODULE_INIT_DIR)/bgagent.v1r2m0 $(MODULE_INIT_DIR)/bgagent.v1r2m1
+install:
+	install -d $(SBINDIR)
+	install -m 755 $(exe) $(SBINDIR)
 
 
 $(exe): $(objs) $(common_objs) $(protocol_objs)
@@ -101,7 +103,7 @@ $(MODULE_INIT_DIR)/%: % | $(MODULE_INIT_DIR)
 
 
 clean:
-	$(RM) *.o *.d
+	$(RM) *.o *.d dpm_agentd
 
 distclean: clean
 
