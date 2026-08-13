@@ -55,7 +55,7 @@ parts := \
  Alias \
  AliasList \
  Behavior \
- bgmaster_server \
+ dpm_server \
  ClientController \
  ClientManager \
  MasterController \
@@ -99,10 +99,6 @@ clean:
 
 distclean: clean
 
-
-ras_scan: ras.h
-	$(BGQ_BUILD_DIR)/scripts/rasScan.py '$(BGQ_BUILD_DIR)/src/master' '$(BGQ_INSTALL_DIR)/ras/metadata' 'bgmaster_ras.xml' '$(BGQ_INSTALL_DIR)/ras/include/ras.xml'
-	@touch $@
 
 .PHONY: default all install clean distclean
 
