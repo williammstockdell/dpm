@@ -64,6 +64,7 @@ objs := ${parts:%=%.o}
 
 common_parts := \
  AgentBase \
+ ArgParse \
  BinaryController \
  Ids \
  Protocol

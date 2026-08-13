@@ -114,7 +114,8 @@ Args::Args(
         void (*usage)(),
         void (*help)(),
         std::vector<std::string>& valargs,
-        const std::vector<std::string>& singles
+        const std::vector<std::string>& singles,
+        bool client
         )
 {
     valargs.push_back("--verbose");
@@ -171,7 +172,7 @@ Args::Args(
         }
     }
 
-    const std::string default_logger("ibm.master");
+    const std::string default_logger("dpm.master");
 
     const bgq::utility::LoggingProgramOptions logging_program_options( default_logger );
     bgq::utility::initializeLogging(*_props, logging_program_options, "master");
@@ -181,7 +182,11 @@ Args::Args(
     bgq::utility::ClientPortConfiguration port_config(
             32042, bgq::utility::ClientPortConfiguration::ConnectionType::Command
             );
-    port_config.setProperties( _props, "master.client");
+    if(client)
+        port_config.setProperties( _props, "master.client");
+    else
+        port_config.setProperties(_props, "master.server");
+
     port_config.notifyComplete();
 
     if (!host_string.empty()) {

@@ -46,7 +46,7 @@ class Args
     std::vector<std::string> _otherargs;
     bool setupLogger(const std::string& verbarg) const;
     void setupLoggerDefaults() const;
-    bgq::utility::Properties::ConstPtr _props;
+    bgq::utility::Properties::Ptr _props;
 
 public:
     /*!
@@ -56,15 +56,17 @@ public:
      * - A single "**" entry in valargs indicates unlimited positional options.
      */
     Args(
-            const int argc,                         //!< [in] standard c-style argument count
-            const char** argv,                      //!< [in] standard c-style argument vector
-            void (*usage)(),                        //!< [in] function pointer to usage function
-            void (*help)(),                         //!< [in] function pointer to help function
-            std::vector<std::string>& valargs,      //!< [in] options to be followed with parameters
-            const std::vector<std::string>& singles //!< [in] arguments that don't take a parameter
+            const int argc,                          //!< [in] standard c-style argument count
+            const char** argv,                       //!< [in] standard c-style argument vector
+            void (*usage)(),                         //!< [in] function pointer to usage function
+            void (*help)(),                          //!< [in] function pointer to help function
+            std::vector<std::string>& valargs,       //!< [in] options to be followed with parameters
+            const std::vector<std::string>& singles, //!< [in] arguments that don't take a parameter
+            bool client = true
         );
 
-    const bgq::utility::Properties::ConstPtr& get_props() const { return _props; }
+    const bgq::utility::Properties::ConstPtr& get_const_props() const { return _props; }
+    const bgq::utility::Properties::Ptr& get_props() const { return _props; }
     const bgq::utility::PortConfiguration::Pairs& get_portpairs() const { return _portpairs; }
 
     bool find_arg(const std::string& arg) const {
@@ -75,6 +77,7 @@ public:
     // arguments out.
     typedef std::vector<std::string>::iterator iterator;
     typedef std::vector<std::string>::const_iterator const_iterator;
+
     size_t size() const {
         return _otherargs.size(); }
     iterator begin() {

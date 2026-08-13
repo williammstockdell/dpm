@@ -21,9 +21,7 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include "Agent.h"
-
-
+#include <filesystem>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/resource.h>
@@ -31,7 +29,9 @@
 #include <utility/include/version.h>
 #include <utility/include/LoggingProgramOptions.h>
 
-#include <filesystem>
+#include "Agent.h"
+#include "../common/ArgParse.h"
+
 
 LOG_DECLARE_FILE( "master" );
 
@@ -70,88 +70,54 @@ setlogging(
     return logfile;
 }
 
-int
-main(int argc, const char** argv)
+
+void usage() {
+
+    std::cerr << "FIX THIS USAGE TEXT" << std::endl;
+}
+
+void help() {
+
+    std::cerr << "FIX THIS HELP TEXT" << std::endl;
+}
+
+
+int main(int argc, const char** argv)
 {
-    // Parse --properties and --verbose before everything else
-    //    namespace po = boost::program_options;
-    bgq::utility::Properties::Ptr props;
-    //    try {
-        // po::options_description temp;
-        // FIXME: Replace
-        // bgq::utility::Properties::ProgramOptions propertiesOptions;
-        // propertiesOptions.addTo( temp );
-        // bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-        // lpo.addTo( temp );
-        // po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
-        // cmd_line.allow_unregistered();
-        // cmd_line.options( temp );
-        // po::variables_map vm;
-        // po::store( cmd_line.run(), vm );
-        // po::notify( vm );
+
+    std::vector<std::string> validargs;
+    std::vector<std::string> singles;
+    validargs.push_back("--debug");
+    validargs.push_back("--logdir");
+    validargs.push_back("--workingdir");
+    validargs.push_back("--users");
+
+    Args largs(argc, argv, &usage, &help, validargs, singles, false);
+    bgq::utility::Properties::Ptr props = largs.get_props();
+
+    try {
+        bgq::utility::LoggingProgramOptions lpo( "dpm.master" );
 
         // Create properties and initialize logging
-        // FIXME:  Replace
-        //        props = bgq::utility::Properties::create( propertiesOptions.getFilename() );
-        //        bgq::utility::initializeLogging(*props, lpo, "master");
-    // } catch (const std::runtime_error& e) {
-    //     std::cerr << "Error reading configuration file: " << e.what() << std::endl;
-    //     exit( EXIT_FAILURE );
-    // } catch ( const std::exception& e ) {
-    //     std::cerr << e.what() << std::endl;
-    //     exit( EXIT_FAILURE );
-    // }
+        bgq::utility::initializeLogging(*props, lpo, std::string("master"));
+    } catch (const std::runtime_error& e) {
+        std::cerr << "Error reading configuration file: " << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    } catch ( const std::exception& e ) {
+        std::cerr << e.what() << std::endl;
+        exit( EXIT_FAILURE );
+    }
 
      bgq::utility::BoolAlpha debug;
      std::string logdir;
      std::string workingdir;
      std::string users;
 
-    // po::options_description options;
-    // options.add_options()
-    //     ("help,h", po::bool_switch(), "this help text")
-    //     ("debug,d", po::value(&debug)->implicit_value(true), "enable debug mode (do not daemonize)")
-    //     ("logdir", po::value(&logdir), "path to logging directory")
-    //     ("workingdir", po::value(&workingdir), "path to working directory")
-    //     ("users", po::value(&users), "comma separated list of usernames")
-    //     ;
-
-    // Add properties and verbose options
-    // FIXME: Replace
-    // bgq::utility::Properties::ProgramOptions propertiesOptions;
-    // propertiesOptions.addTo( options );
-    // bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-    // lpo.addTo( options );
-
     // Add host option
     bgq::utility::ClientPortConfiguration host(
             32041,
             bgq::utility::ClientPortConfiguration::ConnectionType::Administrative
             );
-    //    host.addTo( options );
-
-    // po::variables_map vm;
-    // po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
-    // cmd_line.options( options );
-    // const po::positional_options_description positional;
-    // cmd_line.positional( positional );
-    // try {
-    //     po::store( cmd_line.run(), vm );
-
-    //     // Notify variables_map that we are done processing options
-    //     po::notify( vm );
-    // } catch ( const std::exception& e ) {
-    //     std::cerr << e.what() << std::endl;
-    //     exit( EXIT_FAILURE );
-    // }
-
-    // if ( vm["help"].as<bool>() ) {
-    //     std::cout << argv[0] << std::endl;
-    //     std::cout << std::endl;
-    //     std::cout << "OPTIONS:" << std::endl;
-    //     std::cout << options << std::endl;
-    //     exit( EXIT_SUCCESS );
-    // }
 
     host.setProperties( props, "master.agent" );
     host.notifyComplete();

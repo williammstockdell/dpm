@@ -86,7 +86,7 @@ main(int argc, const char** argv)
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     validargs.push_back("*"); // One argument without a "--" is allowed
-    const Args largs(argc, argv, &usage, &help, validargs, singles);
+    const Args largs(argc, argv, &usage, &help, validargs, singles, true);
     BGMasterClient client;
 
     try {

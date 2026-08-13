@@ -65,7 +65,7 @@ main(int argc, const char** argv)
 {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
-    const Args largs(argc, argv, &usage, &help, validargs, singles);
+    const Args largs(argc, argv, &usage, &help, validargs, singles, true);
     BGMasterClient client;
 
     try {

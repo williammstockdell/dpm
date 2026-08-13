@@ -48,6 +48,8 @@ LDFLAGS += \
  -lssl \
  -lcrypto
 
+common_parts := \
+ ArgParse
 
 parts := \
  AgentManager \
@@ -67,6 +69,7 @@ common_parts := \
  AgentBase \
  BinaryController \
  Ids \
+ ArgParse \
  Protocol
 
 common_objs := ${common_parts:%=../common/%.o}
