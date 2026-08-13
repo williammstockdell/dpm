@@ -163,21 +163,6 @@ public:
         );
 
 
-    /*! \brief Add the server port configuration options to the options description.
-     *
-     *  The option added is --listen-port. The format of this parameter is as described in
-     *  parsePortsStr(const std::string&,const std::string&,Pairs& pairs_out) .
-     *
-     *  The --listen-ports option is added to the hidden options and is an alias for
-     *  --listen-port.
-     *
-     *  --listen-ports can be supplied multiple times.
-     */
-    // void addTo(
-    //         boost::program_options::options_description& visible_options,
-    //         boost::program_options::options_description& hidden_options
-    //     );
-
     ConnectionType::Value getConnectionType() const { return _connection_type; }
 
     /*! \brief Create SSL configuration based on PortConfiguration.

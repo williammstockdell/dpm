@@ -115,13 +115,6 @@ public:
             const std::string& default_logger_name
         );
 
-    /*! \brief Add the program options to the options description.
-     *
-     */
-    void addTo(
-               //            boost::program_options::options_description& opts_desc
-        );
-
     /*! \brief Set the parameters.
      *
      * This is typically called automatically when boost::program_options::notify is called.

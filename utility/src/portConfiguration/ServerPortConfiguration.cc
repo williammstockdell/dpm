@@ -87,47 +87,6 @@ ServerPortConfiguration::ServerPortConfiguration(
 }
 
 
-// void ServerPortConfiguration::addTo(
-//         boost::program_options::options_description& visible_options,
-//         boost::program_options::options_description& hidden_options
-//     )
-// {
-//     namespace po = boost::program_options;
-
-//     string desc_text(string() + "Ports to accept" + (_description.empty() ? "" : string() + " " + _description) + " connections on");
-
-//     string visible_option_name((_name.empty() ? "" : string() + _name + "-") + OptionName);
-
-//     visible_options.add_options()
-//             ( visible_option_name.c_str(),
-//               po::value<Strings>()->notifier(
-//                       boost::bind(
-//                               (void(PortConfiguration::*)(const Strings&)) &PortConfiguration::setPorts,
-//                               this,
-//                               _1
-//                           )
-//                   ),
-//               desc_text.c_str()
-//             )
-//         ;
-
-//     string hidden_option_name((_name.empty() ? "" : string() + _name + "-") + HiddenOptionName);
-
-//     hidden_options.add_options()
-//             ( hidden_option_name.c_str(),
-//               po::value<Strings>()->notifier(
-//                       boost::bind(
-//                               (void(PortConfiguration::*)(const Strings&)) &PortConfiguration::setPorts,
-//                               this,
-//                               _1
-//                           )
-//                   ),
-//               desc_text.c_str()
-//             )
-//         ;
-// }
-
-
 SslConfiguration ServerPortConfiguration::createSslConfiguration() const
 {
     LOG_DEBUG_MSG( "creating ssl configuration with connection type " << _connection_type );

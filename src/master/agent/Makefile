@@ -81,8 +81,6 @@ exe := dpm_agentd
 bg_sbin_links = $(exe)
 
 
-
-
 default: all
 
 all: $(exe)

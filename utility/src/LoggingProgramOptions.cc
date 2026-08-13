@@ -97,25 +97,6 @@ LoggingProgramOptions::LoggingProgramOptions(
 }
 
 
-void LoggingProgramOptions::addTo(
-                                  //   boost::program_options::options_description& opts_desc
-    )
-{
-    // namespace po = boost::program_options;
-
-    // shared_ptr<po::option_description> opt_desc_ptr(
-    //         new po::option_description(
-    //                 "verbose",
-    //                 po::value<Strings>()
-    //                     ->notifier( bind( &LoggingProgramOptions::notifier, this, _1 ) ),
-    //                 "Logging configuration"
-    //             )
-    //     );
-
-    // opts_desc.add( opt_desc_ptr );
-}
-
-
 void LoggingProgramOptions::notifier( const Strings& strs )
 {
     for ( Strings::const_iterator i(strs.begin()) ; i != strs.end() ; ++i )
