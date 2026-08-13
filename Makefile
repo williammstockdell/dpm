@@ -10,11 +10,13 @@ PREFIX ?= $(CURDIR)
 BINDIR  = $(PREFIX)/bin
 SBINDIR = $(PREFIX)/sbin
 LIBDIR  = $(PREFIX)/lib
+ETCDIR  = $(PREFIX)/etc
 
 export PREFIX
 export BINDIR
 export SBINDIR
 export LIBDIR
+export ETCDIR
 
 TARGETS_ALL       = $(addsuffix .all,$(DIRS))
 TARGETS_CLEAN     = $(addsuffix .clean,$(DIRS))
@@ -43,6 +45,7 @@ clean: $(TARGETS_CLEAN)
 	$(RM) -rf $(CURDIR)/lib
 	$(RM) -rf $(CURDIR)/bin
 	$(RM) -rf $(CURDIR)/sbin
+	$(RM) -rf $(CURDIR)/etc
 
 distclean: $(TARGETS_DISTCLEAN)
 

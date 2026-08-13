@@ -1,10 +1,3 @@
-Create a real build/install layout. I’d make this the next step, as you said: build artifacts stay in build directories,
-install stages into something like $(PREFIX)/bin, $(PREFIX)/sbin, $(PREFIX)/lib, maybe share/ for properties/docs.
-At the same time, clean up the remaining bogus rpaths and make each library explicitly link its direct dependencies.
-Establish a clean-build baseline. Before changing much else, verify that make clean && make -jN from the repo root works repeatedly,
-with no dependency on stale .o, generated XML, or files left by an earlier install. Given what we just found in those Makefiles,
-I’d consider this a separate milestone.
-
 Then classify what remains: things to remove immediately, things temporarily retained (program_options, serialization),
 and things that are truly still needed. Same for Asio specifically.
 

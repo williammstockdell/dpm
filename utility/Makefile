@@ -51,6 +51,7 @@ all:  $(TARGETS_ALL)
 
 
 install:
+	$(MAKE) --directory etc install
 	$(MAKE) --directory src install
 
 clean:			$(TARGETS_CLEAN) docs.clean

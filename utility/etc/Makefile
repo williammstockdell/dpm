@@ -31,15 +31,6 @@ BGQ_BIN_INSTALL_DIR=$(BGQ_INSTALL_DIR)/$(TOP_DIR)/etc
 default: all
 
 
-install_parts  = bg.properties.tpl
-install_parts += bg.properties.ship.tpl
-install_parts += bg.bringup.properties.tpl
-install_parts += bg.properties.v1r1m0.tpl
-install_parts += bg.properties.v1r1m1.tpl
-install_parts += bg.properties.v1r1m2.tpl
-install_parts += bg.properties.v1r2m0.tpl
-install_parts += bg.properties.v1r2m1.tpl
-
 
 install_targets=${install_parts:%=$(BGQ_BIN_INSTALL_DIR)/%}
 
@@ -52,27 +43,22 @@ bg.properties: bg.properties.template
 	sed -e "s,%%BGQ_INSTALL_DIR%%,$(BGQ_INSTALL_DIR)," | \
 	sed -e "s,%%CERTIFICATE_DIR%%,$(BGQ_INSTALL_DIR)/utility/etc/security," > $@
 
-bg.properties.ship.tpl: bg.properties.template
-	sed -e "s/%%BGQDB_DBNAME%%/BGDB0/" $< | \
-	sed -e "s/user=%%BGQDB_USER%%/#user=bgqsysdb/" | \
-	sed -e "s/password=%%BGQDB_PWD%%/#password=xxxxxx/" | \
-	sed -e "s/%%BGQDB_SCHEMA%%/bgqsysdb/" | \
-	sed -e "s,%%BGQ_INSTALL_DIR%%,/bgsys/drivers/ppcfloor," | \
-	sed -e "s,%%CERTIFICATE_DIR%%,/bgsys/local/etc/security," > $@
-
-bg.bringup.properties: bg.bringup.properties.template
-	sed -e "s,%%BGQ_INSTALL_DIR%%,$(BGQ_INSTALL_DIR)," $< >$@
 
 %.tpl: %
 	$(CP) $< $@
 
-all: bg.properties bg.properties.ship.tpl bg.bringup.properties
+all: bg.properties
 
 
 clean:
-	$(RM) bg.properties bg.properties.ship.tpl bg.bringup.properties
+	$(RM) bg.properties
 
 distclean: clean
+
+install:
+	install -d $(ETCDIR)
+	install -m 755 bg.properties $(ETCDIR)
+
 
 uninstall:
 	$(RM) $(etc_install_dir)/bg.properties.tpl
