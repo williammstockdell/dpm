@@ -52,7 +52,7 @@ endif
 tld=utility
 install_base_dir=$(BGQ_INSTALL_DIR)/$(tld)
 include_install_dir=$(install_base_dir)/include
-etc_install_dir=$(install_base_dir)/etc
+etc_install_dir=$(BGQ_INSTALL_DIR)/etc
 BGQ_LIB_INSTALL_DIR=$(install_base_dir)/lib
 BGQ_BIN_INSTALL_DIR=$(install_base_dir)/bin
 BGQ_SBIN_INSTALL_DIR=$(install_base_dir)/sbin

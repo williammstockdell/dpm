@@ -41,7 +41,7 @@ bg.properties: bg.properties.template
 	sed -e "s/%%BGQDB_PWD%%/$(BGQDB_PWD)/" | \
 	sed -e "s/%%BGQDB_SCHEMA%%/$(BGQDB_SCHEMA)/" | \
 	sed -e "s,%%BGQ_INSTALL_DIR%%,$(BGQ_INSTALL_DIR)," | \
-	sed -e "s,%%CERTIFICATE_DIR%%,$(BGQ_INSTALL_DIR)/utility/etc/security," > $@
+	sed -e "s,%%CERTIFICATE_DIR%%,$(BGQ_INSTALL_DIR)/etc/security," > $@
 
 
 %.tpl: %
