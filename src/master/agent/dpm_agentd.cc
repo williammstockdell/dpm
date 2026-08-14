@@ -110,8 +110,8 @@ int main(int argc, const char** argv)
 
      bgq::utility::BoolAlpha debug;
      std::string logdir;
-     std::string workingdir;
-     std::string users;
+     std::string workingdir = largs["--workingdir"];
+     std::string users = largs["--users"];
 
     // Add host option
     bgq::utility::ClientPortConfiguration host(2041, bgq::utility::ClientPortConfiguration::ConnectionType::Administrative);

@@ -81,7 +81,7 @@ Agent::start(
         }
 
         if (_user_list.empty())
-            _user_list = "bgqadmin,bgqsysdb,bgws";
+            _user_list = "dpmadmin";
 
         if (_user_list.find(my_name) == std::string::npos) {
             LOG_ERROR_MSG("Invalid user id " << my_name << ". Not in list of valid users: " << _user_list);
