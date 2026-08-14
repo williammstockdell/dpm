@@ -34,6 +34,8 @@
 #include <vector>
 #include <algorithm>
 
+enum bin_type { CLIENT, SERVER, AGENT };
+
 //! \brief Small class for grabbing properties and parsing arguments
 //! for BGmaster commands
 class Args
@@ -62,7 +64,7 @@ public:
             void (*help)(),                          //!< [in] function pointer to help function
             std::vector<std::string>& valargs,       //!< [in] options to be followed with parameters
             const std::vector<std::string>& singles, //!< [in] arguments that don't take a parameter
-            bool client = true
+            bool utype = CLIENT
         );
 
     const bgq::utility::Properties::ConstPtr& get_const_props() const { return _props; }

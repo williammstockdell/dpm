@@ -115,7 +115,7 @@ Args::Args(
         void (*help)(),
         std::vector<std::string>& valargs,
         const std::vector<std::string>& singles,
-        bool client
+        bool utype
         )
 {
     valargs.push_back("--verbose");
@@ -182,10 +182,14 @@ Args::Args(
     bgq::utility::ClientPortConfiguration port_config(
             32042, bgq::utility::ClientPortConfiguration::ConnectionType::Command
             );
-    if(client)
+    if(utype == CLIENT)
         port_config.setProperties( _props, "master.client");
-    else
+    else if(utype == SERVER)
         port_config.setProperties(_props, "master.server");
+    else if(utype == AGENT)
+        port_config.setProperties(_props, "master.agent");
+    else
+        exit(0); // FIXME:  Do better
 
     port_config.notifyComplete();
 
@@ -224,6 +228,7 @@ Args::Args(
         const std::string curr_arg = argv[i];
 
         if (std::find(valargs.begin(), valargs.end(), curr_arg) != valargs.end()) {
+
             // If it's in the vector, make sure there's a value associated with it
             if (i + 1 == argc) {
                 std::cerr << "Missing value for " << curr_arg << std::endl;

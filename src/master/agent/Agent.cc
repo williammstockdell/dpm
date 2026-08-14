@@ -39,7 +39,7 @@
 std::string ghn() {
 
     char hn[256] = {};
-    assert(gethostname(hn, sizeof(hn)));
+    gethostname(hn, sizeof(hn));
     return std::string(hn);
 }
 

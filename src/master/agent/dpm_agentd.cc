@@ -92,11 +92,11 @@ int main(int argc, const char** argv)
     validargs.push_back("--workingdir");
     validargs.push_back("--users");
 
-    Args largs(argc, argv, &usage, &help, validargs, singles, false);
+    Args largs(argc, argv, &usage, &help, validargs, singles, AGENT);
     bgq::utility::Properties::Ptr props = largs.get_props();
 
     try {
-        bgq::utility::LoggingProgramOptions lpo( "dpm.master" );
+        bgq::utility::LoggingProgramOptions lpo( "master.agent" );
 
         // Create properties and initialize logging
         bgq::utility::initializeLogging(*props, lpo, std::string("master"));
@@ -114,10 +114,8 @@ int main(int argc, const char** argv)
      std::string users;
 
     // Add host option
-    bgq::utility::ClientPortConfiguration host(
-            32041,
-            bgq::utility::ClientPortConfiguration::ConnectionType::Administrative
-            );
+    bgq::utility::ClientPortConfiguration host(2041, bgq::utility::ClientPortConfiguration::ConnectionType::Administrative);
+
 
     host.setProperties( props, "master.agent" );
     host.notifyComplete();
@@ -128,7 +126,12 @@ int main(int argc, const char** argv)
         // Now find the logdir
         if (logdir.empty()) {
             try {
-                logdir = props->getValue("master.agent", "logdir");
+
+                logdir = largs["--logdir"];
+
+                if(logdir.empty())
+                   logdir = props->getValue("master.agent", "logdir");
+
             } catch (const std::invalid_argument& e) {
                 LOG_ERROR_MSG("No logging directory specified or missing section. " << e.what());
                 exit( EXIT_FAILURE );
@@ -137,9 +140,10 @@ int main(int argc, const char** argv)
 
         // Create log file and symlink
         setlogging(logdir, agent.get_hostname().uhn());
+
         // daemonize
         if (daemon(0, 1) < 0) {
-            std::cerr << "Error trying to daemonize bgagentd: " << strerror(errno) << std::endl;
+            std::cerr << "Error trying to daemonize dpm_agentd: " << strerror(errno) << std::endl;
             exit( EXIT_FAILURE );
         }
     }
@@ -181,8 +185,7 @@ int main(int argc, const char** argv)
     LOG_DEBUG_MSG("Core limits: " << rlimit_core.rlim_cur);
     LOG_DEBUG_MSG("File limits: " << rlimit_nofile.rlim_cur);
 
-    LOG_INFO_MSG(
-            "bgagentd [" << getpid() << "] Blue Gene/Q " <<
+    LOG_INFO_MSG("dpm_agentd [" << getpid() << "] " <<
 
             std::filesystem::path(argv[0]).stem().string() <<
             " " << "Fred" << " (revision " << "Barney" << ") " <<
