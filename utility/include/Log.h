@@ -271,7 +271,7 @@ std::string calcLoggername( const std::string& base, const std::string& file );
  */
 #define LOG_DECLARE_FILE( base ) \
   static log4cxx::LoggerPtr log_logger_(\
-      log4cxx::Logger::getLogger( "ibm" )\
+      log4cxx::Logger::getLogger( "dpm" )\
     )
 
 //#define LOG_DECLARE_FILE( base ) \
@@ -332,4 +332,3 @@ std::string calcLoggername( const std::string& base, const std::string& file );
 
 
 #endif
-

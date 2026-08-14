@@ -46,7 +46,7 @@ setlogging(
         logdir = "/var/log";
     }
 
-    const std::string logfile( logdir + "/" + hostname + "-bgagentd.log" );
+    const std::string logfile( logdir + "/" + hostname + "-dpm_agentd.log" );
 
     // Now open it. User and group readable. User writable.
     const int openfd = open(logfile.c_str(), O_WRONLY|O_APPEND|O_CREAT,
@@ -58,7 +58,7 @@ setlogging(
     }
 
     // One last notification before dumping output to file
-    std::cout << "bgagentd [" << getpid() << "] starting and logging to " << logfile << std::endl;
+    std::cout << "dpm_agentd [" << getpid() << "] starting and logging to " << logfile << std::endl;
 
     // And send stdout and stderr to it.
     dup2(openfd, STDOUT_FILENO);

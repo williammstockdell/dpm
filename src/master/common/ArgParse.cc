@@ -37,9 +37,9 @@ LOG_DECLARE_FILE( "master" );
 
 typedef std::map<std::string,log4cxx::LevelPtr> Loggers;
 Loggers loggers = {
-    { "ibm.master", log4cxx::Level::getFatal() },
-    { "ibm.utility", log4cxx::Level::getFatal() },
-    { "ibm.utility.cxxsockets", log4cxx::Level::getFatal()}};
+    { "dpm.master", log4cxx::Level::getFatal() },
+    { "dpm.utility", log4cxx::Level::getFatal() },
+    { "dpm.utility.cxxsockets", log4cxx::Level::getFatal()}};
 
 void
 Args::setupLoggerDefaults() const
@@ -66,7 +66,7 @@ Args::setupLogger(
         logger_name = verbarg.substr( 0, split_pos );
     } else {
         // Assume level for default logger
-        logger_name = "ibm.master";
+        logger_name = "dpm.master";
     }
 
     // Create a logger.

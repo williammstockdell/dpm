@@ -34,7 +34,7 @@
 #include <log4cxx/helpers/properties.h>
 
 #include <sstream>
-
+#include <iostream>
 
 using std::ostringstream;
 using std::string;
@@ -132,7 +132,6 @@ static void useDefaultConfiguration()
 }
 
 
-
 // External definitions
 
 
@@ -145,8 +144,11 @@ void initializeLogging(
         const std::string& subsection_name
     )
 {
+    std::cout << "I'm initializing logging! " << logging_initialized << std::endl;
+
     if ( logging_initialized ) {
         LOG_DEBUG_MSG( "Logging already initialized." );
+        std::cout << "log inited" << std::endl;
         return;
     }
 
@@ -154,8 +156,9 @@ void initializeLogging(
 
     // if BG_LOGGING_PROPERTIES_FILE is set then read logging properties from that file
     // rather than from the properties.
+    std::cout << "flag" << std::endl;
 
-    const char *filename_env(getenv( LoggingPropertiesFilenameEnvVarName.c_str() ));
+    const char* filename_env = getenv(LoggingPropertiesFilenameEnvVarName.c_str());
 
     if ( filename_env ) {
         string logging_properties_filename(filename_env);
@@ -171,6 +174,7 @@ void initializeLogging(
     // bg.properties file to log4cxx properties and then use that to configure log4cxx.
 
     try {
+
         log4cxx::helpers::Properties properties;
 
         mergeProperties( properties, bg_properties, BgPropertiesLoggingSectionName );
@@ -198,8 +202,16 @@ void initializeLogging(
             }
         }
 
-        log4cxx::PropertyConfigurator::configure( properties );
+        std::cout << "Configuring logging" << std::endl;
 
+        const auto names = properties.propertyNames();
+
+        for (const auto& name : names) {
+            std::cout << name << " = " << properties.get(name) << std::endl;
+        }
+
+        log4cxx::PropertyConfigurator::configure( properties );
+        std::cout << "logging configured" << std::endl;
         LOG_DEBUG_MSG( "Logging configured." );
 
         if ( invalid_subsection ) {
@@ -237,7 +249,7 @@ void initializeLogging(
 string calcLoggername( const string& base, const string& file )
 {
     ostringstream oss;
-    oss << "ibm." << base << "." << processFilename( file );
+    oss << "dpm." << base << "." << processFilename( file );
     return oss.str();
 }
 
