@@ -66,8 +66,8 @@ bin_exes := \
 sbin_exes := \
  master_start \
  master_stop \
- bgmaster_server_log_level \
- bgmaster_server_refresh_config \
+ dpm_server_log_level \
+ reload_config \
  fail_over
 
 exes := $(bin_exes) $(sbin_exes)
@@ -94,7 +94,7 @@ all: $(exes)
 alias_wait: alias_wait.o $(common_objs)
 	$(build_cmd)
 
-bgmaster_server_log_level: bgmaster_server_log_level.o $(common_objs)
+dpm_server_log_level: dpm_server_log_level.o $(common_objs)
 	$(build_cmd)
 
 binary_status: bin_status.o $(common_objs)
@@ -130,7 +130,7 @@ master_stop: master_stop.o $(common_objs)
 monitor_master: monitor_master.o $(common_objs)
 	$(build_cmd)
 
-bgmaster_server_refresh_config: reload_config.o $(common_objs)
+reload_config: reload_config.o $(common_objs)
 	$(build_cmd)
 
 install: $(installs) $(bg_links_targets)

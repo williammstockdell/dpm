@@ -54,7 +54,7 @@ int signal_fd;
 LockFile* lock_file = 0;
 
 extern "C" void
-bgmaster_server_sighandler(
+dpm_master_server_sighandler(
         int /* signum */,
         siginfo_t* siginfo,
         void*
@@ -81,7 +81,7 @@ setlogging(
 
     const CxxSockets::Host host(hostname);
 
-    const std::string logfile = logdir + "/" + host.uhn() + "-bgmaster_server.log";
+    const std::string logfile = logdir + "/" + host.uhn() + "-dpm_master_server.log";
     LOG_INFO_MSG( "Log file is " << logfile );
     // Now open it.  User and group readable.  User writable.
     const int openfd = open(logfile.c_str(), O_WRONLY|O_APPEND|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP);
@@ -147,7 +147,7 @@ main(int argc, const char** argv)
 
     std::string master_instances = "1";
     try {
-        master_instances = props->getValue("master.policy.instances", "bgmaster_server");
+        master_instances = props->getValue("master.policy.instances", "dpm_master_server");
     } catch (const std::invalid_argument& e) {
         // Don't care if it isn't there.
     }
@@ -159,10 +159,10 @@ main(int argc, const char** argv)
 
     if (!debug._value) {
         if (master_instances == "1") {
-            lock_file = new LockFile("bgmaster_server");
+            lock_file = new LockFile("dpm_master_server");
             if (lock_file->_fileExists ) {
                 LOG_FATAL_MSG(
-                        "Lock file for bgmaster_server found. End bgmaster_server process "
+                        "Lock file for dpm_master_server found. End dpm_master_server process "
                         << lock_file->_pid << " and remove " << lock_file->_fname
                         );
                 exit(EXIT_FAILURE);
@@ -179,7 +179,7 @@ main(int argc, const char** argv)
 
         // Run as background process
         if (daemon(1, 1) < 0) {
-            LOG_FATAL_MSG( "Error trying to daemonize bgmaster_server: " << strerror(errno) );
+            LOG_FATAL_MSG( "Error trying to daemonize dpm_master_server: " << strerror(errno) );
             exit(-1);
         }
     }
@@ -204,12 +204,12 @@ main(int argc, const char** argv)
     for (size_t i = 0; i < signals.size(); ++i)
     {
         struct sigaction action;
-        action.sa_sigaction = &bgmaster_server_sighandler;
+        action.sa_sigaction = &dpm_master_server_sighandler;
         action.sa_flags = SA_SIGINFO;
         int rc = sigaction(signals[i], &action, 0);
         if (rc < 0)
         {
-            LOG_ERROR_MSG("Error setting up bgmaster_server signal handler: " << strerror(errno));
+            LOG_ERROR_MSG("Error setting up dpm_master_server signal handler: " << strerror(errno));
             exit(1);
         }
     }

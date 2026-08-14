@@ -75,11 +75,11 @@ execute =
     # Comma separated list of users or groups allowed to execute blocks.
 
 [master.server]
-    # bgmaster_server configuration options
+    # dpm_master_server configuration options
 
 agent_listen_ports = [::1]:32041,127.0.0.1:32041
 client_listen_ports = [::1]:32042,127.0.0.1:32042
-    # The ports that the bgmaster_server will listen for connections on.
+    # The ports that the dpm_master_server will listen for connections on.
     # The format is a comma-separated list of host:port pairs.
     # host is an IP address or host name. IP addresses containing colons must be enclosed in [].
     # Link local ipv6 addresses must include the interface name appended after a % character.
@@ -89,12 +89,12 @@ client_listen_ports = [::1]:32042,127.0.0.1:32042
     # If the port is not specified the default port will be used (32041 and 32042).
 
 logdir = /tmp
-    # Default logging location for bgmaster_server and all managed binaries.
+    # Default logging location for dpm_master_server and all managed binaries.
 
 [master.client]
 
 host = [::1]:32042,127.0.0.1:32042
-    # The host and port to connect to. The bgmaster_server should be listening on the port.
+    # The host and port to connect to. The dpm_master_server should be listening on the port.
     # The format is a comma-separated list of host:port pairs.
     # host is an IP address or host name. IP addresses containing colons must be enclosed in [].
     # port is a port number or service name.
@@ -108,7 +108,7 @@ host = [::1]:32042,127.0.0.1:32042
 
 logdir = /tmp
 host = 127.0.0.1:32041
-    # The host and port to connect to. The bgmaster_server server should be listening on the port.
+    # The host and port to connect to. The dpm_master_server server should be listening on the port.
     # The format is a comma-separated list of host:port pairs.
     # host is an IP address or host name. IP addresses containing colons must be enclosed in [].
     # port is a port number or service name.
@@ -122,7 +122,7 @@ agentuid = dpmadmin
 [master.binmap]
     # Maps an alias to a binary path.
 
-bgmaster_server = /bgsys/drivers/ppcfloor/hlcs/sbin/dpm_server
+dpm_master_server = /bgsys/drivers/ppcfloor/hlcs/sbin/dpm_server
 
 [master.logdirs]
     # Maps aliases to logging directories.  By default, all binaries will log to logdir
@@ -130,16 +130,7 @@ bgmaster_server = /bgsys/drivers/ppcfloor/hlcs/sbin/dpm_server
 
 [master.binargs]
     # List of arguments for each alias specified in the [master.binmap] section.
-bgmaster_server =
-bgws_server =
-realtime_server =
-runjob_server =
-runjob_mux =
-mc_server =
-Subnet1 =
-mmcs_server =
-teal_server = --realtime --restart=now --logfile /dev/stdout
-teal_bg = --logfile /dev/stdout
+dpm_master_server =
 
 [master.user]
     # Maps an alias to a user id under which it should run.
@@ -151,21 +142,21 @@ foo_server = foo_id
 [master.policy.host_list]
     # Comma separated list of hosts on which the binary associated with the alias may start.
 
-bgmaster_server = 127.0.0.1
+dpm_master_server = 127.0.0.1
 
 
 [master.policy.instances]
     # Policies for the number of instances of each alias are allowed.
     # Valid entries are 1 through 65535, the default if not specified is 1.
 
-bgmaster_server = 1
+dpm_master_server = 1
 
 
 [master.policy.failure]
     # Formatted failover policy.
     #
     # Terminology:
-    # killed:        binary received a kill signal (not a stop message through bgmaster)
+    # killed:        binary received a kill signal (not a stop message through dpm_master)
     # binary:        binary failed
     # agent:         the monitoring agent failed
     # failover:      run the binary that failed on the specified backup host
@@ -200,10 +191,10 @@ server_kill_restart = killed,restart,3
 foo_server = agent_restart,server_restart
 
 [master.startup]
-    # startup options for bgmaster_server
+    # startup options for dpm_master_server
 
 start_servers=true
-    # Option to start selected servers when bgmaster_server starts. Valid values
+    # Option to start selected servers when dpm_master_server starts. Valid values
     # are true or false. If not specified, the default value is false.
 
 
@@ -216,7 +207,7 @@ log4j.additivity.dpm = false
 
 log4j.logger.dpm.utility                = INFO   # Utility functions
 log4j.logger.dpm.utility.cxxsockets     = WARN   # CxxSockets library
-log4j.logger.dpm.master                 = INFO   # BGmaster
+log4j.logger.dpm.master                 = INFO   # Dpm_Master
 
 
 [logging.default]

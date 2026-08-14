@@ -542,16 +542,20 @@ MasterController::buildArgs(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
+
     // Args are optional. Don't complain if we find nothing.
     for(const bgq::utility::Properties::Pair& keyval : args) {
         bool found = false;
+
         for(const AliasPtr& al : _aliases) {
+
             if (keyval.first == al->get_name()) {
                 found = true;
                 LOG_DEBUG_MSG("Adding args " << keyval.second << " for " << keyval.first);
                 al->set_args(keyval.second);
             }
         }
+
         if (!found) {
             // Didn't find an alias, Assume the [master.binmap] entry has been commented out.
             // Log a warning message in case something else is going on.
@@ -750,7 +754,7 @@ MasterController::buildPolicies(
         msg << "Properties file error. " << e.what();
         handleErrorMessage(msg.str());
 
-        // Only exit if we are starting bgmaster_server , not on a refresh.
+        // Only exit if we are starting dpm_master_server , not on a refresh.
         if (_start_once) {
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         } else {
@@ -884,7 +888,7 @@ MasterController::startServers(
         const AliasPtr al = servers_to_start.front();
         // Now take it out of the list, we'll put it in the back later if we can't start it.
         servers_to_start.erase(std::remove(servers_to_start.begin(), servers_to_start.end(), al), servers_to_start.end());
-        if (al->get_name() == "bgmaster_server" || al->get_name() == "bgmaster") {
+        if (al->get_name() == "dpm_master_server" || al->get_name() == "dpm_master") {
             continue; // Don't start ourselves
         }
 
@@ -949,12 +953,12 @@ MasterController::startup(
 {
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream version;
-    version << "Blue Gene/Q";
+    version << "DPM";
     version << " " << "fred";
     version << "(revision " << "barney" << ")";
     version << " " << __DATE__ << " " << __TIME__;
     _version_string = version.str();
-    LOG_INFO_MSG("bgmaster_server [" << getpid() << "] " << _version_string << " starting...");;
+    LOG_INFO_MSG("dpm_master_server [" << getpid() << "] " << _version_string << " starting...");;
     LOG_INFO_MSG("Using " << _props->getFilename() << " for properties.");
     _master_db = false;
     std::string db_val = "true";
@@ -964,7 +968,7 @@ MasterController::startup(
         _master_logdir = _props->getValue("master.server", "logdir");
         if (access(_master_logdir.c_str(), R_OK|W_OK) < 0) {
             std::ostringstream errmsg;
-            errmsg << "Log directory " << _master_logdir << " is not accessible to bgmaster_server.";
+            errmsg << "Log directory " << _master_logdir << " is not accessible to dpm_master_server.";
             handleErrorMessage(errmsg.str());
             throw exceptions::ConfigError(exceptions::FATAL, errmsg.str());
         }
@@ -975,7 +979,7 @@ MasterController::startup(
     // Read policy information from the config file
     std::ostringstream failmsg;
     buildPolicies(failmsg);
-
+    LOG_DEBUG_MSG("Policies complete");
     if (!failmsg.str().empty()) {
         std::ostringstream msg;
         msg << "Invalid configuration: " << failmsg.str();
@@ -991,7 +995,7 @@ MasterController::startup(
     details["PID"] = std::to_string(getpid());
 
     std::ostringstream startmsg;
-    startmsg << "bgmaster_server startup completed";
+    startmsg << "dpm_master_server startup completed";
     addHistoryMessage(startmsg.str());
 
     _start_barrier.arrive_and_wait();
@@ -1028,7 +1032,7 @@ MasterController::startup(
             if ( siginfo.si_signo == SIGUSR1 || siginfo.si_signo == SIGPIPE || siginfo.si_signo == SIGHUP) {
                 LOG_DEBUG_MSG( "Received signal " << siginfo.si_signo << " from " << siginfo.si_pid );
             } else {
-                LOG_FATAL_MSG("bgmaster_server ending due to signal " << siginfo.si_signo << " from " << siginfo.si_pid << ".");
+                LOG_FATAL_MSG("dpm_master_server ending due to signal " << siginfo.si_signo << " from " << siginfo.si_pid << ".");
                 // Send RAS
                 std::map<std::string, std::string> details;
                 details["PID"] = std::to_string(getpid());
