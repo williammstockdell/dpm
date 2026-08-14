@@ -56,7 +56,7 @@ cn = Blue Gene command
 [security.blocks]
     # All of the values in this section can be refreshed by running refresh_config from bg_console.
 
-all = bgqadmin
+all = dpmadmin
     # Comma separated list of users or groups allowed to execute all actions on blocks.
 
 create =
@@ -88,10 +88,8 @@ client_listen_ports = [::1]:32042,127.0.0.1:32042
     # If the host is not specified the server will listen on any interface.
     # If the port is not specified the default port will be used (32041 and 32042).
 
-logdir = /bgsys/logs/BGQ
+logdir = /tmp
     # Default logging location for bgmaster_server and all managed binaries.
-logdirEdramChargePump=/bgsys/logs/BGQ/diags/bringup
-    # Default logging location for any eDRAMChargePump logs.
 
 [master.client]
 
@@ -106,9 +104,9 @@ host = [::1]:32042,127.0.0.1:32042
 
 
 [master.agent]
-    # bgagentd configuration options
+    # dpm_agentd configuration options
 
-logdir = /bgsys/logs/BGQ
+logdir = /tmp
 host = 127.0.0.1:32041
     # The host and port to connect to. The bgmaster_server server should be listening on the port.
     # The format is a comma-separated list of host:port pairs.
@@ -118,29 +116,17 @@ host = 127.0.0.1:32041
     # If the host is not specified the client will connect to localhost.
     # If the port is not specified the default port will be used (32041).
 
-agentuid = bgqadmin
+agentuid = dpmadmin
 
 
 [master.binmap]
     # Maps an alias to a binary path.
 
-bgmaster_server = /bgsys/drivers/ppcfloor/hlcs/sbin/bgmaster_server
-bgws_server = /bgsys/drivers/ppcfloor/bgws/sbin/bgws_server
-realtime_server = /bgsys/drivers/ppcfloor/hlcs/sbin/bg_realtime_server
-runjob_server = /bgsys/drivers/ppcfloor/hlcs/sbin/runjob_server
-runjob_mux = /bgsys/drivers/ppcfloor/hlcs/sbin/runjob_mux
-mc_server = /bgsys/drivers/ppcfloor/control/sbin/mc_server_64
-Subnet1 = /bgsys/drivers/ppcfloor/control/sbin/SubnetMc_64
-mmcs_server = /bgsys/drivers/ppcfloor/hlcs/sbin/mmcs_server
-teal_server = /opt/teal/ibm/teal/teal.py
-teal_bg = /opt/teal/ibm/bgq/bgq.py
+bgmaster_server = /bgsys/drivers/ppcfloor/hlcs/sbin/dpm_server
 
 [master.logdirs]
     # Maps aliases to logging directories.  By default, all binaries will log to logdir
     # in the [master.server] section.
-#runjob_server = /bgsys/logs/BGQ/
-teal_bg = /bgsys/logs/BGQ/teal/
-teal_server = /bgsys/logs/BGQ/teal/
 
 [master.binargs]
     # List of arguments for each alias specified in the [master.binmap] section.
@@ -159,25 +145,13 @@ teal_bg = --logfile /dev/stdout
     # Maps an alias to a user id under which it should run.
     # If an alias is not specified, it runs as the agentuid value in [master.agent].
 
-bgws_server = bgws
-realtime_server = bgqsysdb
+foo_server = foo_id
 
 
 [master.policy.host_list]
     # Comma separated list of hosts on which the binary associated with the alias may start.
 
 bgmaster_server = 127.0.0.1
-bgws_server = 127.0.0.1
-realtime_server = 127.0.0.1
-runjob_server = 127.0.0.1
-runjob_mux = 127.0.0.1
-mc_server = 127.0.0.1
-mmcs_server = 127.0.0.1
-teal_server = 127.0.0.1
-teal_bg = 127.0.0.1
-
-    # Host on which the binary associated with the SubnetMc alias may start.
-Subnet1 = 127.0.0.1
 
 
 [master.policy.instances]
@@ -185,15 +159,6 @@ Subnet1 = 127.0.0.1
     # Valid entries are 1 through 65535, the default if not specified is 1.
 
 bgmaster_server = 1
-bgws_server = 1
-realtime_server = 1
-runjob_server = 1
-runjob_mux = 1
-mc_server = 1
-Subnet1 = 1
-mmcs_server = 1
-teal_server = 1
-teal_bg = 1
 
 
 [master.policy.failure]
@@ -232,15 +197,7 @@ server_kill_restart = killed,restart,3
 [master.policy.map]
     # Map comma separated list of named policies to an alias
     # alias=alias_restart,alias_failover
-Subnet1 = agent_restart,server_restart
-mc_server = agent_restart,server_restart
-realtime_server = agent_restart,server_restart
-mmcs_server = agent_restart,server_restart
-bgws_server = agent_restart,server_restart
-runjob_server = agent_restart,server_restart
-runjob_mux = agent_restart,server_restart
-teal_server = agent_restart,server_restart
-teal_bg = agent_restart,server_restart
+foo_server = agent_restart,server_restart
 
 [master.startup]
     # startup options for bgmaster_server
@@ -259,23 +216,7 @@ log4j.additivity.dpm = false
 
 log4j.logger.dpm.utility                = INFO   # Utility functions
 log4j.logger.dpm.utility.cxxsockets     = WARN   # CxxSockets library
-log4j.logger.dpm.bgsched                = INFO   # Scheduler APIs
-log4j.logger.dpm.security               = INFO   # Security
-log4j.logger.dpm.database               = INFO   # Database layer
-log4j.logger.dpm.realtime               = INFO   # Real-time server
-log4j.logger.dpm.runjob                 = WARN   # job submission
-log4j.logger.dpm.runjob.mux             = INFO   # job submission multiplexer
-log4j.logger.dpm.runjob.server          = INFO   # job submission server
-log4j.logger.dpm.mc                     = INFO   # MC (machine controller)
-log4j.logger.dpm.boot                   = INFO   # MC boot lib
-log4j.logger.dpm.bgqconfig              = INFO   # BGQ config
-log4j.logger.dpm.icon                   = INFO   # iCon
-log4j.logger.dpm.bgws                   = INFO   # Web Services
-log4j.logger.dpm.mmcs                   = INFO   # MMCS server
-log4j.logger.dpm.ras                    = WARN   # RAS
 log4j.logger.dpm.master                 = INFO   # BGmaster
-log4j.logger.dpm.cios                   = WARN   # Common I/O Services
-log4j.logger.dpm.teal                   = INFO   # TEAL
 
 
 [logging.default]
@@ -284,63 +225,8 @@ log4j.appender.default = org.apache.log4j.ConsoleAppender
 log4j.appender.default.layout = org.apache.log4j.PatternLayout
 log4j.appender.default.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss.SSS} (%-5p) [%t] %c: %m%n
 
-
-[logging.mc]
-
-log4j.appender.default = org.apache.log4j.ConsoleAppender
-log4j.appender.default.layout = org.apache.log4j.PatternLayout
-log4j.appender.default.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss.SSS} (%-5p) [%X{subnet}] %c{1} - %m%n
-
-
-[logging.mmcs]
-
-log4j.appender.default = org.apache.log4j.ConsoleAppender
-log4j.appender.default.layout = org.apache.log4j.PatternLayout
-log4j.appender.default.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} (%-5p) [%t] %X{blockId}%X{user}%c: %m%n
-
-
-[logging.runjob]
-
-log4j.appender.default = org.apache.log4j.ConsoleAppender
-log4j.appender.default.layout = org.apache.log4j.PatternLayout
-log4j.appender.default.layout.ConversionPattern = %d{yyyy-MM-dd HH:mm:ss.SSS} (%-5p) [%t] %X{block}%X{job}%X{location}%X{user}%c: %m%n
-
-
 [logging.master]
 
 log4j.appender.default=org.apache.log4j.ConsoleAppender
 log4j.appender.default.layout=org.apache.log4j.PatternLayout
 log4j.appender.default.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} (%-5p) [%t] %X{ID}%X{ALIAS}%c: %m%n
-
-[logging.cios]
-
-log4j.appender.default=org.apache.log4j.ConsoleAppender
-log4j.appender.default.layout=org.apache.log4j.PatternLayout
-log4j.appender.default.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.SSS} (%-5p) [%t] %X{service}%X{pid}%c: %m%n
-
-[baremetal]
-
-TxOpticsFirmwareLevel = B31
-TxOpticsFirmwareFilename = /bgsys/drivers/ppcfloor/baremetal/firmware/optic/deuce328Tx-0B31-1792.a90
-RxOpticsFirmwareLevel = B32
-RxOpticsFirmwareFilename = /bgsys/drivers/ppcfloor/baremetal/firmware/optic/deuce328Rx-0B32-9651.a90
-DcaFirmwareLevel = 9E
-DcaBootFilename = /bgsys/drivers/ppcfloor/baremetal/firmware/dca/bgpf_bootcode_20110815.bin
-DcaAppFilename = /bgsys/drivers/ppcfloor/baremetal/firmware/dca/bgpf_app_20110815.bin
-UpdatePciFirmware = true
-
-CloseAllAlertsOnServiceBulkPowerModule = false
-CloseAllAlertsOnServiceClockCard = false
-CloseAllAlertsOnServiceIoDrawer = false
-CloseAllAlertsOnServiceMidplane = false
-CloseAllAlertsOnServiceNodeBoard = false
-CloseAllAlertsOnServiceNodeDCA = false
-CloseAllAlertsOnServiceRack = false
-    # The CloseAllAlertsOnServiceXXX options indicate how alerts are to be closed following a successful
-    # completion of a Service Action performed by the ServiceXXX command.
-    # Set to false to close alerts on only those replaced devices on or in the serviced hardware.
-    # Set to true to close alerts on all devices on or in the serviced hardware even if they were not replaced.
-    # For example, if ServiceNodeBoard was used to replace a compute card and if CloseAllAlertsOnServiceNodeBoard
-    # was set to false, only those alerts on the replaced compute card are closed. If it was set to true,
-    # alerts on the node board and all the devices on the board (e.g., compute card, link chips, optical module,
-    # node DCA) are closed even if they were not replaced.
