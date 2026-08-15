@@ -53,6 +53,9 @@ all:  $(TARGETS_ALL)
 install:
 	$(MAKE) --directory etc install
 	$(MAKE) --directory src install
+	install -d $(SBINDIR)
+	install -m 755 src/generate_security_certificates.sh \
+	    $(SBINDIR)/dpm-generate-certificates
 
 clean:			$(TARGETS_CLEAN) docs.clean
 distclean:	clean   $(TARGETS_DISTCLEAN)

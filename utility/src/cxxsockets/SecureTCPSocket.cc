@@ -65,8 +65,7 @@ getErrStr(
     }
 }
 
-std::string
-printSSLError(
+std::string printSSLError(
         SSL* ssl,
         const int rc
         )
@@ -171,7 +170,7 @@ extract_peer_cn(
                                      X509_free
                                      );
 
- if ( ! cert ) {
+    if ( ! cert ) {
         int error = 0;
         const std::string estr = printSSLError(ssl, error);
         throw HardError(error, "Failed to get peer certificate " + estr);
@@ -211,6 +210,7 @@ SecureTCPSocket::ServerHandshake(
 
     // Get the client's CN so can compare it vs the expected CNs.
     const std::string client_cn( extract_peer_cn(_ssl) );
+
     LOG_TRACE_MSG( "Client's CN='" << client_cn << "'" );
 
     if (client_cn == administrative_cn) {
@@ -287,11 +287,8 @@ SecureTCPSocket::ServerHandshake(
     LOG_TRACE_MSG("Received serialized user ID: " << _uid_ptr->getUser() );
 }
 
-void
-SecureTCPSocket::ClientHandshake(
-        const bgq::utility::ClientPortConfiguration& port_config
-        )
-{
+void SecureTCPSocket::ClientHandshake(const bgq::utility::ClientPortConfiguration& port_config) {
+
     // Get the server's CN so can compare it vs the expected administrative certificate CN.
     const std::string server_cn( extract_peer_cn(_ssl) );
     LOG_TRACE_MSG( "Server's CN='" << server_cn << "'" );
@@ -326,8 +323,7 @@ SecureTCPSocket::ClientHandshake(
     // FIXME check return code?
 }
 
-void
-SecureTCPSocket::SetupCredentials(
+void SecureTCPSocket::SetupCredentials(
         const bgq::utility::SslConfiguration& sslconfig
         )
 {
@@ -393,11 +389,19 @@ SecureTCPSocket::SetupContext(
     }
 
     // Set up context
-    _ctx = SSL_CTX_new(TLSv1_method());
+    _ctx = SSL_CTX_new(TLS_method());
     if (!_ctx) {
         std::ostringstream errstr;
         getErrStr(errstr);
         LOG_ERROR_MSG("Creating SSL context failed: " << errstr.str());
+        // Should this code really just continue?
+    }
+
+    if (SSL_CTX_set_min_proto_version(_ctx, TLS1_2_VERSION) != 1) {
+
+        std::ostringstream errstr;
+        getErrStr(errstr);
+        LOG_ERROR_MSG("SSL Minimum protocol version failure: " << errstr.str());
         // Should this code really just continue?
     }
 

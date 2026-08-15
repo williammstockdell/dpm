@@ -558,6 +558,8 @@ ClientController::doTermRequest(
     if (termreq._master_only) {
         end_binaries = false;
     }
+
+    LOG_ERROR_MSG("terminate requested");
     MasterController::set_end_requested();
     MasterController::stopThreads(end_binaries, termreq._signal);  // Not ending agents
     MasterController::set_master_terminating();

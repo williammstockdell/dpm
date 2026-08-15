@@ -979,16 +979,18 @@ MasterController::startup(
     // Read policy information from the config file
     std::ostringstream failmsg;
     buildPolicies(failmsg);
-    LOG_DEBUG_MSG("Policies complete");
+    LOG_INFO_MSG("Policies complete");
     if (!failmsg.str().empty()) {
         std::ostringstream msg;
         msg << "Invalid configuration: " << failmsg.str();
         handleErrorMessage(msg.str());
         throw exceptions::ConfigError(exceptions::FATAL, failmsg.str());
     }
-
+    LOG_INFO_MSG("Config read");
     _agent_registrar.run(true);
+    LOG_INFO_MSG("Agent Registrar run");
     _client_registrar.run(false);
+    LOG_INFO_MSG("Client Registrar run");
 
     // Update database with ras message
     std::map<std::string, std::string> details;
@@ -1001,6 +1003,7 @@ MasterController::startup(
     _start_barrier.arrive_and_wait();
 
     while ( !_master_terminating ) {
+
         struct pollfd pollfd;
         pollfd.fd = signal_fd;
         pollfd.events = POLLIN;

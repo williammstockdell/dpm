@@ -174,9 +174,10 @@ Args::Args(
 
     const std::string default_logger("dpm.master");
 
+    setupLoggerDefaults();
     const bgq::utility::LoggingProgramOptions logging_program_options( default_logger );
     bgq::utility::initializeLogging(*_props, logging_program_options, "master");
-    setupLoggerDefaults();
+
 
     // Needs to get master location from properties and command line
     bgq::utility::ClientPortConfiguration port_config(

@@ -225,7 +225,7 @@ main(int argc, const char** argv)
         details["ERROR"] = e.what();
 
     }
-
+    std::cout << "BAILING" << std::endl;
     // Stop threads
     MasterController::stopThreads(true, SIGTERM);
 

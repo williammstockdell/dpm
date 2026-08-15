@@ -304,6 +304,7 @@ Registrar::listenForNew(
             if (accepted) {
                 LOG_DEBUG_MSG("Accepted a new connection");
                 std::thread procthread(&Registrar::processNew, this, sock);
+                procthread.detach();
             }
         }
     }

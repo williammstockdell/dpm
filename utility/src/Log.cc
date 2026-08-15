@@ -149,6 +149,75 @@ void initializeLogging(
     if ( logging_initialized ) {
         LOG_DEBUG_MSG( "Logging already initialized." );
         std::cout << "log inited" << std::endl;
+
+        const log4cxx::LoggerPtr test_logger =
+            log4cxx::Logger::getLogger(
+                                       "dpm.utility.cxxsockets.SecureTCPSocket"
+                                       );
+
+        std::cout << "logger name: "
+                  << test_logger->getName()
+                  << std::endl;
+
+        std::cout << "effective level: "
+                  << test_logger->getEffectiveLevel()->toString()
+                  << std::endl;
+
+        std::cout << "additivity: "
+                  << test_logger->getAdditivity()
+                  << std::endl;
+
+        std::cout << "direct appenders: "
+                  << test_logger->getAllAppenders().size()
+                  << std::endl;
+
+        const log4cxx::LoggerPtr dpm_logger =
+            log4cxx::Logger::getLogger("dpm");
+
+        std::cout << "dpm level: "
+                  << dpm_logger->getEffectiveLevel()->toString()
+                  << std::endl;
+
+        std::cout << "dpm appenders: "
+                  << dpm_logger->getAllAppenders().size()
+                  << std::endl;
+
+        std::cout << "dpm additivity: "
+                  << dpm_logger->getAdditivity()
+                  << std::endl;
+        const char* logger_names[] = {
+            "dpm",
+            "dpm.utility",
+            "dpm.utility.cxxsockets",
+            "dpm.utility.cxxsockets.SecureTCPSocket"
+        };
+
+        for (const char* name : logger_names) {
+            const log4cxx::LoggerPtr logger =
+                log4cxx::Logger::getLogger(name);
+
+            std::cout << name << '\n';
+
+            if (logger->getLevel()) {
+                std::cout << "  assigned: "
+                          << logger->getLevel()->toString()
+                          << '\n';
+            } else {
+                std::cout << "  assigned: <null>\n";
+            }
+
+            std::cout << "  effective: "
+                      << logger->getEffectiveLevel()->toString()
+                      << '\n';
+
+            std::cout << "  appenders: "
+                      << logger->getAllAppenders().size()
+                      << '\n';
+
+            std::cout << "  additivity: "
+                      << logger->getAdditivity()
+                      << std::endl;
+        }
         return;
     }
 
