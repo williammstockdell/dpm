@@ -1169,8 +1169,7 @@ ClientController::processRequest()
     }
 }
 
-void
-ClientController::waitMessages()
+void ClientController::waitMessages()
 {
     LOGGING_DECLARE_ID_MDC(_client_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
@@ -1192,6 +1191,7 @@ void
 ClientController::startPoller()
 {
     _client_socket_poller = std::thread(&ClientController::waitMessages, this);
+    _client_socket_poller.detach();
 }
 
 void

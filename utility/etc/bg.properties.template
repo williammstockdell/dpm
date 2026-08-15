@@ -27,30 +27,30 @@ keystore = %%CERTIFICATE_DIR%%/ca/cert.jks
     # Administrative certificate.
 
 certificate = %%CERTIFICATE_DIR%%/admin/cert.pem
-    # File containing the Blue Gene administrative certificate.
+    # File containing the DPM administrative certificate.
 
 key_file = %%CERTIFICATE_DIR%%/admin/key.pem
-    # File containing the Blue Gene administrative private key.
+    # File containing the DPM administrative private key.
 
-cn = Blue Gene administrative
+cn = DPM administrative
     # The certificate provided by the server or administrator must have this CN
     # (common name).
 
 keystore = %%CERTIFICATE_DIR%%/admin/key.jks
-    # File containing the Blue Gene administrative certificate in Java Keystore format (jks).
+    # File containing the DPM administrative certificate in Java Keystore format (jks).
 
 
 [security.command]
     # Command certificate.
 
 certificate = %%CERTIFICATE_DIR%%/command/cert.pem
-    # File containing the Blue Gene command certificate.
+    # File containing the DPM command certificate.
 
 key_file = %%CERTIFICATE_DIR%%/command/key.pem
-    # File containing the Blue Gene command private key.
+    # File containing the DPM command private key.
 
-cn = Blue Gene command
-    # The certificate provided by the Blue Gene command must have this CN.
+cn = DPM command
+    # The certificate provided by the DPM command must have this CN.
 
 
 [security.blocks]
