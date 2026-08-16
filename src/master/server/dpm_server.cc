@@ -190,6 +190,7 @@ main(int argc, const char** argv)
 
     // Create pipe for signal handler
     int signal_descriptors[2];
+
 #ifdef O_CLOEXEC
     if ( pipe2(signal_descriptors, O_CLOEXEC) != 0 ) {
 #else
@@ -198,6 +199,7 @@ main(int argc, const char** argv)
         LOG_ERROR_MSG( "Could not create pipe for signal handler." );
         exit( EXIT_FAILURE );
     }
+
     signal_fd = signal_descriptors[1];
 
     // Signal handlers
@@ -225,6 +227,7 @@ main(int argc, const char** argv)
         details["ERROR"] = e.what();
 
     }
+
     std::cout << "BAILING" << std::endl;
     // Stop threads
     MasterController::stopThreads(true, SIGTERM);

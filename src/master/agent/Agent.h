@@ -50,9 +50,7 @@ private:
             int servname
             ) const;
 
-    void doEndAgentRequest(
-            const int signal
-            );
+    void doEndAgentRequest(const int signal);
 
     void sendBuffered();
 
@@ -75,9 +73,7 @@ public:
     void set_users(const std::string& users) { _user_list = users; }
 
     //! \brief set up communication with BGMaster.
-    int join(
-            const bgq::utility::PortConfiguration::Pair& port   //!< [in]
-            );
+    int join(const bgq::utility::PortConfiguration::Pair& port);
 
     //! \brief Figure out what to do with a new request from the master.
     void processRequest();

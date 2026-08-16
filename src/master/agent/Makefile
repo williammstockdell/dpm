@@ -58,6 +58,7 @@ LDFLAGS  += -lboost_program_options
 
 parts := \
  dpm_agentd \
+ MasterConnection \
  Agent
 
 objs := ${parts:%=%.o}

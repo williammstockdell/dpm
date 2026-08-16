@@ -351,6 +351,7 @@ ClientController::doStopRequest(
         // We can have a list of aliases or specific binary ids to stop. Do both.
         if (stopreq._binary_ids.size() == 0 && stopreq._aliases.size() == 0) {
             reply_to_client._rt = "stopped all binaries";
+
             // Stop them all if nothing is passed
             ++binsfound;  // Assume at least one is running.
             std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
