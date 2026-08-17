@@ -73,13 +73,9 @@ public:
     /*!
      * Wait on the responder socket for an incoming request. Return when it arrives.
      */
-    void getName(
-            std::string& requestName
-            );
+    void getName(std::string& requestName);
 
-    void getObject(
-            XML::Serializable* requestObject
-            );
+    void getObject(XML::Serializable* requestObject);
 
     /*!
      * Send a reply on the responder socket

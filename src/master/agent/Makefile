@@ -53,8 +53,6 @@ LDFLAGS += \
  -lssl \
  -lcrypto
 
-LDFLAGS  += -lboost_program_options
-
 
 parts := \
  dpm_agentd \

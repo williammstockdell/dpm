@@ -21,22 +21,23 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <thread>
+#include <poll.h>
+#include <csignal>
+
 #include "MasterConnection.h"
 #include "Agent.h"
 
 LOG_DECLARE_FILE( "master" );
 
-void MasterConnection::run(const int signal_read_fd)
-{
-    static constexpr unsigned MaxAttempts = 30;
+void MasterConnection::makeConnection() {
 
-    // Main thread loop
+    while(!_ending) {
 
-    while (!_ending) {
-
-        // FIXME: Call for signal polling goes here.
+        static constexpr unsigned MaxAttempts = 30;
 
         bool connected = false;
+
 
         // Loop through all ports to attempt a connection.
         for (const bgq::utility::PortConfiguration::Pair& port : _ports) {
@@ -77,26 +78,94 @@ void MasterConnection::run(const int signal_read_fd)
         }
 
         // Exhausted all configured ports; start over.
-        if (!connected) {
+        if (connected) return;
+    }
+}
 
-            continue;
+bool MasterConnection::pollConnection(const int signal_read_fd) {
+
+    const int master_fd = _agent->getMasterFD();
+
+    struct pollfd fds[2] {};
+
+    fds[0].fd = signal_read_fd;
+    fds[0].events = POLLIN;
+
+    fds[1].fd = master_fd;
+    fds[1].events = POLLIN;
+
+    while (!_ending) {
+        const int rc = ::poll(fds, 2, -1);
+
+        if (rc < 0) {
+
+            if (errno == EINTR) {
+                continue;
+            }
+
+            throw std::runtime_error(std::string("poll failed: ") + strerror(errno));
         }
 
-        // This point, we're connected.  Loop until we get an end flag.
+        if (fds[0].revents & POLLIN) {
+            siginfo_t siginfo {};
 
-        while (!_ending) {
+            const ssize_t bytes =
+                ::read(signal_read_fd, &siginfo, sizeof(siginfo));
 
-            // This is a blocking wait on new requests.
-            _agent->processRequest();
+            if (bytes == static_cast<ssize_t>(sizeof(siginfo))) {
+                _ending = true;
+                _agent->doEndAgentRequest(siginfo.si_signo);
+                return false;
+            }
         }
 
-        if (!_ending) {
-            LOG_INFO_MSG("Connection to dpm_server ended. Waiting 5 seconds before attempting to reconnect.");
+        if (fds[1].revents & (POLLERR | POLLHUP | POLLNVAL)) {
+            return false;
+        }
+
+        if (fds[1].revents & POLLIN) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+void MasterConnection::run(const int signal_read_fd)
+{
+
+    // Main thread loop
+    makeConnection();
+
+    // This point, we're connected.  Loop until we get an end flag.
+    while (!_ending) {
+
+        // Wait for either a signal or activity from dpm_server.
+        if (!pollConnection(signal_read_fd)) {
+            // Signal handling may have set _ending.
+            if (_ending) {
+                break;
+            }
+        }
+
+        // Consume one request. processRequest() returns true
+        // when the connection has failed and must be re-established.
+        // This is a blocking wait on new requests.
+        if (_agent->processRequest()) {
+
+            LOG_INFO_MSG(
+                         "Connection to dpm_server ended. "
+                         "Waiting 5 seconds before attempting to reconnect."
+                         );
 
             std::this_thread::sleep_for(std::chrono::seconds(5));
+
+            makeConnection();
         }
     }
 }
+
 
 
 MasterConnection::MasterConnection(const bgq::utility::PortConfiguration::Pairs& ports, Agent* const agent) :

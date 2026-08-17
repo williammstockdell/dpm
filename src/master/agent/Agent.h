@@ -50,15 +50,15 @@ private:
             int servname
             ) const;
 
-    void doEndAgentRequest(const int signal);
-
     void sendBuffered();
 
+    // @returns true if a reconnect is required
     void processStartRequest(const BGMasterAgentProtocolSpec::StartRequest& startreq);
 
     void doStopRequest(const BGMasterAgentProtocolSpec::StopRequest& stopreq);
 
 public:
+
     //! \brief Constructor.
     Agent(
             const bgq::utility::Properties::ConstPtr& props
@@ -77,10 +77,18 @@ public:
     int join(const bgq::utility::PortConfiguration::Pair& port);
 
     //! \brief Figure out what to do with a new request from the master.
-    void processRequest();
+    bool processRequest();
 
     //! \brief Get the host name
     const CxxSockets::Host& get_hostname() const { return _hostname; }
+
+    void doEndAgentRequest(const int signal);
+
+    // FIXME: This is an ugly bit of abstraction leakage, but I don't
+    // have a better solution yet.  It's here so that MasterConnection
+    // can poll both the socket file descriptor and the signal.  Some
+    // refactoring is required to get rid of the vestiges of an asio hack.
+    int getMasterFD() const;
 
 private:
 

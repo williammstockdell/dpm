@@ -57,12 +57,9 @@ You can specify --verbose multiple times to set the levels for different loggers
 
 \htmlinclude verbose.html
 
-If the level is not valid then std::invalid_argument will be thrown when boost::program_options::notify() is called.
-
 To use this class
 -# Create an instance, providing the default logger name: <pre>bgq::utility::LoggingProgramOptions logging_program_options( "ibm.realtime" );</pre>
 -# Call addTo() with your options_description
--# When boost::program_options::notify() is called, the arguments are set in the instance.
 -# Pass the instance to initializeLogging().
 
 
@@ -72,21 +69,11 @@ Code example: (for a full example, see bgq/hlcs/src/realtime/bg_realtime_server.
 
 int main( int argc, char* argv[] )
 {
-    namespace po = boost::program_options;
-
-    po::options_description options( "Options" );
-
-    // Add other options.
 
     bgq::utility::LoggingProgramOptions logging_program_options( "ibm.realtime" );
 
     logging_program_options.addTo( options );
 
-    po::variables_map vm;
-
-    po::store(po::parse_command_line( argc, argv, options ), vm); // don't forget to catch exceptions.
-
-    po::notify( vm );
 
     bgq::utility::initializeLogging(
             *properties_ptr,
@@ -117,7 +104,6 @@ public:
 
     /*! \brief Set the parameters.
      *
-     * This is typically called automatically when boost::program_options::notify is called.
      *
      * \param args parameters to --verbose,
      * as described in the detailed description of LoggingProgramOptions.

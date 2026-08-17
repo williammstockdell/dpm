@@ -39,6 +39,16 @@
 
 namespace CxxSockets {
 
+
+enum class PollResult {
+
+    Ready,
+    Timeout,
+    Error,
+    Hangup
+};
+
+
 //! \brief Socket on top of TCP.
 //!
 //! Address family is determined by sockaddr or param depending upon ctor used.
@@ -175,8 +185,11 @@ protected:
     }
 
 public:
+
     //! \brief Default ctor.  This one does NOT acquire an FD.  It gets a v4 socket by default
     TCPSocket();
+
+    PollResult pollRead(const int timeout_ms = -1) const;
 
     //! \brief Build a socket based on either a family or pre-acquired file
     //! descriptor.  Socket sets will generally use this.

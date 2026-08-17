@@ -133,6 +133,15 @@ void Agent::start(const bgq::utility::PortConfiguration::Pairs& ports, const int
     doEndAgentRequest(SIGABRT);
 }
 
+int Agent::getMasterFD() const
+{
+    if (!_prot || !_prot->getResponder()) {
+        return -1;
+    }
+
+    return _prot->getResponder()->getFileDescriptor();
+}
+
 BGMasterAgentProtocolSpec::JoinRequest
 Agent::build_join_request(
        const std::string& hostaddr,
@@ -319,8 +328,7 @@ void Agent::sendBuffered()
     }
 }
 
-void
-Agent::processStartRequest(const BGMasterAgentProtocolSpec::StartRequest& startreq) {
+void Agent::processStartRequest(const BGMasterAgentProtocolSpec::StartRequest& startreq) {
 
     LOG_TRACE_MSG(__FUNCTION__);
 
@@ -545,7 +553,8 @@ Agent::doEndAgentRequest(
     exit(0);
 }
 
-void Agent::processRequest()
+// Returns 'true' if a reconnect is required
+bool Agent::processRequest()
 {
     LOG_TRACE_MSG(__FUNCTION__);
     std::string request_name;
@@ -556,12 +565,12 @@ void Agent::processRequest()
     } catch (const CxxSockets::SoftError& err) {
         // For soft errors, we just back out and let it try again
         LOG_WARN_MSG("Connection to dpm_server interrupted in method " <<  __FUNCTION__);
-        return;
+        return true;
     } catch (const CxxSockets::Error& err) {
         // Server aborted with an incomplete transmission
         LOG_WARN_MSG("Connection to dpm_server ended in method " <<  __FUNCTION__ << ". Error is: " << err.what());
         _prot->getResponder().reset();
-        return;
+        return true;
     }
 
     LOG_DEBUG_MSG("Request " << request_name << " received.");
@@ -575,12 +584,12 @@ void Agent::processRequest()
         } catch (const CxxSockets::SoftError& err) {
             // For soft errors, we just back out and let it try again
             LOG_WARN_MSG("Connection to dpm_server interrupted while handling StartRequest in method " <<  __FUNCTION__);
-            return;
+            return true;
         } catch (const CxxSockets::Error& err) {
             // Server aborted with an incomplete transmission
             LOG_WARN_MSG("Connection to dpm_server ended while handling StartRequest in method " <<  __FUNCTION__);
             _prot->getResponder().reset();
-            return;
+            return true;
         }
 
         std::thread startthread(&Agent::processStartRequest, this, startreq);
@@ -593,16 +602,18 @@ void Agent::processRequest()
         } catch (const CxxSockets::SoftError& err) {
             // For soft errors, we just back out and let it try again
             LOG_WARN_MSG("Connection to dpm_server interrupted while handling StopRequest in method " <<  __FUNCTION__);
-            return;
+            return true;
         } catch (const CxxSockets::Error& err) {
             // Server aborted with an incomplete transmission
             LOG_WARN_MSG("Connection to dpm_server ended while handling StopRequest in method " <<  __FUNCTION__);
             _prot->getResponder().reset();
-            return;
+            return true;
         }
 
         doStopRequest(stopreq);
     } else {
         LOG_WARN_MSG("Unknown request: '" << request_name << "'");
     }
+
+    return false;
 }

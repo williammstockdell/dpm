@@ -26,21 +26,21 @@
 
 #include <utility/include/portConfiguration/PortConfiguration.h>
 
-#include <boost/asio.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
 
 class Agent;
 
-class MasterConnection : public boost::enable_shared_from_this<MasterConnection>
+// FIXME:  This object either needs to go or to be part of a
+// refactor to pull all of the protocall and network manager
+// inside from Agent.
+class MasterConnection
 {
 public:
     /*!
      * \brief Pointer type.
      */
-    typedef boost::shared_ptr<MasterConnection> Ptr;
+    typedef std::shared_ptr<MasterConnection> Ptr;
 
-public:
+
     /*!
      * \brief Factory.
      */
@@ -62,7 +62,12 @@ public:
     void run(const int signal_read_fd);
 
     void cleanupAndDie() { _ending = true; }
+
 private:
+
+    void makeConnection();
+    bool pollConnection(const int signal_read_fd);
+
     const bgq::utility::PortConfiguration::Pairs _ports;
     Agent* const _agent;
     bool _ending;

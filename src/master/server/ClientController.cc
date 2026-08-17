@@ -455,10 +455,7 @@ ClientController::doStopRequest(
 }
 
 void
-ClientController::doStatusRequest(
-        const BGMasterClientProtocolSpec::StatusRequest& statusreq
-        )
-{
+ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusRequest& statusreq) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::StatusReply statusrep(exceptions::OK, "success");
 

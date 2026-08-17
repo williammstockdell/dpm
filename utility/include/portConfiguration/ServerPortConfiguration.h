@@ -76,8 +76,6 @@ Example pseudo-code:
 
 <pre>
 
-namespace po = boost:program_options;
-
 ServerPortConfiguration port_config( MyDefaultPort );
 
 po::options_description all_desc( "Options" );

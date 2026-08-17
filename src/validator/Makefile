@@ -31,12 +31,7 @@ CXXFLAGS += -MD -MP
 CXXFLAGS += -iquote $(BGQ_BUILD_DIR)/hlcs/src/master
 CXXFLAGS += -isystem $(BGQ_INSTALL_DIR)
 
-LDFLAGS  += -lboost_date_time-mt
-LDFLAGS  += -lboost_thread-mt
-LDFLAGS  += -lboost_program_options-mt
 LDFLAGS  += -llog4cxx
-LDFLAGS  += -lboost_filesystem-mt
-LDFLAGS  += -lboost_system-mt
 LDFLAGS  += -lcxxsockets
 LDFLAGS  += -L $(BGQ_INSTALL_DIR)/utility/lib -lbgutility
 LDFLAGS  += -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib

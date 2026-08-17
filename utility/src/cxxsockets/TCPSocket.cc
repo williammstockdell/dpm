@@ -23,6 +23,10 @@
 
 #include <unistd.h>
 #include <netinet/tcp.h>
+#include <poll.h>
+#include <cerrno>
+#include <stdexcept>
+#include <string>
 
 #include "cxxsockets/TCPSocket.h"
 
@@ -33,6 +37,48 @@
 namespace CxxSockets {
 
 LOG_DECLARE_FILE( "utility.cxxsockets" );
+
+CxxSockets::PollResult TCPSocket::pollRead(const int timeout_ms) const
+{
+    struct pollfd pfd {};
+    pfd.fd = _fileDescriptor;
+    pfd.events = POLLIN;
+
+    while (true) {
+        const int rc = ::poll(&pfd, 1, timeout_ms);
+
+        if (rc < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
+
+            throw HardError(
+                            errno,
+                            std::string("poll failed: ") + strerror(errno)
+                            );
+        }
+
+        if (rc == 0) {
+            return PollResult::Timeout;
+        }
+
+        if (pfd.revents & POLLNVAL) {
+            return PollResult::Error;
+        }
+
+        if (pfd.revents & POLLERR) {
+            return PollResult::Error;
+        }
+
+        if (pfd.revents & POLLHUP) {
+            return PollResult::Hangup;
+        }
+
+        if (pfd.revents & POLLIN) {
+            return PollResult::Ready;
+        }
+    }
+}
 
 TCPSocket::TCPSocket() :
     Socket(),
@@ -110,10 +156,8 @@ TCPSocket::performConnect(
 }
 
 void
-TCPSocket::mConnect(
-        const SockAddr& remote_sa
-        )
-{
+TCPSocket::mConnect(const SockAddr& remote_sa) {
+
     LOG_TRACE_MSG("Connecting to remote host " << remote_sa.getHostAddr() << ":" << remote_sa.getServicePort());
     performConnect(remote_sa);
 }

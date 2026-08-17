@@ -32,8 +32,6 @@
 
 #include "PortConfiguration.h"
 
-//#include <boost/program_options.hpp>
-
 #include <string>
 #include <stdint.h>
 
@@ -77,18 +75,10 @@ Example pseudo-code:
 
 <pre>
 
-namespace po = boost:program_options;
-
 ClientPortConfiguration port_config( MyDefaultPort );
-
-po::options_description desc( "Options" );
 
 port_config.addTo( desc );
 
--- do program options stuff.
-
-po::store( ... );
-po::notify( ... );
 
 Properties::Ptr properties_ptr( Properties::create() ); // use Properties::ProgramOptions
 
@@ -160,18 +150,6 @@ public:
             ConnectionType::Value connection_type = ConnectionType::Command //!< [in]
         );
 
-
-    /*! \brief Add the client port configuration options to the options description.
-     *
-     *  The option added is --host. The format of this parameter is as described in
-     *  parsePortsStr(const std::string&,const std::string&,Pairs& pairs_out) .
-     *
-     *  The --host option can be supplied multiple times to attempt
-     *  to connect to multiple ports.
-     */
-    // void addTo(
-    //         boost::program_options::options_description& options
-    //     );
 
     ConnectionType::Value getConnectionType() const  { return _connection_type; }
 

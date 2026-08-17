@@ -241,13 +241,13 @@ public:
     //      *  Adds an option description for --properties that sets _filename.
     //      */
     //     void addTo(
-    //             boost::program_options::options_description& opts_desc //!< [inout]
+
     //             );
 
     //     /*!
     //      * \brief Gets the filename.
     //      *
-    //      * Call this after boost::program_options::notify. Pass the result to the Properties::Properties()
+
     //      */
     //     const std::string& getFilename() const  { return _filename; }
 

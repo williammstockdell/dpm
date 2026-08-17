@@ -144,25 +144,18 @@ main(int argc, const char** argv)
     valid_server_names.push_back("bgmaster_server");
     valid_server_names.push_back("mmcs_server");
 
-    namespace po = boost::program_options;
-    po::options_description options;
-    options.add_options()
-        ("help,h", po::bool_switch(), "this help text")
-        ("server,s", po::value(&servers), "server name")
-        ;
 
     // add properties and verbose options
     bgq::utility::Properties::ProgramOptions propertiesOptions;
     propertiesOptions.addTo( options );
     bgq::utility::LoggingProgramOptions lpo( "ibm" );
-    lpo.addTo( options );
 
     po::positional_options_description positionals;
     positionals.add( "properties", 1 );
 
     // parse --properties before everything else
     try {
-        po::command_line_parser cmd_line( argc, const_cast<char**>(argv) );
+
         cmd_line.allow_unregistered();
         cmd_line.options( options );
         cmd_line.positional( positionals );
