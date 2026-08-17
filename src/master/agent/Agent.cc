@@ -59,8 +59,7 @@ Agent::Agent(
     // Nothing to do
 }
 
-void
-Agent::start(const bgq::utility::PortConfiguration::Pairs& ports) {
+void Agent::start(const bgq::utility::PortConfiguration::Pairs& ports, const int signal_read_fd) {
 
     _host = _hostname;
     LOG_INFO_MSG("Agent starting on " << _hostname.uhn() << ".");
@@ -126,7 +125,7 @@ Agent::start(const bgq::utility::PortConfiguration::Pairs& ports) {
 
     try {
         MasterConnection connection(ports, this);
-        connection.run();
+        connection.run(signal_read_fd);
     } catch (const std::exception& e) {
         LOG_ERROR_MSG("Master connection failed: " << e.what());
     }
@@ -261,8 +260,7 @@ int Agent::join(const bgq::utility::PortConfiguration::Pair& port)
     return 0;
 }
 
-void
-Agent::sendBuffered()
+void Agent::sendBuffered()
 {
     std::list<MsgBasePtr> buffered_messages;
     {
@@ -581,6 +579,7 @@ void Agent::processRequest()
         } catch (const CxxSockets::Error& err) {
             // Server aborted with an incomplete transmission
             LOG_WARN_MSG("Connection to dpm_server ended while handling StartRequest in method " <<  __FUNCTION__);
+            _prot->getResponder().reset();
             return;
         }
 
@@ -598,6 +597,7 @@ void Agent::processRequest()
         } catch (const CxxSockets::Error& err) {
             // Server aborted with an incomplete transmission
             LOG_WARN_MSG("Connection to dpm_server ended while handling StopRequest in method " <<  __FUNCTION__);
+            _prot->getResponder().reset();
             return;
         }
 

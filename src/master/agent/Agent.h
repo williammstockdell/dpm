@@ -66,8 +66,9 @@ public:
 
     //! \brief initiate the registration process
     void start(
-            const bgq::utility::PortConfiguration::Pairs& pairs //!< [in]
-            );
+               const bgq::utility::PortConfiguration::Pairs& pairs, //!< [in]
+               const int signal_read_fd
+               );
 
     //! \brief Set list of users this agent can be.
     void set_users(const std::string& users) { _user_list = users; }

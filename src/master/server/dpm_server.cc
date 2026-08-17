@@ -55,12 +55,14 @@ LockFile* lock_file = 0;
 
 extern "C" void
 dpm_master_server_sighandler(
-        int /* signum */,
+        int signum,
         siginfo_t* siginfo,
         void*
         )
 {
-    (void)write( signal_fd, siginfo, sizeof(siginfo_t) );
+    const int saved_errno = errno;
+    (void)::write(signal_fd, &signum, sizeof(signum));
+    errno = saved_errno;
 }
 
 bool
@@ -192,7 +194,7 @@ main(int argc, const char** argv)
     int signal_descriptors[2];
 
 #ifdef O_CLOEXEC
-    if ( pipe2(signal_descriptors, O_CLOEXEC) != 0 ) {
+    if ( pipe2(signal_descriptors, O_CLOEXEC | O_NONBLOCK) != 0 ) {
 #else
     if ( pipe(signal_descriptors) != 0 ) {
 #endif
@@ -205,9 +207,11 @@ main(int argc, const char** argv)
     // Signal handlers
     for (size_t i = 0; i < signals.size(); ++i)
     {
-        struct sigaction action;
+        struct sigaction action {};
         action.sa_sigaction = &dpm_master_server_sighandler;
         action.sa_flags = SA_SIGINFO;
+        sigemptyset(&action.sa_mask);
+
         int rc = sigaction(signals[i], &action, 0);
         if (rc < 0)
         {
@@ -218,6 +222,7 @@ main(int argc, const char** argv)
 
     // Construct master controller
     MasterController master(props);
+
     try {
         master.startup(signal_descriptors[0]);
     } catch (const exceptions::ConfigError& e) {

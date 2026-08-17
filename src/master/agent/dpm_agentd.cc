@@ -22,6 +22,7 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include <filesystem>
+#include <csignal>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/resource.h>
@@ -35,8 +36,66 @@
 
 LOG_DECLARE_FILE( "master" );
 
-std::string
-setlogging(
+
+namespace {
+
+const std::vector<int> signals{SIGINT, SIGUSR1, SIGTERM, SIGPIPE };
+
+// This gets updated when setupSignals runs
+int signal_write_fd = -1;
+
+}
+
+// Signal handler
+extern "C" void
+dpm_agent_sighandler(
+        int signum,
+        siginfo_t* siginfo,
+        void*
+        )
+{
+    const int saved_errno = errno;
+    (void)::write(signal_write_fd, &signum, sizeof(signum));
+    errno = saved_errno;
+}
+
+int setupSignals() {
+    int signal_descriptors[2];
+
+#ifdef O_CLOEXEC
+    if (pipe2(signal_descriptors, O_CLOEXEC | O_NONBLOCK) != 0)
+#else
+    if (pipe(signal_descriptors) != 0)
+#endif
+    {
+        LOG_ERROR_MSG("Could not create pipe for signal handler.");
+        exit(EXIT_FAILURE);
+    }
+
+    signal_write_fd = signal_descriptors[1];
+
+    for (std::size_t i = 0; i < signals.size(); ++i) {
+        struct sigaction action {};
+        action.sa_sigaction = &dpm_agent_sighandler;
+        action.sa_flags = SA_SIGINFO;
+        sigemptyset(&action.sa_mask);
+
+        const int rc = sigaction(signals[i], &action, nullptr);
+
+        if (rc < 0) {
+            LOG_ERROR_MSG(
+                "Error setting up dpm_agent signal handler: "
+                << strerror(errno)
+            );
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    return signal_descriptors[0];
+}
+
+
+std::string setlogging(
         std::string& logdir,
         const std::string& hostname
         )
@@ -120,6 +179,8 @@ int main(int argc, const char** argv)
     host.setProperties( props, "master.agent" );
     host.notifyComplete();
 
+    int signal_read_fd = setupSignals();
+
     Agent agent( props );
 
     if (!debug._value) {
@@ -191,5 +252,5 @@ int main(int argc, const char** argv)
             " " << "Fred" << " (revision " << "Barney" << ") " <<
             __DATE__ << " " << __TIME__ << " starting"
             );
-    agent.start( host.getPairs() );
+    agent.start(host.getPairs(), signal_read_fd);
 }

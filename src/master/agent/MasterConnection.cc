@@ -26,13 +26,15 @@
 
 LOG_DECLARE_FILE( "master" );
 
-void MasterConnection::run()
+void MasterConnection::run(const int signal_read_fd)
 {
     static constexpr unsigned MaxAttempts = 30;
 
     // Main thread loop
 
     while (!_ending) {
+
+        // FIXME: Call for signal polling goes here.
 
         bool connected = false;
 

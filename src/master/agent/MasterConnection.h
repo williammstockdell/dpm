@@ -59,7 +59,7 @@ public:
             Agent* const agent
             );
 
-    void run();
+    void run(const int signal_read_fd);
 
     void cleanupAndDie() { _ending = true; }
 private:
