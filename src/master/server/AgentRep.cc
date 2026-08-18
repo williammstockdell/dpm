@@ -106,6 +106,14 @@ AgentRep::~AgentRep()
 {
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
+
+    if (_agent_socket_poller.joinable()) {
+        if (_agent_socket_poller.get_id() == std::this_thread::get_id()) {
+            _agent_socket_poller.detach();
+        } else {
+            _agent_socket_poller.join();
+        }
+    }
 }
 
 void
@@ -752,8 +760,7 @@ AgentRep::processRequest()
     return false;
 }
 
-void
-AgentRep::waitMessages()
+void AgentRep::waitMessages()
 {
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
@@ -786,9 +793,8 @@ AgentRep::waitMessages()
     }
 }
 
-void
-AgentRep::startPoller()
-{
+void AgentRep::startPoller() {
+
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
     _agent_socket_poller = std::thread(&AgentRep::waitMessages, this);
@@ -829,7 +835,11 @@ AgentRep::cancel(
     if ( _my_tid ) {
         pthread_kill(_my_tid, SIGUSR1);
     }
-    _agent_socket_poller.join();
+
+    if (_agent_socket_poller.joinable()  && _agent_socket_poller.get_id() != std::this_thread::get_id()) {
+
+        _agent_socket_poller.join();
+    }
 }
 
 void

@@ -125,13 +125,14 @@ void LoggingProgramOptions::apply() const
         Logger::getLogger( i->first )->setLevel( i->second );
     }
 
-
     // Log current logger settings.
     const auto root = log4cxx::Logger::getRootLogger();
 
     if (const auto repo = root->getLoggerRepository().lock()) {
         for (const log4cxx::LoggerPtr& curr_loggerp : repo->getCurrentLoggers()) {
-            LOG_DEBUG_MSG( curr_loggerp->getName() << "=" << curr_loggerp->getLevel()->toString() );
+            const log4cxx::LevelPtr level = curr_loggerp->getLevel();
+
+            LOG_DEBUG_MSG(curr_loggerp->getName() << "=" << (level ? level->toString() : "<inherited>"));
         }
     }
 }

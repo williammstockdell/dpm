@@ -75,21 +75,23 @@ AgentManager::addNew(
 }
 
 void
-AgentManager::removeAgent(
-        AgentRepPtr agent
-        )
-{
+AgentManager::removeAgent(AgentRepPtr agent) {
+
     _agent_manager_mutex.lock();
+
     LOG_DEBUG_MSG("Removing agent " << agent->get_agent_id().str() << " from list.");
+
     // Get copies of the binaries and the agent id
     BGAgentId failing = agent->get_agent_id();
     std::vector<BinaryControllerPtr> binlist = agent->get_binaries();
     _agents.erase(remove(_agents.begin(),_agents.end(), agent), _agents.end());
+
     // Don't need the lock any more.  Won't be using local resources.
     _agent_manager_mutex.unlock();
 
     // For each binary, run through the policy checks and restart.
     for(const BinaryControllerPtr& binptr : binlist) {
+
         // Mark the binary done!  If the agent is gone, so is the binary.
         binptr->set_status(BinaryController::COMPLETED);
         LOG_DEBUG_MSG("Checking for policy for " << binptr->get_alias_name());
@@ -139,8 +141,7 @@ AgentManager::removeAgent(
     }
 }
 
-AgentRepPtr
-AgentManager::findAgentRep(
+AgentRepPtr AgentManager::findAgentRep(
         const BGAgentId& aid
         )
 {

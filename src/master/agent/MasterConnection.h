@@ -70,7 +70,7 @@ private:
 
     const bgq::utility::PortConfiguration::Pairs _ports;
     Agent* const _agent;
-    bool _ending;
+    bool _ending = false;
 };
 
 #endif

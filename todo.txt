@@ -1,13 +1,8 @@
-Then classify what remains: things to remove immediately, things temporarily retained (program_options, serialization),
-and things that are truly still needed. Same for Asio specifically.
+Then classify what remains: things to remove immediately, things temporarily retained (serialization),
+and things that are truly still needed.
 
-Warnings → -Werror. Definitely. I’d also normalize compiler flags centrally while you’re doing this instead of letting every
+normalize compiler flags centrally while you’re doing this instead of letting every
 leaf Makefile have its own 2011-vintage collection.
-
-Replace the removed Asio behavior. The important part here is not “replace Asio”; it’s restore the actual semantics you need:
-master/agent connection handling, retry/wait behavior, signal handling, and whatever cxxsockets functionality was deleted.
-Keep it boring—poll/threads/condition variables/signal primitives rather than
-inventing another framework.
 
 Tests — but I’d split this into two stages. Before the Asio replacement, write a few characterization/smoke tests around whatever
 still runs so you have a behavioral baseline. After the networking work, add proper unit/integration tests, especially loopback
@@ -21,12 +16,12 @@ Protocol/serialization modernization. Yes, and I’d intentionally
 defer this until the existing protocol has tests. The XML-generated protocol classes are exactly the sort of thing where
 you want golden-message/round-trip tests before changing representation.
 
-The other things I’d put on the backlog are CI, sanitizers/static analysis, and versioning.
+CI, sanitizers/static analysis, and versioning.
 
 Once it builds cleanly, get a GitHub Actions build running GCC 14 with -Werror, then add ASan/UBSan builds. And at some point
 replace the removed SVN Revision/DriverName mechanism with something very simple based on a release version plus optional Git commit ID.
 
 Roadmap:
 
-build/install cleanup → reproducible clean build → warning cleanup/Werror → baseline tests → Asio/cxxsockets surgery →
+build/install cleanup* → reproducible clean build* → warning cleanup/Werror* → baseline tests → Asio/cxxsockets surgery* →
 expanded tests → formatting → protocol/serialization work → CI/sanitizers/release packaging.

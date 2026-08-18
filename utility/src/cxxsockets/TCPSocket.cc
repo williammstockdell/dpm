@@ -80,10 +80,8 @@ CxxSockets::PollResult TCPSocket::pollRead(const int timeout_ms) const
     }
 }
 
-TCPSocket::TCPSocket() :
-    Socket(),
-    _nonagle(true)
-{
+TCPSocket::TCPSocket() : Socket(), _nonagle(true) {
+
     #ifdef SOCK_CLOEXEC
     _fileDescriptor = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
     #else
@@ -135,7 +133,9 @@ TCPSocket::performConnect(
         const SockAddr& remote
         )
 {
+
     const int rc = connect(_fileDescriptor, (sockaddr*)(&remote), sizeof(struct sockaddr_storage));
+
     if (rc == -1) {
         const int error = errno;
         std::ostringstream msg;
