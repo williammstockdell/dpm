@@ -620,7 +620,7 @@ void MasterController::addBehaviors(
                                 // Now check to make sure that if there are failover pairs,
                                 // all hosts are in the alias' host list.
                                 typedef std::pair<CxxSockets::Host, CxxSockets::Host> HostPair;
-                                for(const HostPair& pair : it->second.get_host_pairs()) {
+                                for(const HostPair pair : it->second.get_host_pairs()) {
                                     std::string failname = "";
                                     if (al->find_host(pair.first) == false) {
                                         failname = pair.first.fqhn();

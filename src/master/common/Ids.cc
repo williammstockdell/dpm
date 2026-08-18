@@ -141,6 +141,11 @@ BGAgentId::BGAgentId(
     _id = host + ":" + port;
 }
 
+BGAgentId& BGAgentId::operator=(const BGAgentId& id) {
+    _id = id._id;
+    return *this;
+}
+
 // client ids
 
 ClientId::ClientId(
@@ -189,6 +194,11 @@ BinaryId::BinaryId(
     Id()
 {
     _id = id._id;
+}
+
+BinaryId& BinaryId::operator=(const BinaryId& id) {
+    _id = id._id;
+    return *this;
 }
 
 BinaryId::BinaryId(

@@ -55,7 +55,11 @@ dupfds(
         char buf[256];
         msg << "dup2 failed to set STDOUT to the log file: " << strerror_r(errno, buf, sizeof(buf));
         LOG_ERROR_MSG(msg.str());
-        ::write(errorfd, msg.str().c_str(), msg.str().length());
+        ssize_t retcode = ::write(errorfd, msg.str().c_str(), msg.str().length());
+        if(retcode == -1) {
+
+            LOG_ERROR_MSG("write failed " << errno);
+        }
     }
 
     // setup stderr to write to log
@@ -65,7 +69,11 @@ dupfds(
         char buf[256];
         msg << "dup2 failed to set STDERR to the log file: " << strerror_r(errno, buf, sizeof(buf));
         LOG_ERROR_MSG(msg.str());
-        ::write(errorfd, msg.str().c_str(), msg.str().length());
+        ssize_t retcode = ::write(errorfd, msg.str().c_str(), msg.str().length());
+        if(retcode == -1) {
+
+            LOG_ERROR_MSG("write failed " << errno);
+        }
     }
 }
 
@@ -85,7 +93,12 @@ logoutput(
         char buf[256];
         msg << "Could not open log file " << logfilename << " error " << strerror_r(errno, buf, sizeof(buf));
         LOG_ERROR_MSG(msg.str());
-        ::write(errorfd, msg.str().c_str(), msg.str().length());
+        ssize_t retcode = ::write(errorfd, msg.str().c_str(), msg.str().length());
+        if(retcode == -1) {
+
+            LOG_ERROR_MSG("write failed " << errno);
+        }
+
         return 0;
     }
 
@@ -240,7 +253,12 @@ Exec::fexec(
             } catch ( const std::exception& e ) {
                 std::ostringstream msg;
                 msg << e.what();
-                ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+                ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+                if(retcode == -1) {
+
+                    LOG_ERROR_MSG("write failed " << errno);
+                }
+
                 _exit(EXIT_FAILURE);
             }
         } else {
@@ -250,7 +268,12 @@ Exec::fexec(
                 char buf[256];
                 errorstream << "Could not set real and effective gids of this process to " << my_egid << ": " << strerror_r(errno, buf, sizeof(buf));
                 LOG_ERROR_MSG(errorstream.str());
-                ::write(errorPipe[1], errorstream.str().c_str(), errorstream.str().length());
+                ssize_t retcode = ::write(errorPipe[1], errorstream.str().c_str(), errorstream.str().length());
+                if(retcode == -1) {
+
+                    LOG_ERROR_MSG("write failed " << errno);
+                }
+
                 _exit(EXIT_FAILURE);
             }
 
@@ -260,7 +283,12 @@ Exec::fexec(
                 char buf[256];
                 errorstream << "Could not set real and effective uids of this process to " << my_euid << ": " << strerror_r(errno, buf, sizeof(buf));
                 LOG_ERROR_MSG(errorstream.str());
-                ::write(errorPipe[1], errorstream.str().c_str(), errorstream.str().length());
+                ssize_t retcode = ::write(errorPipe[1], errorstream.str().c_str(), errorstream.str().length());
+                if(retcode == -1) {
+
+                    LOG_ERROR_MSG("write failed " << errno);
+                }
+
                 _exit(EXIT_FAILURE);
             }
         }
@@ -308,7 +336,11 @@ Exec::fexec(
             std::ostringstream msg;
             char buf[256];
             msg << "Could not set new process grou: " << strerror_r(errno, buf, sizeof(buf));
-            ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+            ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+            if(retcode == -1) {
+
+                LOG_ERROR_MSG("write failed " << errno);
+            }
             _exit(EXIT_FAILURE);
         }
 
@@ -317,7 +349,11 @@ Exec::fexec(
             std::ostringstream msg;
             char buf[256];
             msg << "Could not set process death signal: " << strerror_r(errno, buf, sizeof(buf));
-            ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+            ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+            if(retcode == -1) {
+
+                LOG_ERROR_MSG("write failed " << errno);
+            }
             _exit(EXIT_FAILURE);
         }
 
@@ -328,7 +364,12 @@ Exec::fexec(
             std::ostringstream msg;
             char buf[256];
             msg << "Could not set signal mask: " << strerror_r(errno, buf, sizeof(buf));
-            ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+            ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+            if(retcode == -1) {
+
+                LOG_ERROR_MSG("write failed " << errno);
+            }
+
             _exit(EXIT_FAILURE);
         }
 
@@ -337,7 +378,11 @@ Exec::fexec(
         std::ostringstream msg;
         char buf[256];
         msg << "execv(" << path << ") failed: " << strerror_r(error, buf, sizeof(buf));
-        ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+        ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
+        if(retcode == -1) {
+
+            LOG_ERROR_MSG("write failed " << errno);
+        }
         _exit(EXIT_FAILURE);
     }
 

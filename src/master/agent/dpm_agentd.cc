@@ -46,6 +46,9 @@ int signal_write_fd = -1;
 
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 // Signal handler
 extern "C" void
 dpm_agent_sighandler(
@@ -55,9 +58,12 @@ dpm_agent_sighandler(
         )
 {
     const int saved_errno = errno;
-    (void)::write(signal_write_fd, &signum, sizeof(signum));
+    ssize_t retcode = ::write(signal_write_fd, &signum, sizeof(signum));
+    if(retcode == -1) exit(1);
     errno = saved_errno;
 }
+
+#pragma GCC diagnostic pop
 
 int setupSignals() {
     int signal_descriptors[2];

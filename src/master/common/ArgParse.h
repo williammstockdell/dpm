@@ -64,10 +64,10 @@ public:
             void (*help)(),                          //!< [in] function pointer to help function
             std::vector<std::string>& valargs,       //!< [in] options to be followed with parameters
             const std::vector<std::string>& singles, //!< [in] arguments that don't take a parameter
-            bool utype = CLIENT
+            bin_type utype = CLIENT
         );
 
-    const bgq::utility::Properties::ConstPtr& get_const_props() const { return _props; }
+    const bgq::utility::Properties::ConstPtr get_const_props() const { return _props; }
     const bgq::utility::Properties::Ptr& get_props() const { return _props; }
     const bgq::utility::PortConfiguration::Pairs& get_portpairs() const { return _portpairs; }
 

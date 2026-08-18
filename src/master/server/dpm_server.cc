@@ -53,6 +53,10 @@ int signal_fd;
 
 LockFile* lock_file = 0;
 
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 extern "C" void
 dpm_master_server_sighandler(
         int signum,
@@ -61,9 +65,12 @@ dpm_master_server_sighandler(
         )
 {
     const int saved_errno = errno;
-    (void)::write(signal_fd, &signum, sizeof(signum));
+    ssize_t retcode = ::write(signal_fd, &signum, sizeof(signum));
+    if(retcode == -1) exit(1);
     errno = saved_errno;
 }
+
+#pragma GCC diagnostic pop
 
 bool
 setlogging(
@@ -121,7 +128,7 @@ main(int argc, const char** argv)
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
 
-    Args largs(argc, argv, &usage, &help, validargs, singles, false);
+    Args largs(argc, argv, &usage, &help, validargs, singles, SERVER);
     bgq::utility::Properties::Ptr props = largs.get_props();
 
     try {

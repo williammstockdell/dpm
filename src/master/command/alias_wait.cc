@@ -82,7 +82,7 @@ main(int argc, const char** argv) {
     validargs.push_back("*"); // One argument without a "--" is allowed
     validargs.push_back(timeout);
 
-    const Args largs(argc, argv, &usage, &help, validargs, singles, true);
+    const Args largs(argc, argv, &usage, &help, validargs, singles, CLIENT);
     BGMasterClient client;
 
     std::string time_out = largs[timeout];

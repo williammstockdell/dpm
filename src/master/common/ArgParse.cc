@@ -115,7 +115,7 @@ Args::Args(
         void (*help)(),
         std::vector<std::string>& valargs,
         const std::vector<std::string>& singles,
-        bool utype
+        bin_type utype
         )
 {
     valargs.push_back("--verbose");

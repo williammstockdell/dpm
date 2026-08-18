@@ -233,7 +233,7 @@ SecureTCPSocket::ServerHandshake(
 
     if (rc < 0) {
         char buf[256];
-        strerror_r( errno, buf, sizeof(buf) );
+        if(strerror_r( errno, buf, sizeof(buf) ) != 0) memcpy(buf, "bad error\0", 9);
         throw HardError(errno, std::string() + "No User ID received on this connection:" + buf);
     } else if ( rc == 0 ) {
         throw HardError(0, "No User ID size received on this connection." );
@@ -246,7 +246,7 @@ SecureTCPSocket::ServerHandshake(
 
     uint32_t user_id_size;
     try {
-        user_id_size = std::stoi(buffer);
+        user_id_size = static_cast<uint32_t>(std::stoi(buffer));
     } catch (const std::invalid_argument& e) {
         throw HardError(0, std::string() + "Could not convert user size (" + buffer + ") to a number: " + e.what());
     } catch (const std::out_of_range& e) {
@@ -272,7 +272,7 @@ SecureTCPSocket::ServerHandshake(
 
     if (rc < 0) {
         char buf[256];
-        strerror_r( errno, buf, sizeof(buf) );
+        if(strerror_r( errno, buf, sizeof(buf) ) != 0) memcpy(buf, "bad error\0", 9);
         throw HardError(errno, std::string() + "No User ID received on this connection:" + buf);
     } else if ( rc == 0 ) {
         throw HardError(0, "No User ID received on this connection." );

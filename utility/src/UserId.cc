@@ -150,10 +150,8 @@ UserId::isMember(
 }
 
 void
-UserId::setGroupList(
-        const gid_t gid
-        )
-{
+UserId::setGroupList(const gid_t gid) {
+
     LOG_DEBUG_MSG( "Getting secondary group list for '" << _name << "' gid '" << gid << "'" );
     // get supplementary group list
     int group_count = 0;
@@ -171,7 +169,7 @@ UserId::setGroupList(
     LOG_TRACE_MSG("Secondary group list " << group_count);
 
     // add each group
-    for ( int i = 0; i < group_count; ++i ) {
+    for (gid_t i = 0; i < static_cast<size_t>(group_count); ++i ) {
 
         // get gid
         const gid_t gid = grouplist[i];

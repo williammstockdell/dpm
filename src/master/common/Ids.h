@@ -77,6 +77,7 @@ public:
     BGAgentId(const BGAgentId& id);
     BGAgentId(const int port, const std::string& host);
     BGAgentId(const std::string& port, const std::string& host);
+    BGAgentId& operator=(const BGAgentId& id);
 };
 
 //! \brief Representation of the universal identifier for a binary
@@ -91,6 +92,7 @@ public:
     BinaryId(const BinaryId& id);
     BinaryId(const int pid, const std::string& host);
     BinaryId(const std::string& pid, const std::string& host);
+    BinaryId& operator=(const BinaryId& binid);
 
     //! \brief Return the process ID of the binary
     int get_pid();
