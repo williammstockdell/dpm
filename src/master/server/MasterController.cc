@@ -116,10 +116,8 @@ MasterController::stopThreads(
 }
 
 void
-MasterController::handleErrorMessage(
-        const std::string& msg
-        )
-{
+MasterController::handleErrorMessage(const std::string& msg) {
+
     LOG_ERROR_MSG( __FUNCTION__ << ": " << msg);
     std::ostringstream errmsg;
     std::vector<ClientProtocolPtr> deadClients;
@@ -155,6 +153,9 @@ MasterController::handleErrorMessage(
                 MasterController::get_monitor_prots().end()
                 );
     }
+
+    MasterController::addHistoryMessage(msg);
+
     return;
 }
 

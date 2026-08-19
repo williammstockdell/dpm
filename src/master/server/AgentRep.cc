@@ -596,10 +596,12 @@ AgentRep::doCompleteRequest(
     try {
         _prot->sendReply(comprep.getClassName(), comprep);
     } catch (const CxxSockets::SoftError& err) {
+
         // For soft errors, we just back out and let it try again
         LOG_ERROR_MSG("Agent connection error during complete reply send.");
         return;
     } catch (const CxxSockets::Error& err) {
+
         // Client aborted with an incomplete transmission
         // Bad, bad, bad.  This object must die
         std::ostringstream msg;
@@ -609,14 +611,12 @@ AgentRep::doCompleteRequest(
     return;
 }
 
-void
-AgentRep::doFailedRequest(
-        const BGMasterAgentProtocolSpec::FailedRequest& failreq
-        )
-{
+void AgentRep::doFailedRequest(const BGMasterAgentProtocolSpec::FailedRequest& failreq) {
+
     std::scoped_lock scoped_lock(_agent_mutex);
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
+
     // First, find our binary id
     const BinaryId reqbid(failreq._status._binary_id);
 
@@ -655,12 +655,14 @@ AgentRep::doFailedRequest(
 
         MasterController::handleErrorMessage(msg.str());
     } else {
+
         // Whoa!  We don't know about this binary?
         // This can happen in situation where mc_server ends first and then mmcs_server fails so
         // it may be normal for this to occur.
         std::ostringstream msg;
         msg << "Could not find binary " << failreq._status._binary_id << " that failed on agent "
             << _agent_id.str() << ". This is normal in some instances.";
+
         // Don't return here.  It might be a buffered fail request saved by the agent.
         // This can happen if bgmaster_server restarts. We'll note it as an error, execute any policy, and send a reply.
         MasterController::handleErrorMessage(msg.str());
@@ -681,10 +683,12 @@ AgentRep::doFailedRequest(
     try {
         _prot->sendReply(failrep.getClassName(), failrep);
     } catch (const CxxSockets::SoftError& err) {
+
         // For soft errors, we just back out and let it try again
         LOG_ERROR_MSG("Agent connection error during failed reply send.");
         return;
     } catch (const CxxSockets::Error& err) {
+
         // Client aborted with an incomplete transmission
         // Bad, bad, bad.  This object must die
         std::ostringstream msg;

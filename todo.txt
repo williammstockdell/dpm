@@ -4,8 +4,7 @@ and things that are truly still needed.
 normalize compiler flags centrally while you’re doing this instead of letting every
 leaf Makefile have its own 2011-vintage collection.
 
-Tests — but I’d split this into two stages. Before the Asio replacement, write a few characterization/smoke tests around whatever
-still runs so you have a behavioral baseline. After the networking work, add proper unit/integration tests, especially loopback
+Tests — but I’d split this into two stages.  After the networking work, add proper unit/integration tests, especially loopback
 connection, disconnect/reconnect, timeout, shutdown, failover policy parsing, properties parsing, and protocol round trips.
 I agree with not resurrecting the entire old Boost.Test graveyard; mine it for useful cases.
 
@@ -25,3 +24,8 @@ Roadmap:
 
 build/install cleanup* → reproducible clean build* → warning cleanup/Werror* → baseline tests → Asio/cxxsockets surgery* →
 expanded tests → formatting → protocol/serialization work → CI/sanitizers/release packaging.
+
+Tests:
+App start/stop/status tests.
+Does agent die if an app dies?
+Does server get notifications?
