@@ -35,7 +35,7 @@ default: all
 install_targets=${install_parts:%=$(BGQ_BIN_INSTALL_DIR)/%}
 
 
-bg.properties: bg.properties.template
+dpm.properties: dpm.properties.template
 	sed -e "s/%%BGQDB_DBNAME%%/$(BGQDB_DBNAME)/" $< | \
 	sed -e "s/%%BGQDB_USER%%/$(BGQDB_USER)/" | \
 	sed -e "s/%%BGQDB_PWD%%/$(BGQDB_PWD)/" | \
@@ -47,19 +47,19 @@ bg.properties: bg.properties.template
 %.tpl: %
 	$(CP) $< $@
 
-all: bg.properties
+all: dpm.properties
 
 
 clean:
-	$(RM) bg.properties
+	$(RM) dpm.properties
 
 distclean: clean
 
 install:
 	install -d $(ETCDIR)
-	install -m 755 bg.properties $(ETCDIR)
+	install -m 755 dpm.properties $(ETCDIR)
 
 
 uninstall:
-	$(RM) $(etc_install_dir)/bg.properties.tpl
-	$(RM) $(etc_install_dir)/bg.bringup.properties.tpl
+	$(RM) $(etc_install_dir)/dpm.properties.tpl
+	$(RM) $(etc_install_dir)/dpm.bringup.properties.tpl
