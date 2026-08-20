@@ -27,17 +27,11 @@
 
 #include "Log.h"
 
-
 namespace CxxSockets {
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
-SockAddrList::SockAddrList(
-        const unsigned short family,
-        const std::string& nodename,
-        const std::string& service
-        )
-{
+SockAddrList::SockAddrList(const unsigned short family, const std::string& nodename, const std::string& service) {
     if (service.empty() && nodename.empty()) {
         std::ostringstream msg;
         msg << "Both service and node cannot be zero.";
@@ -47,11 +41,11 @@ SockAddrList::SockAddrList(
 
     struct addrinfo* addrinf = 0;
     SockAddr::Addrinf(addrinf, family, nodename, service);
-    const std::shared_ptr<struct addrinfo> guard( addrinf, &freeaddrinfo );
+    const std::shared_ptr<struct addrinfo> guard(addrinf, &freeaddrinfo);
     while (addrinf) {
         SockAddr sa(addrinf->ai_addr);
         if (family == AF_INET6_ONLY) {
-            sa.setFamily( AF_INET6_ONLY );
+            sa.setFamily(AF_INET6_ONLY);
         }
         if (sa.family() == AF_INET) {
             _sockque.push_back(sa);
@@ -62,4 +56,4 @@ SockAddrList::SockAddrList(
     }
 }
 
-}
+} // namespace CxxSockets

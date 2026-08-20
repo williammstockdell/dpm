@@ -28,17 +28,16 @@
 #ifndef CXXSOCKET_TCP_SOCKET_H
 #define CXXSOCKET_TCP_SOCKET_H
 
-#include <utility/include/cxxsockets/exception.h>
-#include <utility/include/cxxsockets/Socket.h>
-#include <utility/include/cxxsockets/types.h>
 #include <utility/include/Log.h>
+#include <utility/include/cxxsockets/Socket.h>
+#include <utility/include/cxxsockets/exception.h>
+#include <utility/include/cxxsockets/types.h>
 
 #include <string>
 
 #include <arpa/inet.h>
 
 namespace CxxSockets {
-
 
 enum class PollResult {
 
@@ -48,15 +47,14 @@ enum class PollResult {
     Hangup
 };
 
-
 //! \brief Socket on top of TCP.
 //!
 //! Address family is determined by sockaddr or param depending upon ctor used.
-class TCPSocket : public Socket
-{
+class TCPSocket : public Socket {
     friend class ListeningSocket;
     friend class SecureTCPSocket;
-protected:
+
+  protected:
     bool _nonagle;
 
     //! \brief Actually perform the TCP connect
@@ -69,19 +67,17 @@ protected:
 
     void releaseFd();
 
-    template<class sendfunctor>
-    inline int InternalSend(const Message& message, sendfunctor& f)
-    {
-        const log4cxx::LoggerPtr inlines_logger(log4cxx::Logger::getLogger( "ibm.utility.cxxsockets.CxxSocketInlines" ));
+    template <class sendfunctor> inline int InternalSend(const Message& message, sendfunctor& f) {
+        const log4cxx::LoggerPtr inlines_logger(log4cxx::Logger::getLogger("ibm.utility.cxxsockets.CxxSocketInlines"));
         // Dead simple protocol:  Send a four byte size followed by data.
-        const std::string msg( message.str() );
+        const std::string msg(message.str());
         const int32_t size = msg.length();
         if (size == 0) {
             LOG4CXX_WARN(inlines_logger, "Zero length send attempted.");
             return 0;
         }
 
-        const uint32_t sizeNbo = htonl(size);  // size in network byte order format.
+        const uint32_t sizeNbo = htonl(size); // size in network byte order format.
 
         if (f(_fileDescriptor, &sizeNbo, sizeof(uint32_t)) < 0) {
             std::ostringstream errmsg;
@@ -120,10 +116,8 @@ protected:
         return size;
     }
 
-    template<class receivefunctor>
-    inline int InternalReceive(Message& msg, receivefunctor& f)
-    {
-        const log4cxx::LoggerPtr inlines_logger(log4cxx::Logger::getLogger( "ibm.utility.cxxsockets.CxxSocketInlines" ));
+    template <class receivefunctor> inline int InternalReceive(Message& msg, receivefunctor& f) {
+        const log4cxx::LoggerPtr inlines_logger(log4cxx::Logger::getLogger("ibm.utility.cxxsockets.CxxSocketInlines"));
         uint32_t size = 0;
         int bytes = 0;
 
@@ -157,7 +151,7 @@ protected:
         }
 
         std::vector<char> buf;
-        buf.reserve( size );
+        buf.reserve(size);
         bytes = 0;
         int gotten = 0;
         unsigned int bytes_left = size;
@@ -180,12 +174,11 @@ protected:
         }
         msg.write(&buf[0], size);
 
-        //LOG4CXX_TRACE(inlines_logger, "Received complete message of size " << size << " bytes.");
+        // LOG4CXX_TRACE(inlines_logger, "Received complete message of size " << size << " bytes.");
         return size;
     }
 
-public:
-
+  public:
     //! \brief Default ctor.  This one does NOT acquire an FD.  It gets a v4 socket by default
     TCPSocket();
 
@@ -229,18 +222,16 @@ public:
     int Receive(Message& msg);
 };
 
-class TCPSendFunctor
-{
-public:
-    int operator() (int fileDescriptor, const void* msg, size_t length);
+class TCPSendFunctor {
+  public:
+    int operator()(int fileDescriptor, const void* msg, size_t length);
 };
 
-class TCPReceiveFunctor
-{
-public:
-    int operator() (int fileDescriptor, const void* msg, size_t length);
+class TCPReceiveFunctor {
+  public:
+    int operator()(int fileDescriptor, const void* msg, size_t length);
 };
 
-}
+} // namespace CxxSockets
 
 #endif

@@ -22,66 +22,61 @@
 /* end_generated_IBM_copyright_prolog                               */
 /*********************************************************************/
 
-
 #ifndef __genericxml_h__
 #define __genericxml_h__
 
 #include <iostream>
-#include <vector>
-#include <string>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 class XMLEntity;
 
-class XMLException: public std::runtime_error
-{
-public:
-    XMLException(const XMLEntity* obj): runtime_error(""), _obj(obj) { }
-    XMLException(const std::string& m, const XMLEntity* obj): runtime_error(m), _obj(obj) {  }
+class XMLException : public std::runtime_error {
+  public:
+    XMLException(const XMLEntity* obj) : runtime_error(""), _obj(obj) {}
+    XMLException(const std::string& m, const XMLEntity* obj) : runtime_error(m), _obj(obj) {}
     ~XMLException() throw() {}
-    friend std::ostream &operator<<(std::ostream &os, const XMLException& node);
-private:
+    friend std::ostream& operator<<(std::ostream& os, const XMLException& node);
+
+  private:
     const XMLEntity* _obj;
 };
 
-class XMLEntity
-{
-public:
-    static XMLEntity* readXML (const char* filename);
+class XMLEntity {
+  public:
+    static XMLEntity* readXML(const char* filename);
     static XMLEntity* readXML(std::istream& is);
     static void dumpXML(const std::stringstream& os, const char* description, const bool force);
 
     const std::string& name() const { return _name; }
     const std::string& cdata() const { return _cdata; }
-    const char* attrByName(const char *name) const;
-    const char* attrOptByName(const char *name) const;
-    const XMLEntity* subEntByName(const char *name) const;
+    const char* attrByName(const char* name) const;
+    const char* attrOptByName(const char* name) const;
+    const XMLEntity* subEntByName(const char* name) const;
     std::vector<const XMLEntity*> subentities() const;
     unsigned lineno() const { return _lineno; }
 
     std::vector<XMLEntity>::const_iterator subEntitiesBegin() { return _entities.begin(); }
     std::vector<XMLEntity>::const_iterator subEntitiesEnd() { return _entities.end(); }
 
-    void dump(unsigned indent=0) const ;
+    void dump(unsigned indent = 0) const;
 
     ~XMLEntity();
 
-private:
-	std::string               _name;        // name of entity
-	std::string               _cdata;       // cdata of the entity
-    unsigned                  _lineno;	    // line number it occurred
-    std::vector<std::string>  _attnames;	// names of XML attributes
-    std::vector<std::string>  _attvalues;	// values of XML attributes
-    std::vector<XMLEntity>    _entities;	// subentities
-    XMLEntity*                _parent;  	// parent entity
-    void*                     _parser;	    // associated XML parser
+  private:
+    std::string _name;                   // name of entity
+    std::string _cdata;                  // cdata of the entity
+    unsigned _lineno;                    // line number it occurred
+    std::vector<std::string> _attnames;  // names of XML attributes
+    std::vector<std::string> _attvalues; // values of XML attributes
+    std::vector<XMLEntity> _entities;    // subentities
+    XMLEntity* _parent;                  // parent entity
+    void* _parser;                       // associated XML parser
 
-private:
+  private:
     XMLEntity(void* parser);
-    XMLEntity(const char* name,
-	      const char** attributes,
-	      unsigned lineno,
-	      XMLEntity* parent);
+    XMLEntity(const char* name, const char** attributes, unsigned lineno, XMLEntity* parent);
     void* parser() const { return _parser; }
     XMLEntity* parent() const { return _parent; }
     static void _startXML(void* ud, const char* name, const char** atts);
@@ -89,8 +84,7 @@ private:
     static void _startCDATA(void* ud, const char* s, int len);
 };
 
-inline std::ostream &operator<<(std::ostream &os, const XMLException& ex)
-{
+inline std::ostream& operator<<(std::ostream& os, const XMLException& ex) {
     os << "XML Exception! " << ex.what() << std::endl;
     if (ex._obj) {
         os << "Current XML tag: " << ex._obj->name() << " in line " << ex._obj->lineno() << std::endl;

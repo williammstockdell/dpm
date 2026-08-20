@@ -25,18 +25,13 @@
 
 #include <utility/include/cxxsockets/SockAddrList.h>
 
-
 #include <unistd.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-Protocol::Protocol()
-{
+Protocol::Protocol() {}
 
-}
-
-Protocol::~Protocol()
-{
+Protocol::~Protocol() {
     // Lock and unlock so that we don't destruct
     // in the middle of a send/receive operation.
     // If the op is hung on a blocking send/receive,
@@ -45,12 +40,7 @@ Protocol::~Protocol()
     std::lock_guard scoped_lock(_sr_lock);
 }
 
-void
-Protocol::sendOnly(
-        const std::string& requestName,
-        const XML::Serializable& requestObject
-        )
-{
+void Protocol::sendOnly(const std::string& requestName, const XML::Serializable& requestObject) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_sr_lock);
     if (!_requester) {
@@ -68,14 +58,7 @@ Protocol::sendOnly(
     LOG_TRACE_MSG("Sent message.");
 }
 
-void
-Protocol::sendReceive(
-        const std::string& requestName,
-        const XML::Serializable& requestObject,
-        const std::string& replyName,
-        XML::Serializable& replyObject
-        )
-{
+void Protocol::sendReceive(const std::string& requestName, const XML::Serializable& requestObject, const std::string& replyName, XML::Serializable& replyObject) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_sr_lock);
     if (!_requester) {
@@ -111,15 +94,7 @@ Protocol::sendReceive(
     replyObject.read(is);
 }
 
-void
-Protocol::initializeRequester(
-        const bgq::utility::Properties::ConstPtr& props,
-        const int ipv,
-        const std::string& host,
-        const std::string& port,
-        const unsigned attempts
-        )
-{
+void Protocol::initializeRequester(const bgq::utility::Properties::ConstPtr& props, const int ipv, const std::string& host, const std::string& port, const unsigned attempts) {
     LOG_TRACE_MSG(__FUNCTION__);
     const CxxSockets::SockAddrList remote_list(static_cast<unsigned short>(ipv), host, port);
 
@@ -133,7 +108,7 @@ Protocol::initializeRequester(
     // Normally, we pass socket exceptions back to the client.
     // Here, however, we make use of them.
     bool connected = false;
-    for(const CxxSockets::SockAddr& remote : remote_list) {
+    for (const CxxSockets::SockAddr& remote : remote_list) {
         if (connected) {
             break;
         }
@@ -145,14 +120,14 @@ Protocol::initializeRequester(
                 port_config.notifyComplete();
                 sock->Connect(remote, port_config);
             } catch (const CxxSockets::Error& e) {
-                if ( e.errcode == -1 ) {
+                if (e.errcode == -1) {
                     // no point in retrying
                     throw;
                 }
-                LOG_DEBUG_MSG("Server not available, will retry: " << e.what() );
+                LOG_DEBUG_MSG("Server not available, will retry: " << e.what());
                 if (timeout < timeout_max)
                     timeout *= 10;
-                if ( forever || attempts > 1 ) {
+                if (forever || attempts > 1) {
                     usleep(timeout);
                 }
                 ++retries;
@@ -182,13 +157,9 @@ Protocol::initializeRequester(
     _requester->setProbe(true, 2, 1, 3);
 }
 
-void
-Protocol::initializeResponder(
-        CxxSockets::SecureTCPSocketPtr sock
-        )
-{
-     LOG_TRACE_MSG(__FUNCTION__);
-     _responder = sock;
+void Protocol::initializeResponder(CxxSockets::SecureTCPSocketPtr sock) {
+    LOG_TRACE_MSG(__FUNCTION__);
+    _responder = sock;
     // Keepalive.  Going to fire 'em off pretty quick because LNs may go away without warning.
     // 1) Five seconds from the last data packet, we send our first probe.
     // 2) Send a probe every second.
@@ -201,21 +172,12 @@ Protocol::initializeResponder(
     _responder->setProbe(true, 2, 1, 3);
 }
 
-void
-Protocol::setRequester(
-        CxxSockets::SecureTCPSocketPtr sock
-        )
-{
+void Protocol::setRequester(CxxSockets::SecureTCPSocketPtr sock) {
     LOG_TRACE_MSG(__FUNCTION__);
     _requester = sock;
 }
 
-void
-Protocol::sendReply(
-        const std::string& requestName,
-        const XML::Serializable& replyObject
-        )
-{
+void Protocol::sendReply(const std::string& requestName, const XML::Serializable& replyObject) {
     if (!_responder)
         return;
     LOG_DEBUG_MSG("Sending " << requestName << " reply.");
@@ -238,11 +200,7 @@ Protocol::sendReply(
     LOG_TRACE_MSG("Sent reply.");
 }
 
-void
-Protocol::getName(
-        std::string& requestName
-        )
-{
+void Protocol::getName(std::string& requestName) {
     LOG_TRACE_MSG(__FUNCTION__);
     if (!_responder)
         return;
@@ -253,11 +211,7 @@ Protocol::getName(
     requestName = classNameMessage.str();
 }
 
-void
-Protocol::getObject(
-        XML::Serializable* requestObject
-        )
-{
+void Protocol::getObject(XML::Serializable* requestObject) {
     LOG_TRACE_MSG(__FUNCTION__);
     if (!_responder)
         return;

@@ -21,10 +21,8 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef BGQ_UTILITY_LOGGING_PROGRAM_OPTIONS_H_
 #define BGQ_UTILITY_LOGGING_PROGRAM_OPTIONS_H_
-
 
 /*!
  * \file utility/include/LoggingProgramOptions.h
@@ -33,14 +31,13 @@
 
 #include <log4cxx/logger.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 namespace bgq {
 namespace utility {
-
 
 /*! \brief Program options for logging configuration.
  *
@@ -87,20 +84,15 @@ int main( int argc, char* argv[] )
 
  *
  */
-class LoggingProgramOptions
-{
-public:
-
+class LoggingProgramOptions {
+  public:
     typedef std::vector<std::string> Strings; //!< Argument for notifier.
 
-    typedef std::map<std::string,log4cxx::LevelPtr> LoggingLevels; //!< loggers to set
-
+    typedef std::map<std::string, log4cxx::LevelPtr> LoggingLevels; //!< loggers to set
 
     /*! \brief Constructor.
      */
-    explicit LoggingProgramOptions(
-            const std::string& default_logger_name
-        );
+    explicit LoggingProgramOptions(const std::string& default_logger_name);
 
     /*! \brief Set the parameters.
      *
@@ -110,9 +102,7 @@ public:
      *
      * \throws std::invalid_argument if the format of the parameter is not valid.
      */
-    void notifier(
-            const Strings& args
-        );
+    void notifier(const Strings& args);
 
     /*! \brief Apply the settings to the logging configuration.
      *
@@ -121,35 +111,25 @@ public:
      */
     void apply() const;
 
-
     /*! \brief Parse a verbose argument.
      *
      * \throws std::invalid_argument if the format of the parameter is not valid.
      */
-    static log4cxx::LevelPtr parseVerboseArgument(
-            const std::string& str  //!< [in]
-            );
+    static log4cxx::LevelPtr parseVerboseArgument(const std::string& str //!< [in]
+    );
 
     /*! \brief Get the logging levels set after parsing.
      */
     const LoggingLevels& get() const { return _logging_levels; }
 
-private:
-
+  private:
     std::string _default_logger_name;
     LoggingLevels _logging_levels;
 
-
-    void _parseVerboseString(
-            const std::string& str,
-            std::string& logger_name_out,
-            log4cxx::LevelPtr& level_ptr_out
-        );
+    void _parseVerboseString(const std::string& str, std::string& logger_name_out, log4cxx::LevelPtr& level_ptr_out);
 };
 
-
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq
-
 
 #endif

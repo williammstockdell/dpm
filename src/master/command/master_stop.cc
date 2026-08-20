@@ -28,25 +28,16 @@
 
 #include <utility/include/Log.h>
 
-
 #include <csignal>
 
-LOG_DECLARE_FILE( "master" );
-
+LOG_DECLARE_FILE("master");
 
 enum TypeToStop { BGMASTER_ONLY, BINARY, BGMASTER, BGAGENT, ALIAS, BINARIES };
 
-int
-doStop(
-        BGMasterClient& client,
-        const std::string& target,
-        const TypeToStop stoptype = ALIAS,
-        const int signal = 15
-        )
-{
+int doStop(BGMasterClient& client, const std::string& target, const TypeToStop stoptype = ALIAS, const int signal = 15) {
     BinaryId id(target);
     std::string errormsg;
-    switch(stoptype) {
+    switch (stoptype) {
     case BGMASTER_ONLY:
         try {
             client.end_master(true);
@@ -107,31 +98,23 @@ doStop(
     return 0;
 }
 
-void
-help()
-{
+void help() {
     std::cerr << "Stop any or all controlled processes and bgmaster_server. " << std::endl;
     std::cerr << "By default, it stops bgmaster_server and all managed binaries." << std::endl;
     std::cerr << "Processes are allowed an orderly completion" << std::endl;
-    std::cerr << "with a timeout before they are forced to end."<< std::endl;
+    std::cerr << "with a timeout before they are forced to end." << std::endl;
     std::cerr << "The signal number argument provides an initial signal" << std::endl;
     std::cerr << "to send. By default the initial signal is SIGTERM." << std::endl;
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-void
-usage()
-{
+void usage() {
     std::cerr << "master_stop [ alias ] | [ \"bgmaster\" ] | [ \"binaries\" ] | [ \"bgmaster_only\" ] "
               << "[ --binary binary id ] | [ --signal signal number ] [ --properties filename ] "
               << "[ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
 }
 
-int
-stringSigToIntSig(
-        const std::string& strsig
-        )
-{
+int stringSigToIntSig(const std::string& strsig) {
     int intsig = 0;
     if (strsig == "SIGHUP")
         intsig = SIGHUP;
@@ -217,9 +200,7 @@ stringSigToIntSig(
     return intsig;
 }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     std::string binarg = "--binary";
@@ -262,8 +243,7 @@ main(int argc, const char** argv)
         else if (target == "binaries") {
             target.clear();
             stoptype = BINARY;
-        }
-        else if (target == "bgmaster_only")
+        } else if (target == "bgmaster_only")
             stoptype = BGMASTER_ONLY;
         else
             stoptype = ALIAS;
@@ -277,5 +257,5 @@ main(int argc, const char** argv)
     }
 
     const int rc = doStop(client, target, stoptype, signal);
-    exit( rc );
+    exit(rc);
 }

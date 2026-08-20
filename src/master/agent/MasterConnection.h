@@ -26,45 +26,37 @@
 
 #include <utility/include/portConfiguration/PortConfiguration.h>
 
-
 class Agent;
 
 // FIXME:  This object either needs to go or to be part of a
 // refactor to pull all of the protocall and network manager
 // inside from Agent.
-class MasterConnection
-{
-public:
+class MasterConnection {
+  public:
     /*!
      * \brief Pointer type.
      */
     typedef std::shared_ptr<MasterConnection> Ptr;
 
-
     /*!
      * \brief Factory.
      */
-    static void create(
-            const bgq::utility::PortConfiguration::Pairs& ports,    //!< [in]
-            Agent* const agent                                      //!< [in]
-            );
+    static void create(const bgq::utility::PortConfiguration::Pairs& ports, //!< [in]
+                       Agent* const agent                                   //!< [in]
+    );
 
     /*!
      * \brief dtor.
      */
     ~MasterConnection();
 
-    MasterConnection(
-            const bgq::utility::PortConfiguration::Pairs& ports,
-            Agent* const agent
-            );
+    MasterConnection(const bgq::utility::PortConfiguration::Pairs& ports, Agent* const agent);
 
     void run(const int signal_read_fd);
 
     void cleanupAndDie() { _ending = true; }
 
-private:
-
+  private:
     void makeConnection();
     bool pollConnection(const int signal_read_fd);
 

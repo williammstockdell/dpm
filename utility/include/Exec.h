@@ -36,25 +36,18 @@ namespace Exec {
 //! and process id so that a process can read the child's stderr and stdout
 //! and wait for it to complete.
 //! \param pipefd A file descriptor to be filled out with the child's output pipe.
-//!        This will not be set if logfilename is passed. 
+//!        This will not be set if logfilename is passed.
 //! \param path_and_args The full path of the executable and its arguments
-//! \param managed Sets the non-portable Linux PR_SET_PDEATHSIG so ensure that 
+//! \param managed Sets the non-portable Linux PR_SET_PDEATHSIG so ensure that
 //!        death of the parent takes out the child.
 //! \param propfile of bg.properties file to pass as an env var.
 //! \param errorstring
 //! \param logfilename
 //! \param userid
 //! \returns the child's process ID
-pid_t fexec(
-        int& pipefd,
-        const std::string& path_and_args,
-        std::string& errorstring,
-        const bool managed,
-        const std::string& logfilename = std::string(), 
-        const std::string& propfile = std::string(),
-        const std::string& userid = std::string()
-        );
+pid_t fexec(int& pipefd, const std::string& path_and_args, std::string& errorstring, const bool managed, const std::string& logfilename = std::string(), const std::string& propfile = std::string(),
+            const std::string& userid = std::string());
 
-} // Exec
+} // namespace Exec
 
 #endif

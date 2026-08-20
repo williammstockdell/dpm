@@ -21,7 +21,6 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #include "portConfiguration/ClientPortConfiguration.h"
 
 #include "portConfiguration/SslConfiguration.h"
@@ -30,59 +29,32 @@
 
 #include <sstream>
 
-
 using std::ostringstream;
 using std::string;
 
-
-LOG_DECLARE_FILE( "utility" );
-
+LOG_DECLARE_FILE("utility");
 
 namespace bgq {
 namespace utility {
 
+const std::string ClientPortConfiguration::DefaultHostname("");
+const std::string ClientPortConfiguration::OptionName("host");
+const std::string ClientPortConfiguration::PropertyName("host");
 
-const std::string ClientPortConfiguration::DefaultHostname( "" );
-const std::string ClientPortConfiguration::OptionName( "host" );
-const std::string ClientPortConfiguration::PropertyName( "host" );
-
-
-ClientPortConfiguration::ClientPortConfiguration(
-        uint32_t default_tcp_port,
-        ConnectionType::Value connection_type
-    ) :
-        PortConfiguration( default_tcp_port ),
-        _connection_type(connection_type)
-{
+ClientPortConfiguration::ClientPortConfiguration(uint32_t default_tcp_port, ConnectionType::Value connection_type) : PortConfiguration(default_tcp_port), _connection_type(connection_type) {
     // Nothing to do.
 }
 
-
-ClientPortConfiguration::ClientPortConfiguration(
-        const std::string& default_service_name,
-        ConnectionType::Value connection_type
-    ) :
-        PortConfiguration( default_service_name ),
-        _connection_type(connection_type)
-{
+ClientPortConfiguration::ClientPortConfiguration(const std::string& default_service_name, ConnectionType::Value connection_type)
+    : PortConfiguration(default_service_name), _connection_type(connection_type) {
     // Nothing to do.
 }
 
-
-ClientPortConfiguration::ClientPortConfiguration(
-        const std::string& default_service_name,
-        const std::string& port_type_name,
-        const std::string& port_type_description,
-        ConnectionType::Value connection_type
-    ) :
-        PortConfiguration( default_service_name ),
-        _name(port_type_name),
-        _description(port_type_description),
-        _connection_type(connection_type)
-{
+ClientPortConfiguration::ClientPortConfiguration(const std::string& default_service_name, const std::string& port_type_name, const std::string& port_type_description,
+                                                 ConnectionType::Value connection_type)
+    : PortConfiguration(default_service_name), _name(port_type_name), _description(port_type_description), _connection_type(connection_type) {
     // Nothing to do.
 }
-
 
 // void ClientPortConfiguration::addTo(
 //         boost::program_options::options_description& options
@@ -106,34 +78,23 @@ ClientPortConfiguration::ClientPortConfiguration(
 //          );
 // }
 
-
-SslConfiguration ClientPortConfiguration::createSslConfiguration() const
-{
-    SslConfiguration ssl_config(
-            SslConfiguration::Use::Client,
-            _connection_type == ClientPortConfiguration::ConnectionType::Command ?
-                    SslConfiguration::Certificate::Command : SslConfiguration::Certificate::Administrative,
-            _properties_ptr
-        );
+SslConfiguration ClientPortConfiguration::createSslConfiguration() const {
+    SslConfiguration ssl_config(SslConfiguration::Use::Client,
+                                _connection_type == ClientPortConfiguration::ConnectionType::Command ? SslConfiguration::Certificate::Command : SslConfiguration::Certificate::Administrative,
+                                _properties_ptr);
 
     return ssl_config;
 }
 
+std::string ClientPortConfiguration::_getPropertyName() const { return (string() + (_name.empty() ? "" : string() + _name + "_") + PropertyName); }
 
-std::string ClientPortConfiguration::_getPropertyName() const
-{
-    return (string() + (_name.empty() ? "" : string() + _name + "_") + PropertyName);
-}
-
-
-ClientPortConfiguration::Pairs ClientPortConfiguration::_getDefault() const
-{
+ClientPortConfiguration::Pairs ClientPortConfiguration::_getDefault() const {
     Pairs pairs;
 
-    pairs.push_back( Pair( DefaultHostname, getDefaultServiceName() ) );
+    pairs.push_back(Pair(DefaultHostname, getDefaultServiceName()));
 
     return pairs;
 }
 
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq

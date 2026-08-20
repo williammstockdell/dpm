@@ -29,29 +29,17 @@
 
 #include "Log.h"
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
-FileSet::FileSet() :
-    _filevec(),
-    _setLock()
-{
+FileSet::FileSet() : _filevec(), _setLock() {}
 
-}
+FileSet::~FileSet() {}
 
-FileSet::~FileSet()
-{
-
-}
-
-void
-FileSet::LockSet(
-        PthreadMutexHolder& mutex
-        )
-{
+void FileSet::LockSet(PthreadMutexHolder& mutex) {
     const int rc = mutex.Lock(&_setLock);
-    if ( rc ) {
+    if (rc) {
         std::ostringstream msg;
         char buf[256];
         msg << "Could not lock set: " << strerror_r(rc, buf, sizeof(buf));
@@ -60,39 +48,27 @@ FileSet::LockSet(
 }
 
 // Do not lock.  Private method called by public methods that lock.
-void
-FileSet::pAddFile(
-        FilePtr file
-        )
-{
+void FileSet::pAddFile(FilePtr file) {
     const std::vector<FilePtr>::const_iterator f = std::find(_filevec.begin(), _filevec.end(), file);
     if (f != _filevec.end()) {
         std::ostringstream msg;
         msg << "Socket already added" << std::endl;
-        LOG_DEBUG_MSG( msg.str() );
+        LOG_DEBUG_MSG(msg.str());
         throw UserError(-1, msg.str());
     }
     _filevec.push_back(file);
 }
 
-void
-FileSet::AddFile(
-        FilePtr file
-        )
-{
+void FileSet::AddFile(FilePtr file) {
     PthreadMutexHolder mutex;
     LockSet(mutex);
     pAddFile(file);
 }
 
-void
-FileSet::RemoveFile(
-        FilePtr file
-        )
-{
+void FileSet::RemoveFile(FilePtr file) {
     PthreadMutexHolder mutex;
     LockSet(mutex);
-    _filevec.erase(remove(_filevec.begin(),_filevec.end(),file), _filevec.end());
+    _filevec.erase(remove(_filevec.begin(), _filevec.end(), file), _filevec.end());
 }
 
-}
+} // namespace CxxSockets

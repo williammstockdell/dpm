@@ -21,36 +21,27 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef MASTER_LOCK_FILE_H_
 #define MASTER_LOCK_FILE_H_
 
-
 #include <fstream>
-#include <string>
 #include <stdexcept>
+#include <string>
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-
-class LockFile
-{
-public:
+class LockFile {
+  public:
     const std::string _fname;
     char _pid[64];
     bool _fileExists;
 
-    LockFile(
-            const char* server_name
-            ) : 
-        _fname( std::string("/tmp/") + server_name + "-lock"),
-        _fileExists(false)
-    {
+    LockFile(const char* server_name) : _fname(std::string("/tmp/") + server_name + "-lock"), _fileExists(false) {
         struct stat lstat;
         if (!stat(_fname.c_str(), &lstat)) {
-            _fileExists=true;
+            _fileExists = true;
             std::ifstream in(_fname.c_str());
             in.getline(_pid, 64);
             return;
@@ -60,19 +51,18 @@ public:
     }
 
     void setpid() {
-        std::ofstream out( _fname.c_str() );
+        std::ofstream out(_fname.c_str());
         out << getpid() << "\n";
-        if ( !out ) {
-            throw std::runtime_error( std::string("Could not write pid to ") + _fname );
+        if (!out) {
+            throw std::runtime_error(std::string("Could not write pid to ") + _fname);
         }
     }
 
     ~LockFile() {
-        if ( !_fileExists ) {
+        if (!_fileExists) {
             ::remove(_fname.c_str());
         }
     }
 };
-
 
 #endif

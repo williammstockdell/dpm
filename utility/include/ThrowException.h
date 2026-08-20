@@ -32,6 +32,11 @@
 /*!
  * \brief throw an exception of the given type with the msg as the what parameter.
  */
-#define UTILITY_THROW_EXCEPTION(type, msg) { std::ostringstream os; os << msg; throw type( os.str() ); }
+#define UTILITY_THROW_EXCEPTION(type, msg)                                                                                                                                                             \
+    {                                                                                                                                                                                                  \
+        std::ostringstream os;                                                                                                                                                                         \
+        os << msg;                                                                                                                                                                                     \
+        throw type(os.str());                                                                                                                                                                          \
+    }
 
 #endif

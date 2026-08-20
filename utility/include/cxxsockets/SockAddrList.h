@@ -37,9 +37,8 @@
 namespace CxxSockets {
 
 //! \brief List of SockAddrs
-class SockAddrList
-{
-public:
+class SockAddrList {
+  public:
     typedef std::deque<SockAddr>::iterator iterator;
     typedef std::deque<SockAddr>::const_iterator const_iterator;
 
@@ -47,11 +46,10 @@ public:
     SockAddrList() {}
 
     //! \brief Constructor
-    SockAddrList(
-            const unsigned short family,    //!< [in] Address family e.g. AF_INET, AF_INET6, AF_UNSPEC
-            const std::string& nodename,    //!< [in] hostname or IP address string
-            const std::string& service      //!< [in] port or service name from /etc/services
-            );
+    SockAddrList(const unsigned short family, //!< [in] Address family e.g. AF_INET, AF_INET6, AF_UNSPEC
+                 const std::string& nodename, //!< [in] hostname or IP address string
+                 const std::string& service   //!< [in] port or service name from /etc/services
+    );
 
     //! forwarded operations
     size_t size() const { return _sockque.size(); }
@@ -61,12 +59,11 @@ public:
     const_iterator end() const { return _sockque.end(); }
     void push_back(const SockAddr& sa) { _sockque.push_back(sa); }
 
-private:
+  private:
     //! \brief Double-ended-queue of SockAddrs
     std::deque<SockAddr> _sockque;
 };
 
-}
+} // namespace CxxSockets
 
 #endif
-

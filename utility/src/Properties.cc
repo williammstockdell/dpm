@@ -24,22 +24,21 @@
 #include <Properties.h>
 
 #include <Log.h>
-#include <shared_mutex>
-#include <unistd.h>
-#include <string>
+#include <Trim.h>
 #include <cassert>
 #include <cerrno>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <shared_mutex>
 #include <stdexcept>
-#include <string>
 #include <string.h>
-#include <filesystem>
-#include <Trim.h>
+#include <string>
+#include <unistd.h>
 
 using std::string;
 
-LOG_DECLARE_FILE( "utility" );
+LOG_DECLARE_FILE("utility");
 
 namespace bgq {
 namespace utility {
@@ -47,31 +46,20 @@ namespace utility {
 #include <algorithm>
 #include <cctype>
 
-
 //---------------------------------------------------------------------
 // class Properties
 
-const std::string Properties::EnvironmentalName( "BG_PROPERTIES_FILE" );
-const std::string Properties::DefaultLocation( "/bgsys/local/etc/bg.properties");
+const std::string Properties::EnvironmentalName("BG_PROPERTIES_FILE");
+const std::string Properties::DefaultLocation("/bgsys/local/etc/bg.properties");
 
-Properties::Properties(
-        const std::string& file
-        ) :
-    _filename(file),
-    _map(),
-    _mutex()
-{
-    this->read();
-}
+Properties::Properties(const std::string& file) : _filename(file), _map(), _mutex() { this->read(); }
 
-void
-Properties::read()
-{
+void Properties::read() {
     // get filename
-    if ( _filename.empty() ) {
+    if (_filename.empty()) {
         // use env value
-        if (getenv( EnvironmentalName.c_str() )) {
-            _filename = getenv( EnvironmentalName.c_str() );
+        if (getenv(EnvironmentalName.c_str())) {
+            _filename = getenv(EnvironmentalName.c_str());
         } else {
             // use default
             _filename = DefaultLocation;
@@ -114,44 +102,22 @@ Properties::read()
         } else if (section != _map.end()) {
             this->parseLine(section, line, lineno);
         } else {
-            throw(
-                    MissingSection(
-                                   "line " + std::to_string(lineno) +
-                        " of properties file " + _filename + " is invalid"
-                        )
-                    );
+            throw(MissingSection("line " + std::to_string(lineno) + " of properties file " + _filename + " is invalid"));
         }
     }
 }
 
-Properties::Map::iterator
-Properties::parseSection(
-        const std::string& line,
-        uint32_t lineno
-        )
-{
+Properties::Map::iterator Properties::parseSection(const std::string& line, uint32_t lineno) {
     // ensure we have left brackets
     std::string::size_type leftBracket = line.find_first_of('[');
     if (leftBracket == std::string::npos) {
-        throw(
-                MalformedSection(
-                    "missing [ character at line " +
-                    std::to_string(lineno) +
-                    " in file " + _filename
-                    )
-                );
+        throw(MalformedSection("missing [ character at line " + std::to_string(lineno) + " in file " + _filename));
     }
 
     // ensure we have right bracket
     std::string::size_type rightBracket = line.find_first_of(']', leftBracket);
     if (rightBracket == std::string::npos) {
-        throw(
-                MalformedSection(
-                    "missing ] character at line " +
-                    std::to_string(lineno) +
-                    " in file " + _filename
-                    )
-                );
+        throw(MalformedSection("missing ] character at line " + std::to_string(lineno) + " in file " + _filename));
     }
 
     // get section name
@@ -163,35 +129,25 @@ Properties::parseSection(
     // make sure we don't have this section
     Map::const_iterator section = _map.find(name);
     if (section != _map.end()) {
-        throw(
-                DuplicateSection(
-                                 "section " + name + " already exists"
-                                 " in properties file " + _filename
-                    )
-                );
+        throw(DuplicateSection("section " + name +
+                               " already exists"
+                               " in properties file " +
+                               _filename));
     }
 
     // add section
-    Map::iterator result = _map.insert( Map::value_type( name, Section() ) ).first;
+    Map::iterator result = _map.insert(Map::value_type(name, Section())).first;
     return result;
 }
 
-void
-Properties::parseLine(
-        Map::iterator sectionIterator,
-        const std::string& line,
-        uint32_t lineno
-        )
-{
+void Properties::parseLine(Map::iterator sectionIterator, const std::string& line, uint32_t lineno) {
     // look for equals char
     std::string::size_type equals = line.find_first_of('=');
     if (equals == std::string::npos) {
-        throw(
-                MalformedKey(
-                             "line " + std::to_string(lineno) + " missing equals token"
-                    " in properties file " + _filename
-                    )
-                );
+        throw(MalformedKey("line " + std::to_string(lineno) +
+                           " missing equals token"
+                           " in properties file " +
+                           _filename));
     }
 
     // tokenize
@@ -205,12 +161,7 @@ Properties::parseLine(
     // make sure we don't have this key
     try {
         this->getValueImpl(sectionIterator->first, key);
-        throw(
-                DuplicateKey(
-                    "found duplicate key in section " + sectionIterator->first +
-                    " of properties file " + _filename
-                    )
-                );
+        throw(DuplicateKey("found duplicate key in section " + sectionIterator->first + " of properties file " + _filename));
     } catch (const std::invalid_argument& e) {
         // fall through
     }
@@ -220,91 +171,57 @@ Properties::parseLine(
     sectionIterator->second.push_back(pair);
 }
 
-const std::string&
-Properties::getValue(
-        const std::string& sectionName,
-        const std::string& keyName
-        ) const
-{
+const std::string& Properties::getValue(const std::string& sectionName, const std::string& keyName) const {
     // acquire read lock
-    std::shared_lock<Mutex> lock( _mutex );
-    return this->getValueImpl( sectionName, keyName );
+    std::shared_lock<Mutex> lock(_mutex);
+    return this->getValueImpl(sectionName, keyName);
 }
 
-const std::string& Properties::getValueImpl(const std::string& sectionName, const std::string& keyName) const
-{
+const std::string& Properties::getValueImpl(const std::string& sectionName, const std::string& keyName) const {
     const Section& section = getValuesImpl(sectionName);
 
-    const auto keyIterator = std::find_if(
-        section.begin(),
-        section.end(),
-        [&keyName](const auto& entry) {
-            return entry.first == keyName;
-        }
-    );
+    const auto keyIterator = std::find_if(section.begin(), section.end(), [&keyName](const auto& entry) { return entry.first == keyName; });
 
     if (keyIterator == section.end()) {
-        throw std::invalid_argument(
-            "could not find key " + keyName +
-            " in section " + sectionName +
-            " of properties file " + _filename
-        );
+        throw std::invalid_argument("could not find key " + keyName + " in section " + sectionName + " of properties file " + _filename);
     }
 
     return keyIterator->second;
 }
 
-const Properties::Section&
-Properties::getValues(
-        const std::string& sectionName
-        ) const
-{
+const Properties::Section& Properties::getValues(const std::string& sectionName) const {
     // acquire read lock
-    std::shared_lock<Mutex> lock( _mutex );
-    return this->getValuesImpl( sectionName );
+    std::shared_lock<Mutex> lock(_mutex);
+    return this->getValuesImpl(sectionName);
 }
 
-const Properties::Section&
-Properties::getValuesImpl(
-        const std::string& sectionName
-        ) const
-{
+const Properties::Section& Properties::getValuesImpl(const std::string& sectionName) const {
     // find section
     Map::const_iterator sectionIterator = _map.find(sectionName);
     if (sectionIterator == _map.end()) {
-        throw(
-                std::invalid_argument(
-                    "Could not find section " + sectionName + " in properties file " + _filename
-                    )
-                );
+        throw(std::invalid_argument("Could not find section " + sectionName + " in properties file " + _filename));
     }
 
     return sectionIterator->second;
 }
 
-bool
-Properties::reload(
-        const std::string& filename
-        )
-{
+bool Properties::reload(const std::string& filename) {
     // ensure filename is fully qualified
-    if ( !filename.empty() && !std::filesystem::path(filename).is_absolute() ) {
-        LOG_WARN_MSG( filename << " is not a fully qualified path" );
-        throw(
-                std::invalid_argument( filename )
-                );
+    if (!filename.empty() && !std::filesystem::path(filename).is_absolute()) {
+        LOG_WARN_MSG(filename << " is not a fully qualified path");
+        throw(std::invalid_argument(filename));
     }
 
     // acquire write lock
-    std::unique_lock<Mutex> unique( _mutex );
+    std::unique_lock<Mutex> unique(_mutex);
 
     // retain copy
     Map map;
     map.swap(_map);
 
     // reset filename
-    std::string old_filename( _filename );
-    if ( !filename.empty() ) {
+    std::string old_filename(_filename);
+    if (!filename.empty()) {
         _filename = filename;
     }
 
@@ -320,5 +237,5 @@ Properties::reload(
     }
 }
 
-} // namespace bgq::utility
 } // namespace utility
+} // namespace bgq

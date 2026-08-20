@@ -25,20 +25,15 @@
 
 #include "BinaryController.h"
 
-#include <utility/include/Log.h>
 #include <algorithm>
+#include <utility/include/Log.h>
 
 LOG_DECLARE_FILE("master");
 
-bool
-AgentBase::find_binary(
-        const BinaryId& id,
-        BinaryControllerPtr& p
-        ) const
-{
+bool AgentBase::find_binary(const BinaryId& id, BinaryControllerPtr& p) const {
     LOG_TRACE_MSG(__FUNCTION__);
     bool foundit = false;
-    for(const BinaryControllerPtr& bincont : _binaries) {
+    for (const BinaryControllerPtr& bincont : _binaries) {
         if (id == bincont->get_binid()) {
             p = bincont;
             foundit = true;
@@ -47,13 +42,9 @@ AgentBase::find_binary(
     return foundit;
 }
 
-bool
-AgentBase::runningAlias(
-        const std::string &alias_name
-        ) const
-{
+bool AgentBase::runningAlias(const std::string& alias_name) const {
     LOG_TRACE_MSG(__FUNCTION__);
-    for(const BinaryControllerPtr& bptr :  _binaries) {
+    for (const BinaryControllerPtr& bptr : _binaries) {
         if (bptr->get_alias_name() == alias_name)
             return true;
     }
@@ -66,8 +57,4 @@ void AgentBase::addController(const BinaryControllerPtr& controller) {
     _binaries.insert(_binaries.begin(), controller);
 }
 
-void
-AgentBase::removeController(const BinaryControllerPtr& controller) {
-
-    _binaries.erase(std::remove(_binaries.begin(), _binaries.end(), controller), _binaries.end());
-}
+void AgentBase::removeController(const BinaryControllerPtr& controller) { _binaries.erase(std::remove(_binaries.begin(), _binaries.end(), controller), _binaries.end()); }

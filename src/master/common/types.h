@@ -24,16 +24,14 @@
 #ifndef MASTER_TYPES_H_
 #define MASTER_TYPES_H_
 
-
 #include <xml/include/library/XML.h>
 
 #include <log4cxx/log4cxx.h>
 
 #include <string>
-#include <utility>
 #include <string_view>
 #include <type_traits>
-
+#include <utility>
 
 class AgentBase;
 typedef std::shared_ptr<AgentBase> AgentBasePtr;
@@ -52,9 +50,7 @@ typedef std::shared_ptr<Protocol> ProtocolPtr;
 
 typedef std::shared_ptr<XML::Serializable> MsgBasePtr;
 
-
-template <typename T>
-std::string local_to_string(const T& value) {
+template <typename T> std::string local_to_string(const T& value) {
     if constexpr (std::is_convertible_v<T, std::string_view>) {
         return std::string(value);
     } else {
@@ -62,9 +58,6 @@ std::string local_to_string(const T& value) {
     }
 }
 
-
-#define LOGGING_DECLARE_ID_MDC(value) \
-    log4cxx::MDC _location_mdc( "ID", std::string("{") + local_to_string(value) + "} " );
-
+#define LOGGING_DECLARE_ID_MDC(value) log4cxx::MDC _location_mdc("ID", std::string("{") + local_to_string(value) + "} ");
 
 #endif

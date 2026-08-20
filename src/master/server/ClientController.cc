@@ -21,11 +21,11 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include "ClientController.h"
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "Alias.h"
 #include "AliasList.h"
-#include "ClientController.h"
 #include "ClientManager.h"
 #include "MasterController.h"
 #include "ras.h"
@@ -34,34 +34,23 @@
 
 #include "common/BinaryController.h"
 
+#include <log4cxx/logger.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/TimeStuff.h>
-#include <log4cxx/logger.h>
-
 
 #include <pthread.h>
 #include <signal.h>
 #include <unistd.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-ClientController::~ClientController()
-{
+ClientController::~ClientController() {
     LOGGING_DECLARE_ID_MDC(_client_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
 }
 
-ClientController::ClientController(
-        const ClientProtocolPtr& prot,
-        const std::string& ipaddr,
-        const int port,
-        const CxxSockets::UserType utype
-        ) :
-    _prot( prot ),
-    _ending( false ),
-    _client_id( port, ipaddr ),
-    _utype( utype )
-{
+ClientController::ClientController(const ClientProtocolPtr& prot, const std::string& ipaddr, const int port, const CxxSockets::UserType utype)
+    : _prot(prot), _ending(false), _client_id(port, ipaddr), _utype(utype) {
     LOGGING_DECLARE_ID_MDC(_client_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
 
@@ -71,11 +60,7 @@ ClientController::ClientController(
     LOG_DEBUG_MSG("Sent join reply to " << ipaddr << ":" << port);
 }
 
-void
-ClientController::doStartRequest(
-        const BGMasterClientProtocolSpec::StartRequest& startreq
-        )
-{
+void ClientController::doStartRequest(const BGMasterClientProtocolSpec::StartRequest& startreq) {
     LOG_TRACE_MSG(__FUNCTION__);
     BinaryId id;
     BGMasterClientProtocolSpec::StartReply clientrep(exceptions::OK, "started servers", id);
@@ -129,13 +114,7 @@ ClientController::doStartRequest(
                 const BGAgentId aid(startreq._agent_id);
                 const AgentRepPtr p = al->validateStartAgent(aid);
                 if (p) {
-                    const BGMasterAgentProtocolSpec::StartRequest agentreq(
-                            al->get_path(),
-                            al->get_args(),
-                            al->get_logdir(),
-                            al->get_name(),
-                            al->get_user()
-                            );
+                    const BGMasterAgentProtocolSpec::StartRequest agentreq(al->get_path(), al->get_args(), al->get_logdir(), al->get_name(), al->get_user());
                     BGMasterAgentProtocolSpec::StartReply agentrep;
                     agentrep._rc = exceptions::OK;
 
@@ -143,9 +122,9 @@ ClientController::doStartRequest(
 
                     std::ostringstream logmsg;
                     logmsg << "start request path=" << agentreq._path << " "
-                        << "arguments=" << agentreq._arguments << " "
-                        << "logdir=" << al->get_logdir() << " "
-                        << "user=" << agentreq._user << " ";
+                           << "arguments=" << agentreq._arguments << " "
+                           << "logdir=" << al->get_logdir() << " "
+                           << "user=" << agentreq._user << " ";
                     LOG_TRACE_MSG(logmsg.str());
 
                     bid = p->startBin(agentreq, agentrep);
@@ -195,34 +174,23 @@ ClientController::doStartRequest(
     }
 }
 
-void
-ClientController::doAgentRequest(
-        const BGMasterClientProtocolSpec::AgentlistRequest& /* agentreq */
-        )
-{
+void ClientController::doAgentRequest(const BGMasterClientProtocolSpec::AgentlistRequest& /* agentreq */
+) {
     LOG_TRACE_MSG(__FUNCTION__);
     // Got an agent request. Build up a reply which means going through all of the agents and all of their
     // binaries, and shoving it in the message. First, iterate through the agent manager:
     BGMasterClientProtocolSpec::AgentlistReply agentrep(exceptions::OK, "success");
-    for(const AgentRepPtr& agent : MasterController::get_agent_manager().get_agent_list()) {
+    for (const AgentRepPtr& agent : MasterController::get_agent_manager().get_agent_list()) {
         // Build our corresponding protocol agent object
         BGMasterClientProtocolSpec::AgentlistReply::Agent reply_agent(agent->get_agent_id());
 
         // Now iterate through binaries and add them. This gets a COPY of the binary list which could change, but that's OK.
         std::vector<BinaryControllerPtr> binaries = agent->get_binaries();
-        for(const BinaryControllerPtr& binary : binaries) {
+        for (const BinaryControllerPtr& binary : binaries) {
             typedef BGMasterClientProtocolSpec::AgentlistReply::Agent::Binary AgentBin;
             LOG_DEBUG_MSG("Found binary " << binary);
             const std::string t = time_to_string(binary->get_start_time());
-            const AgentBin bin(
-                    binary->get_status(),
-                    binary->get_exit_status(),
-                    binary->get_binary_bin_path(),
-                    binary->get_alias_name(),
-                    binary->get_user(),
-                    binary->get_binid().str(),
-                    t
-                    );
+            const AgentBin bin(binary->get_status(), binary->get_exit_status(), binary->get_binary_bin_path(), binary->get_alias_name(), binary->get_user(), binary->get_binid().str(), t);
             reply_agent._binaries.push_back(bin);
         }
 
@@ -241,11 +209,8 @@ ClientController::doAgentRequest(
     }
 }
 
-void
-ClientController::doClientsRequest(
-        const BGMasterClientProtocolSpec::ClientsRequest& /* clientreq */
-        )
-{
+void ClientController::doClientsRequest(const BGMasterClientProtocolSpec::ClientsRequest& /* clientreq */
+) {
     LOG_TRACE_MSG(__FUNCTION__);
     // Spin through the client controllers and add them to the reply
     BGMasterClientProtocolSpec::ClientsReply clientrep(exceptions::OK, "success");
@@ -269,11 +234,7 @@ ClientController::doClientsRequest(
     }
 }
 
-void
-ClientController::doWaitRequest(
-        const BGMasterClientProtocolSpec::WaitRequest& waitreq
-        )
-{
+void ClientController::doWaitRequest(const BGMasterClientProtocolSpec::WaitRequest& waitreq) {
     LOG_TRACE_MSG(__FUNCTION__ << " " << waitreq._binary_id);
     // Get the binary id and then we'll loop until we can't find the controller any more.
     const BinaryId reqbid(waitreq._binary_id);
@@ -326,18 +287,11 @@ ClientController::doWaitRequest(
     }
 }
 
-void
-ClientController::doStopRequest(
-        const BGMasterClientProtocolSpec::StopRequest& stopreq
-        )
-{
+void ClientController::doStopRequest(const BGMasterClientProtocolSpec::StopRequest& stopreq) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::StopReply reply_to_client(exceptions::OK, "stopped");
 
-    LOG_INFO_MSG(
-            "Stop request for " << stopreq._binary_ids.size() << " ids and " << stopreq._aliases.size() <<
-            " binary names with signal " << stopreq._signal
-            );
+    LOG_INFO_MSG("Stop request for " << stopreq._binary_ids.size() << " ids and " << stopreq._aliases.size() << " binary names with signal " << stopreq._signal);
     unsigned binsfound = 0;
     if (_utype != CxxSockets::Administrator) {
         reply_to_client._rc = exceptions::FATAL;
@@ -353,9 +307,9 @@ ClientController::doStopRequest(
             reply_to_client._rt = "stopped all binaries";
 
             // Stop them all if nothing is passed
-            ++binsfound;  // Assume at least one is running.
+            ++binsfound; // Assume at least one is running.
             std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
-            for(const AgentRepPtr& rep : agents) {
+            for (const AgentRepPtr& rep : agents) {
                 if (rep) // The iterator may have gone stale.  Check the rep ptr.
                     rep->stopAllBins(reply_to_client, stopreq._signal);
             }
@@ -383,10 +337,7 @@ ClientController::doStopRequest(
                 location.second->stopBin(bid, location, stopreq._signal, stop_from_agent, false);
 
                 // Now collect the response and add it to the reply
-                const BGMasterClientProtocolSpec::StopReply::BinaryStatus binstat_to_return(
-                        stop_from_agent._status._binary_id,
-                        stop_from_agent._status._exit_status
-                        );
+                const BGMasterClientProtocolSpec::StopReply::BinaryStatus binstat_to_return(stop_from_agent._status._binary_id, stop_from_agent._status._exit_status);
 
                 reply_to_client._statuses.push_back(binstat_to_return);
                 if (stop_from_agent._rc != exceptions::OK) {
@@ -424,10 +375,7 @@ ClientController::doStopRequest(
                     rep->stopBin(bid, *li, stopreq._signal, stop_from_agent, false);
 
                     // Now collect the response and add it to the reply
-                    const BGMasterClientProtocolSpec::StopReply::BinaryStatus binstat_to_return(
-                            stop_from_agent._status._binary_id,
-                            stop_from_agent._status._exit_status
-                            );
+                    const BGMasterClientProtocolSpec::StopReply::BinaryStatus binstat_to_return(stop_from_agent._status._binary_id, stop_from_agent._status._exit_status);
 
                     reply_to_client._statuses.push_back(binstat_to_return);
                     if (stop_from_agent._rc != exceptions::OK) {
@@ -454,8 +402,7 @@ ClientController::doStopRequest(
     }
 }
 
-void
-ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusRequest& statusreq) {
+void ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusRequest& statusreq) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::StatusReply statusrep(exceptions::OK, "success");
 
@@ -472,15 +419,7 @@ ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusReques
                 const BinaryControllerPtr pbase = location.first;
                 if (pbase->valid()) {
                     const std::string t = time_to_string(pbase->get_start_time());
-                    const BinCont bin(
-                            pbase->get_exit_status(),
-                            pbase->get_binid().str(),
-                            pbase->get_binary_bin_path(),
-                            pbase->get_alias_name(),
-                            pbase->get_user(),
-                            pbase->get_status(),
-                            t
-                            );
+                    const BinCont bin(pbase->get_exit_status(), pbase->get_binid().str(), pbase->get_binary_bin_path(), pbase->get_alias_name(), pbase->get_user(), pbase->get_status(), t);
                     statusrep._binaries.push_back(bin);
                 }
             }
@@ -488,24 +427,16 @@ ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusReques
     } else {
         // Need them ALL. Loop through agents.
         const std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
-        for(const AgentRepPtr& rep : agents) {
+        for (const AgentRepPtr& rep : agents) {
             if (!rep) {
                 continue;
             }
             const std::vector<BinaryControllerPtr> binaries = rep->get_binaries();
             // Now loop through binaries
-            for(const BinaryControllerPtr& pbase : binaries) {
+            for (const BinaryControllerPtr& pbase : binaries) {
                 if (pbase->valid()) {
                     const std::string t = time_to_string(pbase->get_start_time());
-                    const BinCont bin(
-                            pbase->get_exit_status(),
-                            pbase->get_binid().str(),
-                            pbase->get_binary_bin_path(),
-                            pbase->get_alias_name(),
-                            pbase->get_user(),
-                            pbase->get_status(),
-                            t
-                            );
+                    const BinCont bin(pbase->get_exit_status(), pbase->get_binid().str(), pbase->get_binary_bin_path(), pbase->get_alias_name(), pbase->get_user(), pbase->get_status(), t);
                     statusrep._binaries.push_back(bin);
                 }
             }
@@ -521,17 +452,13 @@ ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusReques
     }
 }
 
-void
-ClientController::doTermRequest(
-        const BGMasterClientProtocolSpec::TerminateRequest& termreq
-        )
-{
+void ClientController::doTermRequest(const BGMasterClientProtocolSpec::TerminateRequest& termreq) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     BGMasterClientProtocolSpec::TerminateReply termrep(exceptions::OK, "success");
 
     // If we are already in the process of terminating we don't want to start the termination process again.
-    if ( MasterController::get_end_requested() ) {
+    if (MasterController::get_end_requested()) {
         termrep._rc = exceptions::WARN;
         termrep._rt = "bgmaster_server already terminating from previous request";
     } else {
@@ -550,7 +477,8 @@ ClientController::doTermRequest(
     }
 
     // Go no further if a secondary termination request to avoid undefined behavior.
-    if ( MasterController::get_end_requested() ) return;
+    if (MasterController::get_end_requested())
+        return;
 
     bool end_binaries = true;
     if (termreq._master_only) {
@@ -559,15 +487,11 @@ ClientController::doTermRequest(
 
     LOG_ERROR_MSG("terminate requested");
     MasterController::set_end_requested();
-    MasterController::stopThreads(end_binaries, termreq._signal);  // Not ending agents
+    MasterController::stopThreads(end_binaries, termreq._signal); // Not ending agents
     MasterController::set_master_terminating();
 }
 
-void
-ClientController::doReloadRequest(
-        const BGMasterClientProtocolSpec::ReloadRequest& relreq
-        )
-{
+void ClientController::doReloadRequest(const BGMasterClientProtocolSpec::ReloadRequest& relreq) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::ReloadReply relrep(exceptions::OK, "Successfully reloaded configuration. ");
 
@@ -631,11 +555,7 @@ ClientController::doReloadRequest(
     }
 }
 
-void
-ClientController::doFailRequest(
-        const BGMasterClientProtocolSpec::FailoverRequest& failreq
-        )
-{
+void ClientController::doFailRequest(const BGMasterClientProtocolSpec::FailoverRequest& failreq) {
     LOG_TRACE_MSG(__FUNCTION__ << " " << failreq._binary_ids[0]);
     BGMasterClientProtocolSpec::FailoverReply failrep(exceptions::OK, "success");
     const std::string trigger = failreq._trigger;
@@ -648,7 +568,7 @@ ClientController::doFailRequest(
         details["COMMAND"] = "fail_over";
 
     } else {
-        for(const std::string& strbid : failreq._binary_ids) {
+        for (const std::string& strbid : failreq._binary_ids) {
             // For every bin in the list, do the failover action, update
             // the status in the reply, and return it.
             // First, find out if we still have the binary.  If we do,
@@ -695,20 +615,11 @@ ClientController::doFailRequest(
     }
 }
 
-void
-ClientController::doMasterStatRequest(
-        const BGMasterClientProtocolSpec::MasterstatRequest& /* statreq */
-        )
-{
+void ClientController::doMasterStatRequest(const BGMasterClientProtocolSpec::MasterstatRequest& /* statreq */
+) {
     LOG_TRACE_MSG(__FUNCTION__);
-    const BGMasterClientProtocolSpec::MasterstatReply statrep(
-            exceptions::OK,
-            std::string(),
-            getpid(),
-            time_to_string(MasterController::get_start_time()),
-            MasterController::_version_string,
-            MasterController::getProps()->getFilename()
-            );
+    const BGMasterClientProtocolSpec::MasterstatReply statrep(exceptions::OK, std::string(), getpid(), time_to_string(MasterController::get_start_time()), MasterController::_version_string,
+                                                              MasterController::getProps()->getFilename());
     try {
         _prot->sendReply(statrep.getClassName(), statrep);
     } catch (const CxxSockets::SoftError& err) {
@@ -719,11 +630,7 @@ ClientController::doMasterStatRequest(
     }
 }
 
-void
-ClientController::doAliasWaitRequest(
-        const BGMasterClientProtocolSpec::Alias_waitRequest& waitreq
-        )
-{
+void ClientController::doAliasWaitRequest(const BGMasterClientProtocolSpec::Alias_waitRequest& waitreq) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::Alias_waitReply waitrep;
     waitrep._rc = exceptions::OK;
@@ -775,11 +682,8 @@ ClientController::doAliasWaitRequest(
     }
 }
 
-void
-ClientController::doErrorsRequest(
-        const BGMasterClientProtocolSpec::Get_errorsRequest& /* error_req */
-        )
-{
+void ClientController::doErrorsRequest(const BGMasterClientProtocolSpec::Get_errorsRequest& /* error_req */
+) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::Get_errorsReply error_rep(exceptions::OK, "success");
     MasterController::getErrorMessages(error_rep._errors);
@@ -793,11 +697,8 @@ ClientController::doErrorsRequest(
     }
 }
 
-void
-ClientController::doHistoryRequest(
-        const BGMasterClientProtocolSpec::Get_historyRequest& /* history_req */
-        )
-{
+void ClientController::doHistoryRequest(const BGMasterClientProtocolSpec::Get_historyRequest& /* history_req */
+) {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::Get_historyReply history_rep(exceptions::OK, "success");
     MasterController::getHistoryMessages(history_rep._history);
@@ -811,11 +712,8 @@ ClientController::doHistoryRequest(
     }
 }
 
-void
-ClientController::doEndmonitorRequest(
-        const BGMasterClientProtocolSpec::EndmonitorRequest& /* endmonreq */
-        )
-{
+void ClientController::doEndmonitorRequest(const BGMasterClientProtocolSpec::EndmonitorRequest& /* endmonreq */
+) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     const BGMasterClientProtocolSpec::EndmonitorReply endmonrep;
@@ -829,39 +727,29 @@ ClientController::doEndmonitorRequest(
         LOG_ERROR_MSG("Client connection ended during end monitor reply.");
     }
     std::scoped_lock scoped_lock(MasterController::_monitor_prots_mutex);
-    MasterController::get_monitor_prots().erase(
-            std::remove(
-                MasterController::get_monitor_prots().begin(),
-                MasterController::get_monitor_prots().end(),
-                _prot
-                ),
-            MasterController::get_monitor_prots().end()
-            );
+    MasterController::get_monitor_prots().erase(std::remove(MasterController::get_monitor_prots().begin(), MasterController::get_monitor_prots().end(), _prot),
+                                                MasterController::get_monitor_prots().end());
 }
 
-void
-ClientController::doLoglevelRequest(
-        const BGMasterClientProtocolSpec::LoglevelRequest& loglevreq
-        )
-{
+void ClientController::doLoglevelRequest(const BGMasterClientProtocolSpec::LoglevelRequest& loglevreq) {
     BGMasterClientProtocolSpec::LoglevelReply loglevrep;
     loglevrep._rc = exceptions::OK;
     loglevrep._rt = "";
 
     // If there are any changes in the request, apply them.
     bgq::utility::LoggingProgramOptions::Strings logstrings;
-    for(const std::string& logger : loglevreq._loggers) {
-        logstrings.push_back( logger );
+    for (const std::string& logger : loglevreq._loggers) {
+        logstrings.push_back(logger);
     }
     // Set logging level
     try {
-        bgq::utility::LoggingProgramOptions lpo( "ibm.master" );
-        lpo.notifier( logstrings );
+        bgq::utility::LoggingProgramOptions lpo("ibm.master");
+        lpo.notifier(logstrings);
         lpo.apply();
-    } catch ( const std::invalid_argument& e ) {
+    } catch (const std::invalid_argument& e) {
         loglevrep._rc = exceptions::FATAL;
         loglevrep._rt = e.what();
-        LOG_WARN_MSG( e.what() );
+        LOG_WARN_MSG(e.what());
     }
 
     const auto root = log4cxx::Logger::getRootLogger();
@@ -872,10 +760,7 @@ ClientController::doLoglevelRequest(
                 continue;
             }
 
-            loglevrep._loggers.emplace_back(
-                                            curr_loggerp->getName(),
-                                            curr_loggerp->getLevel()->toString()
-                                            );
+            loglevrep._loggers.emplace_back(curr_loggerp->getName(), curr_loggerp->getLevel()->toString());
         }
     }
 
@@ -889,15 +774,12 @@ ClientController::doLoglevelRequest(
     }
 }
 
-void
-ClientController::doGetidleRequest(
-        const BGMasterClientProtocolSpec::GetidleRequest& /* idlereq */
-        )
-{
+void ClientController::doGetidleRequest(const BGMasterClientProtocolSpec::GetidleRequest& /* idlereq */
+) {
     // Make a local copy because we don't really care about updates and we are going to destroy it when we're done.
     const std::vector<AliasPtr> alist = MasterController::_aliases.get_list_copy();
     BGMasterClientProtocolSpec::GetidleReply idlerep;
-    for(const AliasPtr& al : alist) {
+    for (const AliasPtr& al : alist) {
         if (!al->running()) {
             // Nothing running, put it in the reply.
             idlerep._aliases.push_back(al->get_name());
@@ -914,23 +796,20 @@ ClientController::doGetidleRequest(
     }
 }
 
-void
-ClientController::doMonitorRequest(
-        const BGMasterClientProtocolSpec::MonitorRequest& /* monreq */
-        )
-{
+void ClientController::doMonitorRequest(const BGMasterClientProtocolSpec::MonitorRequest& /* monreq */
+) {
     // To do this, we first send a reply of all of the history and event messages in our buffer.
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::MonitorReply monrep(exceptions::OK, "success");
     std::vector<std::string> history_messages;
     MasterController::getHistoryMessages(history_messages);
-    for(const std::string& curr_message : history_messages) {
+    for (const std::string& curr_message : history_messages) {
         BGMasterClientProtocolSpec::MonitorReply::EventMessage em(curr_message);
         monrep._eventmessages.push_back(em);
     }
     std::vector<std::string> error_messages;
     MasterController::getErrorMessages(error_messages);
-    for(const std::string& curr_message : error_messages) {
+    for (const std::string& curr_message : error_messages) {
         BGMasterClientProtocolSpec::MonitorReply::ErrorMessage em(curr_message);
         monrep._errormessages.push_back(em);
     }
@@ -949,9 +828,7 @@ ClientController::doMonitorRequest(
     MasterController::get_monitor_prots().push_back(_prot);
 }
 
-void
-ClientController::processRequest()
-{
+void ClientController::processRequest() {
     LOG_TRACE_MSG(__FUNCTION__);
     // These will be requests coming from the bgagent.
     std::string request_name;
@@ -1167,8 +1044,7 @@ ClientController::processRequest()
     }
 }
 
-void ClientController::waitMessages()
-{
+void ClientController::waitMessages() {
     LOGGING_DECLARE_ID_MDC(_client_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
     // Wait for requests and send responses
@@ -1185,16 +1061,12 @@ void ClientController::waitMessages()
     MasterController::get_client_manager().removeClient(self_ptr);
 }
 
-void
-ClientController::startPoller()
-{
+void ClientController::startPoller() {
     _client_socket_poller = std::thread(&ClientController::waitMessages, this);
     _client_socket_poller.detach();
 }
 
-void
-ClientController::cancel()
-{
+void ClientController::cancel() {
     LOGGING_DECLARE_ID_MDC(_client_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream os;
@@ -1204,7 +1076,7 @@ ClientController::cancel()
     LOG_DEBUG_MSG("Canceling client " << os.str());
     _ending = true;
     pthread_kill(_my_tid, SIGUSR1);
-    if (_my_tid != pthread_self()) {  // Don't want to wait for myself!
+    if (_my_tid != pthread_self()) { // Don't want to wait for myself!
         _client_socket_poller.join();
     }
 }

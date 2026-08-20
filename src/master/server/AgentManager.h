@@ -24,20 +24,17 @@
 #ifndef MASTER_AGENT_MANAGER_H_
 #define MASTER_AGENT_MANAGER_H_
 
-#include <mutex>
 #include "common/Ids.h"
 #include "types.h"
+#include <mutex>
 
 #include <utility/include/cxxsockets/Host.h>
-
 
 #include <string>
 #include <vector>
 
-
-class AgentManager
-{
-public:
+class AgentManager {
+  public:
     AgentManager();
 
     //! \brief set the number of agents we are allowed to have for each host
@@ -79,14 +76,12 @@ public:
     //! \brief get a COPY of the agent vector.
     std::vector<AgentRepPtr> get_agent_list() const { return _agents; }
 
-private:
-
+  private:
     //! \brief vector of BGAgents
     std::vector<AgentRepPtr> _agents;
     std::mutex _agent_manager_mutex;
     bool _ending_agents;
     unsigned int _agents_per_host;
 };
-
 
 #endif

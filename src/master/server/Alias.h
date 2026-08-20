@@ -25,31 +25,21 @@
 #define ALIAS_H
 
 #include <chrono>
-#include <optional>
 #include <list>
+#include <optional>
 #include <string>
 
-#include "common/Ids.h"
 #include "Policy.h"
+#include "common/Ids.h"
 #include "types.h"
 
 #include <utility/include/cxxsockets/Host.h>
 
-
-
 //! \brief Alias class.  Represents the association between a name,
 //! an executable, its policies, and its active instances.
-class Alias
-{
-public:
-    Alias(
-            const std::string& name,
-            const std::string& path,
-            const Policy& p,
-            const std::string& user = std::string(),
-            const std::string& logdir = std::string(),
-            const int preferredHostWait = int()
-         );
+class Alias {
+  public:
+    Alias(const std::string& name, const std::string& path, const Policy& p, const std::string& user = std::string(), const std::string& logdir = std::string(), const int preferredHostWait = int());
 
     void set_path(const std::string& path) {
         std::lock_guard scoped_lock(_mutex);
@@ -88,15 +78,21 @@ public:
     //! \return AgentRepPtr of the agent which must run this Alias next (if any)
     AgentRepPtr evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const BinaryId& failed_bid, BinaryControllerPtr bptr);
 
-    bool check_instances() const { if (_my_policy.limit() <= _binaries.size()) return false; else return true; }
+    bool check_instances() const {
+        if (_my_policy.limit() <= _binaries.size())
+            return false;
+        else
+            return true;
+    }
 
     //! \brief See if this alias has a specific binary id associated
     //! \param id Binary id to look for
     //! \return true if found, false if not
     bool find_binary(const BinaryId& id) {
         std::lock_guard lock_guard(_mutex);
-        for(BinaryId idit : _binaries) {
-            if (id == idit) return true;
+        for (BinaryId idit : _binaries) {
+            if (id == idit)
+                return true;
         }
         return false;
     }
@@ -126,9 +122,7 @@ public:
         return find_host_internal(host);
     }
 
-    Policy& policy() {
-        return _my_policy;
-    }
+    Policy& policy() { return _my_policy; }
 
     const std::string& get_name() const { return _name; }
     const std::string& get_path() const { return _path; }
@@ -136,13 +130,14 @@ public:
     const std::string& get_user() const { return _user; }
     const std::string& get_logdir() const { return _logdir; }
 
-private:
+  private:
     AgentRepPtr runPolicy(const BGAgentId& agent_id, bool restart);
 
     //! \brief If the passed host is in our list return true
     bool find_host_internal(const CxxSockets::Host& host) {
-        for(CxxSockets::Host h : _hosts) {
-            if (h == host) return true;
+        for (CxxSockets::Host h : _hosts) {
+            if (h == host)
+                return true;
         }
         return false;
     }

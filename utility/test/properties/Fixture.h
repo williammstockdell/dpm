@@ -29,29 +29,24 @@
 #include <boost/scoped_array.hpp>
 
 #include <cerrno>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 
-struct Fixture
-{
-public:
+struct Fixture {
+  public:
     /*!
      * \brief
      */
-    Fixture() :
-        _filename(),
-        _file(),
-        _fd(0)
-    {
-        bgq::utility::initializeLogging( *bgq::utility::Properties::create() );
+    Fixture() : _filename(), _file(), _fd(0) {
+        bgq::utility::initializeLogging(*bgq::utility::Properties::create());
 
         // create temporary file
         const char* file_template = "properties.XXXXXX";
-        boost::scoped_array<char> filename( new char[strlen(file_template) + 1] );
+        boost::scoped_array<char> filename(new char[strlen(file_template) + 1]);
         strncpy(filename.get(), file_template, strlen(file_template));
-        filename[ strlen(file_template) ] = '\0';
-        _fd = mkstemp( filename.get() );
+        filename[strlen(file_template)] = '\0';
+        _fd = mkstemp(filename.get());
         if (_fd == -1) {
             BOOST_FAIL("could not create temporary properties file " << filename.get() << ": " << strerror(errno));
         } else {
@@ -61,7 +56,7 @@ public:
 
         // open temporary file
         _file.open(_filename.c_str(), std::ios_base::in | std::ios_base::out | std::ios_base::trunc);
-        if ( !_file ) {
+        if (!_file) {
             BOOST_FAIL("could not open file " << _filename);
         }
     }
@@ -69,11 +64,10 @@ public:
     /*!
      * \brief
      */
-    ~Fixture()
-    {
+    ~Fixture() {
         BOOST_TEST_MESSAGE("tearing down fixture");
         ::close(_fd);
-        (void)unlink( _filename.c_str() );
+        (void)unlink(_filename.c_str());
     }
 
     /*!

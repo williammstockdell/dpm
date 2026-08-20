@@ -27,16 +27,13 @@
 #ifndef BGQ_UTILITY_EXIT_STATUS_HPP_
 #define BGQ_UTILITY_EXIT_STATUS_HPP_
 
-
 #include <sys/types.h>
 #include <sys/wait.h>
 
 #include <iosfwd>
 
-
 namespace bgq {
 namespace utility {
-
 
 /*! \brief A wrapper around the process exit status macros for determining how a program exited (signaled or normal), supports <<, bool comparison.
  *
@@ -44,50 +41,43 @@ namespace utility {
  *
  *  Output is like &quot;status <i>number</i>&quot;, or &quot;signal <i>number</i>&quot;.
  */
-class ExitStatus
-{
-public:
-
-    typedef const int ExitStatus::*BoolType;
-
+class ExitStatus {
+  public:
+    typedef const int ExitStatus::* BoolType;
 
     /*! \brief Normal exit is exited() & exit status is 0. */
     static const ExitStatus Normal;
 
-
-    explicit ExitStatus( int exit_status = -1 ) : _exit_status(exit_status) {}
+    explicit ExitStatus(int exit_status = -1) : _exit_status(exit_status) {}
 
     /*! \brief The raw exit status. */
     int get() const { return _exit_status; }
 
     /*! \brief Returns true iff the program exited with a normal exit status. */
-    bool exited() const  { return WIFEXITED( _exit_status ); }
+    bool exited() const { return WIFEXITED(_exit_status); }
 
     /*! \brief The exit status, only valid if exited() is true. */
-    int getExitStatus() const  { return WEXITSTATUS( _exit_status ); }
+    int getExitStatus() const { return WEXITSTATUS(_exit_status); }
 
     /*! \brief Returns true iff the program exited due to a signal. */
-    bool signaled() const  { return WIFSIGNALED( _exit_status ); }
+    bool signaled() const { return WIFSIGNALED(_exit_status); }
 
     /*! \brief The exit status, only valid if signaled() is true. */
-    int getSignal() const  { return WTERMSIG( _exit_status ); }
+    int getSignal() const { return WTERMSIG(_exit_status); }
 
     /*! \brief Boolean comparison.
      *  \return true if abnormal exit, false if normal exit.
      */
-    operator BoolType() const  { return (_exit_status != 0 ? &ExitStatus::_exit_status : 0 ); }
+    operator BoolType() const { return (_exit_status != 0 ? &ExitStatus::_exit_status : 0); }
 
-
-private:
-
+  private:
     int _exit_status;
 };
 
-
 /*! \brief Outputs the exit status, like &quot;status <i>number</i>&quot;, or &quot;signal <i>number</i>&quot;. */
-std::ostream& operator<<( std::ostream& os, const ExitStatus& exit_status );
+std::ostream& operator<<(std::ostream& os, const ExitStatus& exit_status);
 
-
-} } // namespace bgq::utility
+} // namespace utility
+} // namespace bgq
 
 #endif

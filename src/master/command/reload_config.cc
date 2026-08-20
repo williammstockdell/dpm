@@ -28,27 +28,20 @@
 
 #include <utility/include/Log.h>
 
+LOG_DECLARE_FILE("master");
 
-
-LOG_DECLARE_FILE( "master" );
-
-void
-doReload(
-        const BGMasterClient& client,
-        const std::string& config_file
-        )
-{
+void doReload(const BGMasterClient& client, const std::string& config_file) {
     try {
         client.reload_config(config_file);
-    } catch ( const exceptions::ConfigError& e ) {
+    } catch (const exceptions::ConfigError& e) {
         std::cerr << e.what() << std::endl;
         if (e.errcode == exceptions::FATAL) {
             exit(EXIT_FAILURE);
         } else {
             exit(0);
         }
-    } catch ( const exceptions::CommunicationError& e ) {
-        std::cerr <<  "Configuration file not reloaded, error is: " << e.what() << std::endl;
+    } catch (const exceptions::CommunicationError& e) {
+        std::cerr << "Configuration file not reloaded, error is: " << e.what() << std::endl;
         if (e.errcode == exceptions::FATAL) {
             exit(EXIT_FAILURE);
         } else {
@@ -57,23 +50,15 @@ doReload(
     }
 }
 
-void
-help()
-{
+void help() {
     std::cerr << "Reload the policies defined by bg.properties." << std::endl;
     std::cerr << "Old policies are not discarded, only new ones are added." << std::endl;
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-void
-usage()
-{
-    std::cerr << "bgmaster_server_refresh_config [ --help ] [ --host host:port ] [ --verbose verbosity ] filename" << std::endl;
-}
+void usage() { std::cerr << "bgmaster_server_refresh_config [ --help ] [ --host host:port ] [ --verbose verbosity ] filename" << std::endl; }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     validargs.push_back("*"); // One argument without a "--" is allowed
@@ -82,7 +67,7 @@ main(int argc, const char** argv)
 
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
-    } catch ( const exceptions::BGMasterError& e ) {
+    } catch (const exceptions::BGMasterError& e) {
         std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }

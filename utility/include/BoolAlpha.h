@@ -47,19 +47,17 @@ namespace utility {
 ./a.out --flag
 \endverbatim
  */
-class BoolAlpha
-{
-public:
+class BoolAlpha {
+  public:
     /*!
      * \brief ctor.
      *
-     * \throws std::logic_error 
+     * \throws std::logic_error
      *
      * \note purposefully implicit ctor to allow implicit conversions.
      */
-    BoolAlpha(
-            bool value = false  //!< [in]
-            );
+    BoolAlpha(bool value = false //!< [in]
+    );
 
     bool _value;
 };
@@ -67,22 +65,18 @@ public:
 /*!
  * \brief extraction operator.
  */
-std::ostream&
-operator<<(
-        std::ostream& stream,       //!< [in]
-        const BoolAlpha& b          //!< [in]
-        );
+std::ostream& operator<<(std::ostream& stream, //!< [in]
+                         const BoolAlpha& b    //!< [in]
+);
 
 /*!
  * \brief insertion operator.
  */
-std::istream&
-operator>>(
-        std::istream& stream,       //!< [in]
-        BoolAlpha& b                //!< [in]
-        );
+std::istream& operator>>(std::istream& stream, //!< [in]
+                         BoolAlpha& b          //!< [in]
+);
 
-} // utility
-} // bgq
+} // namespace utility
+} // namespace bgq
 
 #endif

@@ -36,33 +36,30 @@
 using namespace bgq::utility;
 using namespace CxxSockets;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( default_ctor )
-{
+BOOST_AUTO_TEST_CASE(default_ctor) {
     // open a listening socket
-    SockAddr addr( AF_INET );
-    ListeningSocket listen( addr );
-    listen.getSockName( addr );
-    BOOST_CHECK( addr.getServicePort() != 0 );
+    SockAddr addr(AF_INET);
+    ListeningSocket listen(addr);
+    listen.getSockName(addr);
+    BOOST_CHECK(addr.getServicePort() != 0);
 
     // connect to it
     TCPSocket client;
-    client.Connect( addr );
+    client.Connect(addr);
 
     int flag;
     socklen_t length = sizeof(flag);
-    const int ret = getsockopt( client.getFileDescriptor(), IPPROTO_TCP, TCP_NODELAY, &flag, &length );
-    BOOST_CHECK_EQUAL( ret, 0 );
-    BOOST_CHECK_EQUAL( flag, 1u );
+    const int ret = getsockopt(client.getFileDescriptor(), IPPROTO_TCP, TCP_NODELAY, &flag, &length);
+    BOOST_CHECK_EQUAL(ret, 0);
+    BOOST_CHECK_EQUAL(flag, 1u);
 }

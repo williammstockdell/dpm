@@ -21,7 +21,6 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef BGQ_UTILITY_PORT_CONFIGURATION_H_
 #define BGQ_UTILITY_PORT_CONFIGURATION_H_
 
@@ -30,7 +29,6 @@
  *  \brief Host and port configuration for clients and servers, base class.
  *
  */
-
 
 #include <utility/include/Properties.h>
 
@@ -41,30 +39,25 @@
 
 #include <stdint.h>
 
-
 namespace bgq {
 namespace utility {
-
 
 /*! \brief Abstract base class for host and port configuration for clients and servers.
  *
  *  See the concrete subclasses for more info.
  *
  */
-class PortConfiguration
-{
-public:
-
+class PortConfiguration {
+  public:
     /*! \brief Exception thrown if a port string is not valid.
      *
      */
     class InvalidPortStr : public std::invalid_argument {
-    public:
-        InvalidPortStr( const std::string& what_str ) : std::invalid_argument( what_str )  {}
+      public:
+        InvalidPortStr(const std::string& what_str) : std::invalid_argument(what_str) {}
     };
 
-
-    typedef std::pair<std::string,std::string> Pair; //!< A host-port pair, first is host name second is service name.
+    typedef std::pair<std::string, std::string> Pair; //!< A host-port pair, first is host name second is service name.
 
     typedef std::vector<Pair> Pairs; //!< Collection of Pair.
 
@@ -83,10 +76,9 @@ public:
      *
      *  \throws InvalidPortStr the port string is not valid.
      */
-    static Pair parsePortStr(
-            const std::string& port_str, //!< host:port string.
-            const std::string& default_service_name //!< Service name to use if the port is left off.
-        );
+    static Pair parsePortStr(const std::string& port_str,            //!< host:port string.
+                             const std::string& default_service_name //!< Service name to use if the port is left off.
+    );
 
     /*! \brief Parse a comma-separated list of host-ports.
      *
@@ -97,11 +89,10 @@ public:
      *
      *  \throws InvalidPortStr the port string is not valid.
      */
-    static void parsePortsStr(
-            const std::string& ports_str, //!< comma-separated list of host:port.
-            const std::string& default_service_name, //!< Service name to use if the port is left off.
-            Pairs& pairs_out //!< [out] pairs.
-        );
+    static void parsePortsStr(const std::string& ports_str,            //!< comma-separated list of host:port.
+                              const std::string& default_service_name, //!< Service name to use if the port is left off.
+                              Pairs& pairs_out                         //!< [out] pairs.
+    );
 
     /*! \brief Parse a collection of comma-separated list of host-ports.
      *
@@ -111,34 +102,29 @@ public:
      *
      *  \throws InvalidPortStr the port string is not valid.
      */
-    static void parsePortsStrs(
-            const Strings& ports_strs, //!< Collection of comma-separated lists of host:port.
-            const std::string& default_service_name, //!< Service name to use if the port is left off.
-            Pairs& pairs_out //!< [out] pairs.
-        );
-
+    static void parsePortsStrs(const Strings& ports_strs,               //!< Collection of comma-separated lists of host:port.
+                               const std::string& default_service_name, //!< Service name to use if the port is left off.
+                               Pairs& pairs_out                         //!< [out] pairs.
+    );
 
     /*! \brief Create a port configuration.
      */
-    explicit PortConfiguration(
-            uint32_t default_tcp_port //!< The port that will be used if none is provided.
-        );
+    explicit PortConfiguration(uint32_t default_tcp_port //!< The port that will be used if none is provided.
+    );
 
     /*! \brief Create a port configuration.
      */
-    explicit PortConfiguration(
-            const std::string& default_service_name //!< The service name that will be used if none is provided.
-        );
-
+    explicit PortConfiguration(const std::string& default_service_name //!< The service name that will be used if none is provided.
+    );
 
     /*! \brief Get the default service name */
-    const std::string& getDefaultServiceName() const  { return _default_service_name; }
+    const std::string& getDefaultServiceName() const { return _default_service_name; }
 
     /*! \brief Explicitly set the pairs.
      *
      * If pairs is empty, then the defaults will be used.
      */
-    void setPairs( const Pairs& pairs )  { _pairs = pairs; }
+    void setPairs(const Pairs& pairs) { _pairs = pairs; }
 
     /*! \brief Set the ports using a ports string.
      *
@@ -146,7 +132,7 @@ public:
      *
      * \throws InvalidPortStr the port string is not valid.
      */
-    void setPorts( const std::string& ports_str );
+    void setPorts(const std::string& ports_str);
 
     /*! \brief Set the ports using a collection of ports strings.
      *
@@ -154,7 +140,7 @@ public:
      *
      * \throws InvalidPortStr the port string is not valid.
      */
-    void setPorts( const Strings& ports_strs );
+    void setPorts(const Strings& ports_strs);
 
     /*! \brief Set the properties file.
      *
@@ -171,10 +157,7 @@ public:
      * The SSL configuration will be read
      * from the given properties file.
      */
-    void setProperties(
-            Properties::ConstPtr properties_ptr,
-            const std::string& section_name
-        );
+    void setProperties(Properties::ConstPtr properties_ptr, const std::string& section_name);
 
     /*! \brief Notify this class that configuration is complete.
      *
@@ -192,22 +175,20 @@ public:
      */
     const Pairs& getPairs() const;
 
-    const std::string& getAdministrativeCn() const  { return _administrative_cn; }
-    const std::string& getCommandCn() const  { return _command_cn; }
+    const std::string& getAdministrativeCn() const { return _administrative_cn; }
+    const std::string& getCommandCn() const { return _command_cn; }
 
     /*! \brief dtor.  */
     virtual ~PortConfiguration() { /* Nothing to do */ }
 
-
-protected:
-
+  protected:
     /*! \brief Get the name of the property in the configuration file.
      *
      *  If this class needs to get the value from the property file
      *  it will call this to get the property name to use.
      *
      */
-    virtual std::string _getPropertyName() const =0;
+    virtual std::string _getPropertyName() const = 0;
 
     /*! \brief Get the default value.
      *
@@ -215,11 +196,9 @@ protected:
      *  call this.
      *
      */
-    virtual Pairs _getDefault() const =0;
+    virtual Pairs _getDefault() const = 0;
 
-
-protected:
-
+  protected:
     std::string _default_service_name;
 
     Properties::ConstPtr _properties_ptr;
@@ -229,14 +208,10 @@ protected:
 
     std::string _administrative_cn, _command_cn;
 
-
     void _handlePairsComplete();
-
 };
 
-
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq
-
 
 #endif

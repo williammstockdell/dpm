@@ -29,14 +29,12 @@
 
 #include "common/types.h"
 
-
 class AgentManager;
 typedef std::shared_ptr<AgentManager> AgentManagerPtr;
 
 class AgentRep;
 typedef std::shared_ptr<AgentRep> AgentRepPtr;
 typedef std::pair<BinaryControllerPtr, AgentRepPtr> BinaryLocation;
-
 
 class Alias;
 typedef std::shared_ptr<Alias> AliasPtr;

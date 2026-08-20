@@ -30,29 +30,16 @@
 
 using namespace bgq::utility;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( missing_file )
-{
-    BOOST_CHECK_THROW(
-            Symlink( "/i/do/not/exist" ),
-            boost::system::system_error
-            );
-}
+BOOST_AUTO_TEST_CASE(missing_file) { BOOST_CHECK_THROW(Symlink("/i/do/not/exist"), boost::system::system_error); }
 
-BOOST_AUTO_TEST_CASE( valid_file )
-{
-    BOOST_CHECK_NO_THROW(
-            Symlink( "/proc/self/exe" )
-            );
-}
+BOOST_AUTO_TEST_CASE(valid_file) { BOOST_CHECK_NO_THROW(Symlink("/proc/self/exe")); }

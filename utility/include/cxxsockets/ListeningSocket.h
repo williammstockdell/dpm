@@ -34,27 +34,26 @@
 
 namespace CxxSockets {
 
-//! \brief Generic v4/v6 listening socket.  
+//! \brief Generic v4/v6 listening socket.
 //!
 //! The version is specified by the SockAddr used to initialize it.
 //!
 //! \see ListenerSet
-class ListeningSocket : public Socket
-{
+class ListeningSocket : public Socket {
     int Accept();
-public:
+
+  public:
     //! \brief Performs a bind() and listen() for a single sockaddr
-    ListeningSocket(
-            const SockAddr& addr,   //<! [in] object representing address to listen on
-            int backlog = SOMAXCONN //<! [in] Maximum number of pending connections to allow
-            );
+    ListeningSocket(const SockAddr& addr,   //<! [in] object representing address to listen on
+                    int backlog = SOMAXCONN //<! [in] Maximum number of pending connections to allow
+    );
 
     //! \brief This gets a new socket
-    //! 
+    //!
     //! \param sock Pass in a new socket object to fill
     void AcceptNew(const TCPSocketPtr& sock);
 };
 
-} 
+} // namespace CxxSockets
 
 #endif

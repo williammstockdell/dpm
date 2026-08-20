@@ -31,22 +31,21 @@
 
 #include <vector>
 
-
 //! \brief Base class providing agent definition
 //! Both master and agent use this.
 class AgentBase {
 
-public:
+  public:
     typedef std::vector<BinaryControllerPtr> Binaries;
 
     AgentBase(const AgentBase&) = delete;
     AgentBase& operator=(const AgentBase&) = delete;
 
-public:
+  public:
     //! \brief Constructor.
     AgentBase() : _ending(false) {}
 
-    virtual ~AgentBase() { }
+    virtual ~AgentBase() {}
 
     const CxxSockets::Host& get_host() const { return _host; }
     const BGAgentId& get_agent_id() const { return _agent_id; }
@@ -57,13 +56,13 @@ public:
     //! \brief Find out if the specified alias is running on this agent.
     //! \param al Alias pointer to check
     //! \returns true or false
-    bool runningAlias(const std::string &alias_name) const;
+    bool runningAlias(const std::string& alias_name) const;
 
     //! \brief Return a COPY of the internal binary container.
     const Binaries& get_binaries() const { return _binaries; }
     bool ending() const { return _ending; }
 
-protected:
+  protected:
     void addController(const BinaryControllerPtr& controller);
     void removeController(const BinaryControllerPtr& controller);
 
@@ -79,7 +78,7 @@ protected:
     //! \brief Agent's host name
     CxxSockets::Host _host;
 
-private:
+  private:
     //! Container of binaries managed by this agent
     Binaries _binaries;
 };

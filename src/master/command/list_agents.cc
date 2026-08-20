@@ -24,30 +24,20 @@
 #include "common/ArgParse.h"
 
 #include "lib/BGMasterClient.h"
-#include "lib/exceptions.h"
 #include "lib/ListAgents.h"
+#include "lib/exceptions.h"
 
 #include <utility/include/Log.h>
 
 #include <iostream>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-void
-help()
-{
-    std::cerr << "Returns a list of ids for active agents and associated running binaries." << std::endl;
-}
+void help() { std::cerr << "Returns a list of ids for active agents and associated running binaries." << std::endl; }
 
-void
-usage()
-{
-    std::cerr << "list_agents [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
-}
+void usage() { std::cerr << "list_agents [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     std::string fancyarg = "--fancy"; // hidden for backwards compatibility
@@ -65,8 +55,7 @@ main(int argc, const char** argv)
 
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
-    }
-    catch ( const exceptions::BGMasterError& e ) {
+    } catch (const exceptions::BGMasterError& e) {
         std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }

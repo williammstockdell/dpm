@@ -24,26 +24,24 @@
 #ifndef MASTER_REGISTRAR_H_
 #define MASTER_REGISTRAR_H_
 
-
 #include <utility/include/cxxsockets/types.h>
 
-#include <utility/include/portConfiguration/PortConfiguration.h>
-#include <thread>
 #include <pthread.h>
-
+#include <thread>
+#include <utility/include/portConfiguration/PortConfiguration.h>
 
 //! \brief Registrar joins new BGAgents and clients
 //! Registrar process new clients, validates them and
 //! starts new threads within the client manager
-class Registrar
-{
-public:
+class Registrar {
+  public:
     Registrar();
     ~Registrar();
     void run(bool agent);
     bool get_failed() { return _failed; }
     void cancel();
-private:
+
+  private:
     //! \brief Waits for new incoming connections.
     void listenForNew(const bgq::utility::PortConfiguration::Pairs& portpairs);
 
@@ -59,6 +57,5 @@ private:
     bool _failed;
     pthread_t _my_tid;
 };
-
 
 #endif

@@ -24,7 +24,6 @@
 #ifndef MASTER_BGMASTER_CLIENT_API_H_
 #define MASTER_BGMASTER_CLIENT_API_H_
 
-
 #include "../common/Ids.h"
 #include "../common/types.h"
 
@@ -36,24 +35,19 @@
 #include <string>
 #include <vector>
 
-
 //! \brief client API for BGMaster.
-class BGMasterClient
-{
-private:
+class BGMasterClient {
+  private:
     const ClientProtocolPtr _prot;
 
-public:
+  public:
     //! \brief Constructor
     BGMasterClient();
 
     //! \brief Connect to bgmaster_server and initiate protocol
     //! \param props Properties
     //! \param portpairs host:port pairs to use to connect to bgmaster_server.
-    void connectMaster(
-            const bgq::utility::Properties::ConstPtr& props,
-            const bgq::utility::PortConfiguration::Pairs& portpairs
-            ) const;
+    void connectMaster(const bgq::utility::Properties::ConstPtr& props, const bgq::utility::PortConfiguration::Pairs& portpairs) const;
 
     //! \brief Tell bgmaster_server to start a specific binary based on its configured alias
     //! Starts all servers if an empty alias string is specified.
@@ -158,10 +152,9 @@ public:
     typedef std::string LogLevel;
 
     //! \brief Change/display bgmaster_server logging levels.
-    void log_level(
-            const std::vector<std::string>& input,      //!< [in] loggers to change
-            std::map<LogName, LogLevel>& loglevels      //!< [out] current logging levels
-            ) const;
+    void log_level(const std::vector<std::string>& input, //!< [in] loggers to change
+                   std::map<LogName, LogLevel>& loglevels //!< [out] current logging levels
+    ) const;
 };
 
 #endif

@@ -32,70 +32,58 @@
 
 using namespace bgq::utility::performance;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
 
         // initialize performance API
-        performance::init( Properties::create( "good.properties" ) );
+        performance::init(Properties::create("good.properties"));
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( get_all )
-{
+BOOST_AUTO_TEST_CASE(get_all) {
     // create two persistent statistic sets.
-    std::string container_one( "test_one" );
-    std::string container_two( "test_two" );
-    PERFORMANCE_LIST_INIT( container_one );
-    PERFORMANCE_LIST_INIT( container_two );
+    std::string container_one("test_one");
+    std::string container_two("test_two");
+    PERFORMANCE_LIST_INIT(container_one);
+    PERFORMANCE_LIST_INIT(container_two);
     typedef PersistentStatisticList::Timer Timer;
 
     // time something
     {
-        Timer timer( container_one, "test_metric", "123", Mode::Value::Basic );
+        Timer timer(container_one, "test_metric", "123", Mode::Value::Basic);
     }
 
     // time something else
     {
-        Timer timer( container_two, "test_metric", "456", Mode::Value::Basic );
+        Timer timer(container_two, "test_metric", "456", Mode::Value::Basic);
     }
 
     // get statistics
     GlobalStatistics& global = GlobalStatistics::instance();
     {
         std::list<PersistentStatisticList::Ptr> stats;
-        global.get( stats );
+        global.get(stats);
 
         // ensure we have two
-        BOOST_CHECK_EQUAL(
-                stats.size(),
-                2u
-                );
+        BOOST_CHECK_EQUAL(stats.size(), 2u);
     }
 
     // ensure container_one has one statistic
     {
         PersistentStatisticList::Ptr stats;
-        global.get( container_one, stats );
-        BOOST_CHECK_EQUAL(
-                stats->getCount(),
-                1u
-                );
+        global.get(container_one, stats);
+        BOOST_CHECK_EQUAL(stats->getCount(), 1u);
     }
 
     // ensure container_two has one statistic
     {
         PersistentStatisticList::Ptr stats;
-        global.get( container_two, stats );
-        BOOST_CHECK_EQUAL(
-                stats->getCount(),
-                1u
-                );
+        global.get(container_two, stats);
+        BOOST_CHECK_EQUAL(stats->getCount(), 1u);
     }
 }

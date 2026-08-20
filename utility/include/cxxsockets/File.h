@@ -33,15 +33,13 @@
 
 #include <utility/include/cxxsockets/types.h>
 
-
 namespace CxxSockets {
 
-class File
-{
-private:
+class File {
+  private:
     mutable PthreadMutex _fileLock;
 
-protected:
+  protected:
     int _fileDescriptor;
     std::unique_ptr<PthreadMutex> _receiver;
     std::unique_ptr<PthreadMutex> _sender;
@@ -58,12 +56,12 @@ protected:
     //! \brief Close the file
     int Close();
 
-public:
+  public:
     int getFileDescriptor() const { return _fileDescriptor; }
 
     virtual ~File() = 0;
 };
 
-}
+} // namespace CxxSockets
 
 #endif

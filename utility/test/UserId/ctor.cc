@@ -32,110 +32,80 @@
 
 using namespace bgq::utility;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( ctor )
-{
+BOOST_AUTO_TEST_CASE(ctor) {
     {
         // no argument to the ctor means get our current uid
         UserId uid;
-        BOOST_CHECK_EQUAL( uid.getUid(), getuid() );
+        BOOST_CHECK_EQUAL(uid.getUid(), getuid());
     }
 
     {
         const uid_t root = 0;
-        UserId uid( root );
-        BOOST_CHECK_EQUAL( uid.getUid(), root );
+        UserId uid(root);
+        BOOST_CHECK_EQUAL(uid.getUid(), root);
     }
 
     {
         // Create remote user
         UserId uid("remoteuser", true);
-        BOOST_CHECK_EQUAL( uid.getUser(), "remoteuser" );
+        BOOST_CHECK_EQUAL(uid.getUser(), "remoteuser");
     }
 }
 
-BOOST_AUTO_TEST_CASE( serialize )
-{
+BOOST_AUTO_TEST_CASE(serialize) {
     // serialize into a buffer
     UserId uid;
-    std::string string(
-            uid.serialize()
-            );
+    std::string string(uid.serialize());
     std::vector<char> buf;
-    BOOST_FOREACH( char c, string ) {
-        buf.push_back( c );
+    BOOST_FOREACH (char c, string) {
+        buf.push_back(c);
     }
-    BOOST_CHECK( !buf.empty() );
+    BOOST_CHECK(!buf.empty());
 
     // deserialize
-    UserId other( buf );
+    UserId other(buf);
 
-    BOOST_CHECK( uid == other );
+    BOOST_CHECK(uid == other);
 }
 
-BOOST_AUTO_TEST_CASE( missing_username )
-{
-    BOOST_CHECK_THROW(
-            UserId uid("doesnotexist"),
-            std::runtime_error
-            );
-}
+BOOST_AUTO_TEST_CASE(missing_username) { BOOST_CHECK_THROW(UserId uid("doesnotexist"), std::runtime_error); }
 
-BOOST_AUTO_TEST_CASE( is_member)
-{
+BOOST_AUTO_TEST_CASE(is_member) {
     UserId uid;
 
     // hopefully this group does not exist
-    BOOST_CHECK(
-            uid.isMember( "hopefullyidonotexist" ) == false
-            );
+    BOOST_CHECK(uid.isMember("hopefullyidonotexist") == false);
 }
 
-BOOST_AUTO_TEST_CASE( setters )
-{
+BOOST_AUTO_TEST_CASE(setters) {
     UserId uid;
 
     uid.setUser("foobar");
-    BOOST_CHECK_EQUAL( uid.getUser(), "foobar" );
+    BOOST_CHECK_EQUAL(uid.getUser(), "foobar");
 
     uid.setUid(123);
-    BOOST_CHECK_EQUAL( uid.getUid(), 123u );
+    BOOST_CHECK_EQUAL(uid.getUid(), 123u);
 
     UserId::GroupList groups;
-    groups.push_back(
-            UserId::GroupList::value_type( 456, "admin")
-            );
-    uid.setGroups( groups );
-    BOOST_CHECK_EQUAL(
-            uid.getGroups().front().first,
-            groups.front().first
-            );
-    BOOST_CHECK_EQUAL(
-            uid.getGroups().front().second,
-            groups.front().second
-            );
+    groups.push_back(UserId::GroupList::value_type(456, "admin"));
+    uid.setGroups(groups);
+    BOOST_CHECK_EQUAL(uid.getGroups().front().first, groups.front().first);
+    BOOST_CHECK_EQUAL(uid.getGroups().front().second, groups.front().second);
 }
 
-
-BOOST_AUTO_TEST_CASE( primary_gid)
-{
+BOOST_AUTO_TEST_CASE(primary_gid) {
     UserId uid;
 
     // primary gid should be at the front of the list
-    BOOST_CHECK_EQUAL(
-            uid.getGroups().front().first,
-            getgid()
-            );
+    BOOST_CHECK_EQUAL(uid.getGroups().front().first, getgid());
 }
-

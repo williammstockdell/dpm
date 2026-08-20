@@ -26,17 +26,12 @@
 
 #include <iostream>
 
-int
-main()
-{
-    bgq::utility::initializeLogging(
-            *bgq::utility::Properties::create()
-            );
+int main() {
+    bgq::utility::initializeLogging(*bgq::utility::Properties::create());
 
     bgq::utility::UserId uid;
-    std::string buf( uid.serialize() );
+    std::string buf(uid.serialize());
     std::cout << buf;
 
     return 0;
 }
-

@@ -24,7 +24,6 @@
 #ifndef MASTER_AGENT_H_
 #define MASTER_AGENT_H_
 
-
 #include "common/AgentBase.h"
 #include "common/AgentProtocol.h"
 #include "common/types.h"
@@ -42,13 +41,9 @@
 //! The base class provides the definition common
 //! to the master and the agent.  This provides the
 //! agent functionality.
-class Agent : public AgentBase
-{
-private:
-    BGMasterAgentProtocolSpec::JoinRequest build_join_request(
-            const std::string& hostaddr,
-            int servname
-            ) const;
+class Agent : public AgentBase {
+  private:
+    BGMasterAgentProtocolSpec::JoinRequest build_join_request(const std::string& hostaddr, int servname) const;
 
     void sendBuffered();
 
@@ -57,18 +52,13 @@ private:
 
     void doStopRequest(const BGMasterAgentProtocolSpec::StopRequest& stopreq);
 
-public:
-
+  public:
     //! \brief Constructor.
-    Agent(
-            const bgq::utility::Properties::ConstPtr& props
-         );
+    Agent(const bgq::utility::Properties::ConstPtr& props);
 
     //! \brief initiate the registration process
-    void start(
-               const bgq::utility::PortConfiguration::Pairs& pairs, //!< [in]
-               const int signal_read_fd
-               );
+    void start(const bgq::utility::PortConfiguration::Pairs& pairs, //!< [in]
+               const int signal_read_fd);
 
     //! \brief Set list of users this agent can be.
     void set_users(const std::string& users) { _user_list = users; }
@@ -90,8 +80,7 @@ public:
     // refactoring is required to get rid of the vestiges of an asio hack.
     int getMasterFD() const;
 
-private:
-
+  private:
     std::mutex _uid_mutex;
     std::string _user_list;
     const CxxSockets::Host _hostname;

@@ -26,8 +26,8 @@
 #ifndef CXXSOCKET_LISTENERSET_H
 #define CXXSOCKET_LISTENERSET_H
 
-#include <utility/include/cxxsockets/types.h>
 #include <utility/include/cxxsockets/FileSet.h>
+#include <utility/include/cxxsockets/types.h>
 
 #include <sys/socket.h>
 
@@ -36,16 +36,14 @@ namespace CxxSockets {
 //! \brief Set of Listeners.
 //!
 //! Treat multiple listeners as one object for performing accepts.
-//! More transparent v4/v6 support. 
-class ListenerSet : public FileSet
-{
-public:
+//! More transparent v4/v6 support.
+class ListenerSet : public FileSet {
+  public:
     //! \brief Constructor.  You need a list of sockaddrs even if you
     //! just want a single element.
-    ListenerSet(
-            const SockAddrList& sal,    //!< [in]
-            int backlog = SOMAXCONN     //!< [in]
-            );
+    ListenerSet(const SockAddrList& sal, //!< [in]
+                int backlog = SOMAXCONN  //!< [in]
+    );
 
     //! \brief Performs a blocking accept.
     //!
@@ -57,6 +55,6 @@ public:
     bool AcceptNew(const TCPSocketPtr& sock);
 };
 
-}
+} // namespace CxxSockets
 
 #endif

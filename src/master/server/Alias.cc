@@ -28,48 +28,24 @@
 #include "ras.h"
 
 #include "common/BinaryController.h"
-#include <utility/include/TimeStuff.h>
 #include <utility/include/ScopeExit.h>
+#include <utility/include/TimeStuff.h>
 
 #include "../lib/exceptions.h"
 
-
 #include <unistd.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-#define LOGGING_DECLARE_ALIAS_MDC(name) \
-    log4cxx::MDC _location_mdc( "ALIAS", std::string("{") + name + "} " );
+#define LOGGING_DECLARE_ALIAS_MDC(name) log4cxx::MDC _location_mdc("ALIAS", std::string("{") + name + "} ");
 
 const int RETRY_WINDOW = 60;
 
-Alias::Alias(
-        const std::string& name,
-        const std::string& path,
-        const Policy& p,
-        const std::string& user,
-        const std::string& logdir,
-        const int preferredHostWait
-        ) :
-    _name(name),
-    _path(path),
-    _user(user),
-    _logdir(logdir),
-    _preferredHostWait(preferredHostWait),
-    _my_policy(p),
-    _retry_count(0),
-    _waiting_for_agent(false),
-    _halt_waiting_for_agent(false),
-    _preferred_start_time()
-{
+Alias::Alias(const std::string& name, const std::string& path, const Policy& p, const std::string& user, const std::string& logdir, const int preferredHostWait)
+    : _name(name), _path(path), _user(user), _logdir(logdir), _preferredHostWait(preferredHostWait), _my_policy(p), _retry_count(0), _waiting_for_agent(false), _halt_waiting_for_agent(false),
+      _preferred_start_time() {}
 
-}
-
-void
-Alias::remove_binary(
-        const BinaryId& id
-        )
-{
+void Alias::remove_binary(const BinaryId& id) {
     _halt_waiting_for_agent = true; // If anyone is waiting, STOP!
     LOG_DEBUG_MSG("Removing binary id " << id.str() << " from alias.");
     std::scoped_lock scoped_lock(_mutex);
@@ -77,20 +53,13 @@ Alias::remove_binary(
 }
 
 // Find agent on which to run based on policy.
-AgentRepPtr
-Alias::runPolicy(
-        const BGAgentId& agent_id,
-        bool restart = false
-        )
-{
+AgentRepPtr Alias::runPolicy(const BGAgentId& agent_id, bool restart = false) {
     // Non-locking private method.  Must be called from locking method.
     LOGGING_DECLARE_ALIAS_MDC(_name);
     LOG_DEBUG_MSG("Policy check for alias " << _name);
 
     // Make SURE we are no longer waiting for an agent when this function is done!
-    ScopeExit cleanup([this] {
-        _waiting_for_agent = false;
-    });
+    ScopeExit cleanup([this] { _waiting_for_agent = false; });
 
     // We have to check the following to see if we can start the job:
     // 1) That we will not exceed the maximum number of occurrences
@@ -118,7 +87,7 @@ Alias::runPolicy(
         if (agent_to_run == 0) {
             // Bad agent specified! Fail!
             std::ostringstream msg;
-            msg <<"Bad agent " << agent_id.str() << " specified";
+            msg << "Bad agent " << agent_id.str() << " specified";
             std::map<std::string, std::string> details;
             details["ALIAS"] = get_name();
 
@@ -165,21 +134,20 @@ Alias::runPolicy(
         // Keep checking hosts until we get either the host we want (preferred or self)
         // or a backup host with an attempt timeout.
         bool winner = false;
-        for(const CxxSockets::Host& curr_host : _hosts) {
+        for (const CxxSockets::Host& curr_host : _hosts) {
             // Loop through hosts and the first one that has a valid associated agent is our winner.
             agent_to_run = MasterController::get_agent_manager().findAgentRep(curr_host);
             if (agent_to_run) {
-                LOG_DEBUG_MSG("Agent " << agent_to_run->get_host().uhn() << " specified by configuration "
-                        << curr_host.uhn() << " found.");
+                LOG_DEBUG_MSG("Agent " << agent_to_run->get_host().uhn() << " specified by configuration " << curr_host.uhn() << " found.");
                 // Now we need to find out if we care whether it's a preferred host.
                 if (curr_host.get_primary() == false) {
-                    if (!_preferred_start_time.has_value() ) {
-                        LOG_INFO_MSG( "waiting " << _preferredHostWait << " seconds for primary host" );
+                    if (!_preferred_start_time.has_value()) {
+                        LOG_INFO_MSG("waiting " << _preferredHostWait << " seconds for primary host");
                         _preferred_start_time = std::chrono::system_clock::now();
                     }
                     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
                     const std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(now - *_preferred_start_time);
-                    if ( duration.count() > _preferredHostWait ) {
+                    if (duration.count() > _preferredHostWait) {
                         winner = true;
                         LOG_INFO_MSG("Giving up after " << _preferredHostWait << " seconds waiting for the preferred agent host.");
                         LOG_INFO_MSG("Starting on agent " << curr_host.uhn() << ".");
@@ -210,7 +178,7 @@ Alias::runPolicy(
                 std::ostringstream msg;
                 std::ostringstream hosts;
                 bool first = true;
-                for(const CxxSockets::Host& curr_host : _hosts) {
+                for (const CxxSockets::Host& curr_host : _hosts) {
                     if (!first) {
                         hosts << ", " << curr_host.uhn();
                     } else {
@@ -228,11 +196,7 @@ Alias::runPolicy(
     return agent_to_run;
 }
 
-AgentRepPtr
-Alias::validateStartAgent(
-        const BGAgentId& agent_id
-        )
-{
+AgentRepPtr Alias::validateStartAgent(const BGAgentId& agent_id) {
     LOG_TRACE_MSG(__FUNCTION__);
     if (_waiting_for_agent) {
         throw exceptions::InternalError(exceptions::INFO, "Cannot start alias until agent started.");
@@ -243,14 +207,7 @@ Alias::validateStartAgent(
     return runPolicy(agent_id);
 }
 
-AgentRepPtr
-Alias::evaluatePolicy(
-        Policy::Trigger trig,
-        BGAgentId& agent,
-        const BinaryId& failed_bid,
-        BinaryControllerPtr bptr
-        )
-{
+AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const BinaryId& failed_bid, BinaryControllerPtr bptr) {
     LOGGING_DECLARE_ALIAS_MDC(_name);
     LOG_TRACE_MSG(__FUNCTION__);
     std::scoped_lock scoped_lock(_mutex);
@@ -266,19 +223,18 @@ Alias::evaluatePolicy(
         }
     }
 
-    if (!bptr) {  // Still no binary controller. We'll construct a dummy one.
+    if (!bptr) { // Still no binary controller. We'll construct a dummy one.
         const BinaryControllerPtr p(new BinaryController());
         bptr = p;
     }
 
     const std::chrono::system_clock::time_point start = bptr->get_start_time();
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    LOG_DEBUG_MSG("Start time=" << time_to_string(start)
-                  << " Now=" << time_to_string(now));
+    LOG_DEBUG_MSG("Start time=" << time_to_string(start) << " Now=" << time_to_string(now));
     const auto td = now - start;
     if (td < std::chrono::seconds(RETRY_WINDOW)) {
         ++_retry_count;
-        LOG_DEBUG_MSG( "retry count: " << _retry_count );
+        LOG_DEBUG_MSG("retry count: " << _retry_count);
     }
 
     Behavior bvr;
@@ -290,7 +246,7 @@ Alias::evaluatePolicy(
         CxxSockets::Host target = bvr.findFailoverTarget(agent.get_host());
         bool done = false;
         CxxSockets::Host oldtarget = agent.get_host();
-        while (!done) {  // We'll do retries, going back and forth between fail-over pairs.
+        while (!done) { // We'll do retries, going back and forth between fail-over pairs.
             // We have to fail over.
             if (target.ip().length() == 0) {
                 std::ostringstream errmsg;
@@ -306,7 +262,7 @@ Alias::evaluatePolicy(
             }
             if (failname.length() > 0) {
                 std::ostringstream errmsg;
-                errmsg << "Host " << failname << " not in host list for "  << get_name();
+                errmsg << "Host " << failname << " not in host list for " << get_name();
                 throw exceptions::InternalError(exceptions::WARN, errmsg.str());
             }
 
@@ -324,8 +280,8 @@ Alias::evaluatePolicy(
                 if (bvr.get_retries() < _retry_count) {
                     // Update database with RAS message
                     std::ostringstream msg;
-                    msg << "Retry count within " << RETRY_WINDOW << " second window failed for alias " << get_name() << " with a count of "
-                        << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
+                    msg << "Retry count within " << RETRY_WINDOW << " second window failed for alias " << get_name() << " with a count of " << _retry_count - 1 << " and " << bvr.get_retries()
+                        << " allowed.";
                     LOG_INFO_MSG(msg.str());
                     MasterController::handleErrorMessage(msg.str());
                     std::map<std::string, std::string> details;
@@ -337,7 +293,7 @@ Alias::evaluatePolicy(
                 ++_retry_count;
                 continue;
             }
-            if (bvr.get_retries() > (_retry_count==0?_retry_count:_retry_count - 1)) {
+            if (bvr.get_retries() > (_retry_count == 0 ? _retry_count : _retry_count - 1)) {
                 rep = runPolicy(target_agent, true);
                 // Update database with RAS message
                 std::map<std::string, std::string> details;
@@ -348,8 +304,7 @@ Alias::evaluatePolicy(
                 done = true;
             } else {
                 std::ostringstream msg;
-                msg << "Retry count within retry window failed for alias " << get_name() << " with a count of "
-                    << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
+                msg << "Retry count within retry window failed for alias " << get_name() << " with a count of " << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
                 LOG_INFO_MSG(msg.str());
                 MasterController::handleErrorMessage(msg.str());
                 std::map<std::string, std::string> details;
@@ -362,11 +317,8 @@ Alias::evaluatePolicy(
         return rep;
 
     } else if (bvr.get_action() == Behavior::RESTART) {
-        if (bvr.get_retries() > (_retry_count==0?_retry_count:_retry_count - 1)) {
-            LOG_INFO_MSG(
-                    "Restarting alias " << get_name() << " on agent " << agent.get_host().fqhn() << " " <<
-                    _retry_count << " of " << bvr.get_retries()
-                    );
+        if (bvr.get_retries() > (_retry_count == 0 ? _retry_count : _retry_count - 1)) {
+            LOG_INFO_MSG("Restarting alias " << get_name() << " on agent " << agent.get_host().fqhn() << " " << _retry_count << " of " << bvr.get_retries());
             // Update database with RAS message
             std::map<std::string, std::string> details;
             details["ALIAS"] = get_name();
@@ -374,8 +326,7 @@ Alias::evaluatePolicy(
             rep = runPolicy(agent, true);
         } else {
             std::ostringstream msg;
-            msg << "Retry count within retry window failed for alias " << get_name() << " with a count of "
-                << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
+            msg << "Retry count within retry window failed for alias " << get_name() << " with a count of " << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
             LOG_INFO_MSG(msg.str());
             MasterController::handleErrorMessage(msg.str());
             std::map<std::string, std::string> details;

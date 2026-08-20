@@ -28,17 +28,9 @@
 
 #include <utility/include/Log.h>
 
+LOG_DECLARE_FILE("master");
 
-
-LOG_DECLARE_FILE( "master" );
-
-void
-doAliasWait(
-        BGMasterClient& client,
-        std::string& target,
-        std::string& timeout
-        )
-{
+void doAliasWait(BGMasterClient& client, std::string& target, std::string& timeout) {
     BinaryId id;
     int to = 0;
     if (timeout.length() != 0) {
@@ -62,18 +54,11 @@ doAliasWait(
     std::cout << "Waited alias " << target << " running under id " << id.str() << std::endl;
 }
 
-void help()
-{
-    std::cerr << "Waits for a specified alias to become active." << std::endl;
-}
+void help() { std::cerr << "Waits for a specified alias to become active." << std::endl; }
 
-void usage()
-{
-    std::cerr << "alias_wait [alias] [ --timeout seconds ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
-}
+void usage() { std::cerr << "alias_wait [alias] [ --timeout seconds ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
-int
-main(int argc, const char** argv) {
+int main(int argc, const char** argv) {
 
     std::string timeout = "--timeout";
     std::vector<std::string> validargs;

@@ -26,13 +26,14 @@
  * \version 1.0.0
  *
  * The utility directory provides implementations of basic functions useful across
- * multiple components. 
+ * multiple components.
  *
  * - Common logging: Log.h
  * - Configuration %file: Properties.h
  * - CxxSockets
  * - Control System \link bgq::utility::performance performance counter\endlink classes and macros.
- * - Port Configuration \link bgq::utility::PortConfiguration classes\endlink for \link bgq::utility::ClientPortConfiguration clients\endlink and \link bgq::utility::ServerPortConfiguration servers\endlink
+ * - Port Configuration \link bgq::utility::PortConfiguration classes\endlink for \link bgq::utility::ClientPortConfiguration clients\endlink and \link bgq::utility::ServerPortConfiguration
+ * servers\endlink
  * - Executing arbitrary code at scope exit with \link bgq::utility::ScopeGuard ScopeGuard\endlink
  * - Generic \link bgq::utility::PluginHandle plugin interface\endlink  for loading shared libraries.
  * - Implementation of the \link bgq::utility::Singleton Singleton Design Pattern\endlink.

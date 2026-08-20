@@ -24,7 +24,6 @@
 #ifndef MASTER_CLIENT_CONTROLLER_H_
 #define MASTER_CLIENT_CONTROLLER_H_
 
-
 #include "common/ClientProtocol.h"
 #include "common/Ids.h"
 #include "common/types.h"
@@ -36,13 +35,11 @@
 
 #include <string>
 
-
 //! \brief One ClientController for each client connected to BGMaster.
 //!
 //! Client Controller owns the sockets connected to the client and all
 //! messages to and from the client flow through it.
-class ClientController : public std::enable_shared_from_this<ClientController>
-{
+class ClientController : public std::enable_shared_from_this<ClientController> {
     //! \brief Protocol management object
     const ClientProtocolPtr _prot;
     bool _ending;
@@ -94,13 +91,8 @@ class ClientController : public std::enable_shared_from_this<ClientController>
     //! \brief Get list of idle aliases
     void doGetidleRequest(const BGMasterClientProtocolSpec::GetidleRequest& idlereq);
 
-public:
-    ClientController(
-            const ClientProtocolPtr& prot,
-            const std::string& ipaddr,
-            const int port,
-            const CxxSockets::UserType _utype
-            );
+  public:
+    ClientController(const ClientProtocolPtr& prot, const std::string& ipaddr, const int port, const CxxSockets::UserType _utype);
 
     ~ClientController();
 

@@ -35,8 +35,7 @@ extern const char* DriverName;
 extern const char* Revision;
 extern const unsigned int SvnRevision;
 
-} // utility
-} // bgq
+} // namespace utility
+} // namespace bgq
 
 #endif
-

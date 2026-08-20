@@ -21,16 +21,13 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef BGQ_UTILITY_SERVER_PORT_CONFIGURATION_H_
 #define BGQ_UTILITY_SERVER_PORT_CONFIGURATION_H_
-
 
 /*! \file
  *
  *  \brief Class for port configuration for servers.
  */
-
 
 #include "PortConfiguration.h"
 
@@ -38,13 +35,10 @@
 
 #include <stdint.h>
 
-
 namespace bgq {
 namespace utility {
 
-
 class SslConfiguration;
-
 
 /*! \brief Port configuration for servers.
  *
@@ -120,10 +114,8 @@ The port_type_description will be used in the help text:
 
  *
  */
-class ServerPortConfiguration : public PortConfiguration
-{
-public:
-
+class ServerPortConfiguration : public PortConfiguration {
+  public:
     /*! \brief The client certificate types to accept. */
     struct ConnectionType {
         enum Value {
@@ -133,33 +125,27 @@ public:
         };
     };
 
-
-    static const std::string DefaultHostname; //!< The default host name.
-    static const std::string OptionName; //!< The base name of the command-line option.
+    static const std::string DefaultHostname;  //!< The default host name.
+    static const std::string OptionName;       //!< The base name of the command-line option.
     static const std::string HiddenOptionName; //!< The base name of the hidden option on the command-line.
-    static const std::string PropertyName; //!< The base name of the property in the properties file.
-
+    static const std::string PropertyName;     //!< The base name of the property in the properties file.
 
     //! \brief Constructor to specify port.
-    ServerPortConfiguration(
-            uint32_t default_tcp_port, //!< [in]
-            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
-        );
+    ServerPortConfiguration(uint32_t default_tcp_port,                                                    //!< [in]
+                            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
+    );
 
     //! \brief Constructor to specify service name.
-    ServerPortConfiguration(
-            const std::string& default_service_name, //!< [in]
-            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
-        );
+    ServerPortConfiguration(const std::string& default_service_name,                                      //!< [in]
+                            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
+    );
 
     //! \brief Constructor to specify port type.
-    ServerPortConfiguration(
-            const std::string& default_service_name, //!< The service name that will be used if none is provided.
-            const std::string& port_type_name, //!< The port name, will be prepended to options
-            const std::string& port_type_description, //!< The port description, will be embedded in the option description help text.
-            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
-        );
-
+    ServerPortConfiguration(const std::string& default_service_name,                                      //!< The service name that will be used if none is provided.
+                            const std::string& port_type_name,                                            //!< The port name, will be prepended to options
+                            const std::string& port_type_description,                                     //!< The port description, will be embedded in the option description help text.
+                            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
+    );
 
     ConnectionType::Value getConnectionType() const { return _connection_type; }
 
@@ -172,27 +158,20 @@ public:
      */
     SslConfiguration createSslConfiguration() const;
 
-
-protected:
-
+  protected:
     //! \brief The property name is '[<i>name</i>_]listen_ports'.
     std::string _getPropertyName() const;
 
     //! \brief The default is '127.0.0.1:<i>default_service_name</i>,[::1]:<i>default_service_name</i>'
     Pairs _getDefault() const;
 
-
-private:
-
+  private:
     std::string _name, _description;
 
     ConnectionType::Value _connection_type;
-
 };
 
-
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq
-
 
 #endif

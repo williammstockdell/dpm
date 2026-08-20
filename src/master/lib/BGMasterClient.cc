@@ -23,8 +23,8 @@
 
 #include <ranges>
 
-#include <utility/include/TimeStuff.h>
 #include <utility/include/ScopeExit.h>
+#include <utility/include/TimeStuff.h>
 
 #include "BGMasterClient.h"
 
@@ -33,27 +33,18 @@
 #include "common/BinaryController.h"
 #include "common/ClientProtocol.h"
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-BGMasterClient::BGMasterClient() :
-    _prot( new ClientProtocol )
-{
+BGMasterClient::BGMasterClient() : _prot(new ClientProtocol) {}
 
-}
-
-void
-BGMasterClient::connectMaster(
-        const bgq::utility::Properties::ConstPtr& props,
-        const bgq::utility::PortConfiguration::Pairs& portpairs
-        ) const
-{
+void BGMasterClient::connectMaster(const bgq::utility::Properties::ConstPtr& props, const bgq::utility::PortConfiguration::Pairs& portpairs) const {
     LOG_TRACE_MSG(__FUNCTION__);
     std::string connected_host;
     std::string connected_port;
     bool failed = true;
     std::ostringstream portstrings;
 
-    for(const bgq::utility::PortConfiguration::Pair& portpair : portpairs) {
+    for (const bgq::utility::PortConfiguration::Pair& portpair : portpairs) {
         portstrings << portpair.first << ":" << portpair.second;
         try {
             _prot->initializeRequester(props, AF_UNSPEC, portpair.first, portpair.second, 2);
@@ -63,7 +54,7 @@ BGMasterClient::connectMaster(
             failed = false;
             break;
         } catch (const CxxSockets::Error& e) {
-            if ( e.errcode == -1 ) {
+            if (e.errcode == -1) {
                 throw exceptions::CommunicationError(exceptions::FATAL, e.what());
             }
             LOG_WARN_MSG("Connection to bgmaster_server failed: " << e.what());
@@ -99,12 +90,7 @@ BGMasterClient::connectMaster(
     LOG_DEBUG_MSG("Group joined");
 }
 
-BinaryId
-BGMasterClient::start(
-        const std::string& alias,
-        const BGAgentId* loc
-        ) const
-{
+BinaryId BGMasterClient::start(const std::string& alias, const BGAgentId* loc) const {
     LOG_TRACE_MSG(__FUNCTION__);
     BGAgentId location;
     if (loc) {
@@ -132,11 +118,7 @@ BGMasterClient::start(
     return id;
 }
 
-int
-BGMasterClient::wait_for_terminate(
-        BinaryId bid
-        ) const
-{
+int BGMasterClient::wait_for_terminate(BinaryId bid) const {
     LOG_TRACE_MSG(__FUNCTION__);
 
     BGMasterClientProtocolSpec::WaitRequest waitreq(bid);
@@ -158,13 +140,7 @@ BGMasterClient::wait_for_terminate(
     return waitrep._status._status;
 }
 
-void
-BGMasterClient::stop(
-        const std::string& alias,
-        const int signal,
-        std::string& errormsg
-        ) const
-{
+void BGMasterClient::stop(const std::string& alias, const int signal, std::string& errormsg) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const std::vector<BinaryId> bv;
     std::vector<std::string> sv;
@@ -172,13 +148,7 @@ BGMasterClient::stop(
     return stop(bv, sv, signal, errormsg);
 }
 
-void
-BGMasterClient::stop(
-        const BinaryId& id,
-        const int signal,
-        std::string& errormsg
-        ) const
-{
+void BGMasterClient::stop(const BinaryId& id, const int signal, std::string& errormsg) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const std::vector<std::string> sv;
     std::vector<BinaryId> bv;
@@ -187,38 +157,19 @@ BGMasterClient::stop(
     return stop(bv, sv, signal, errormsg);
 }
 
-void
-BGMasterClient::stop(
-        const std::vector<std::string>& aliases,
-        const int signal,
-        std::string& errormsg
-        ) const
-{
+void BGMasterClient::stop(const std::vector<std::string>& aliases, const int signal, std::string& errormsg) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const std::vector<BinaryId> bv;
     return stop(bv, aliases, signal, errormsg);
 }
 
-void
-BGMasterClient::stop(
-        const std::vector<BinaryId>& ids,
-        const int signal,
-        std::string& errormsg
-        ) const
-{
+void BGMasterClient::stop(const std::vector<BinaryId>& ids, const int signal, std::string& errormsg) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const std::vector<std::string> sv;
     return stop(ids, sv, signal, errormsg);
 }
 
-void
-BGMasterClient::stop(
-        const std::vector<BinaryId>& ids,
-        const std::vector<std::string>& aliases,
-        const int signal,
-        std::string& errormsg
-        ) const
-{
+void BGMasterClient::stop(const std::vector<BinaryId>& ids, const std::vector<std::string>& aliases, const int signal, std::string& errormsg) const {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::StopRequest stopreq(signal);
     stopreq._aliases = aliases;
@@ -244,11 +195,7 @@ BGMasterClient::stop(
     return;
 }
 
-void
-BGMasterClient::get_errors(
-        std::vector<std::string>& error_vec
-        ) const
-{
+void BGMasterClient::get_errors(std::vector<std::string>& error_vec) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::Get_errorsRequest error_req;
     BGMasterClientProtocolSpec::Get_errorsReply error_rep(exceptions::OK, "success");
@@ -264,11 +211,7 @@ BGMasterClient::get_errors(
     }
 }
 
-void
-BGMasterClient::get_history(
-        std::vector<std::string>& history_vec
-        ) const
-{
+void BGMasterClient::get_history(std::vector<std::string>& history_vec) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::Get_historyRequest history_req;
     BGMasterClientProtocolSpec::Get_historyReply history_rep(exceptions::OK, "success");
@@ -284,13 +227,7 @@ BGMasterClient::get_history(
     }
 }
 
-int
-BGMasterClient::master_status(
-        std::string& start_time,
-        std::string& version,
-        std::string& properties
-        ) const
-{
+int BGMasterClient::master_status(std::string& start_time, std::string& version, std::string& properties) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::MasterstatRequest statreq;
     BGMasterClientProtocolSpec::MasterstatReply statrep;
@@ -314,9 +251,7 @@ BGMasterClient::master_status(
     return retval;
 }
 
-void
-BGMasterClient::status(std::map<BinaryId, BinaryControllerPtr, Id::Comp>& stats) const
-{
+void BGMasterClient::status(std::map<BinaryId, BinaryControllerPtr, Id::Comp>& stats) const {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::StatusRequest statreq;
     for (std::map<BinaryId, BinaryControllerPtr, Id::Comp>::const_iterator it = stats.begin(); it != stats.end(); ++it) {
@@ -340,27 +275,13 @@ BGMasterClient::status(std::map<BinaryId, BinaryControllerPtr, Id::Comp>& stats)
         const BinCont bincont = *binit;
         const BinaryId bid(bincont._binary_id);
         const BinaryController::Status stat = (BinaryController::Status)(bincont._status);
-        const BinaryControllerPtr binary(
-                new BinaryController(
-                    bid,
-                    bincont._binary_name,
-                    bincont._alias,
-                    bincont._user,
-                    bincont._exit_status,
-                    stat,
-                    bincont._start_time
-                    )
-                );
+        const BinaryControllerPtr binary(new BinaryController(bid, bincont._binary_name, bincont._alias, bincont._user, bincont._exit_status, stat, bincont._start_time));
 
         stats[bid] = binary;
     }
 }
 
-void
-BGMasterClient::idle_aliases(
-        std::vector<std::string>& aliases
-        ) const
-{
+void BGMasterClient::idle_aliases(std::vector<std::string>& aliases) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::GetidleRequest idlereq;
     BGMasterClientProtocolSpec::GetidleReply idlerep(exceptions::OK, "success");
@@ -371,16 +292,12 @@ BGMasterClient::idle_aliases(
     } catch (const CxxSockets::Error& err) {
         throw exceptions::CommunicationError(exceptions::WARN, "Connection to bgmaster_server failed.");
     }
-    for(const std::string& al : idlerep._aliases) {
+    for (const std::string& al : idlerep._aliases) {
         aliases.push_back(al);
     }
 }
 
-void
-BGMasterClient::get_agents(
-        std::map<BGAgentId, std::vector<BinaryControllerPtr>, Id::Comp>& amap
-        ) const
-{
+void BGMasterClient::get_agents(std::map<BGAgentId, std::vector<BinaryControllerPtr>, Id::Comp>& amap) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::AgentlistRequest agentreq;
     BGMasterClientProtocolSpec::AgentlistReply agentrep(exceptions::OK, "success");
@@ -406,16 +323,7 @@ BGMasterClient::get_agents(
             // Now build our binary type from the reply's
             const ReplyBinary rep_bin = *bin_it;
             LOG_DEBUG_MSG("Found binary " << rep_bin._binary_id << "|" << rep_bin._name << "|" << rep_bin._status);
-            const BinaryControllerPtr base(
-                    new BinaryController(rep_bin._binary_id,
-                        rep_bin._name,
-                        rep_bin._alias,
-                        rep_bin._user,
-                        rep_bin._exit_status,
-                        rep_bin._status,
-                        rep_bin._start_time
-                        )
-                    );
+            const BinaryControllerPtr base(new BinaryController(rep_bin._binary_id, rep_bin._name, rep_bin._alias, rep_bin._user, rep_bin._exit_status, rep_bin._status, rep_bin._start_time));
             binvec.push_back(base);
         }
         // Now stick our vector in our map
@@ -423,11 +331,7 @@ BGMasterClient::get_agents(
     }
 }
 
-void
-BGMasterClient::get_clients(
-        ClientAndUserMap& clients
-        ) const
-{
+void BGMasterClient::get_clients(ClientAndUserMap& clients) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::ClientsRequest clientreq;
     BGMasterClientProtocolSpec::ClientsReply clientrep(exceptions::OK, "success");
@@ -447,12 +351,7 @@ BGMasterClient::get_clients(
     }
 }
 
-void
-BGMasterClient::end_master(
-        bool master_only,
-        int signal
-        ) const
-{
+void BGMasterClient::end_master(bool master_only, int signal) const {
     // Note that this just requests a graceful end to the bgmaster_server
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::TerminateRequest termreq(master_only, signal);
@@ -470,16 +369,11 @@ BGMasterClient::end_master(
     }
 }
 
-void
-BGMasterClient::fail_over(
-        std::vector<BinaryId>& bins,
-        const std::string& trigger
-        ) const
-{
+void BGMasterClient::fail_over(std::vector<BinaryId>& bins, const std::string& trigger) const {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::FailoverRequest failreq;
     BGMasterClientProtocolSpec::FailoverReply failrep(exceptions::OK, "success");
-    for(const BinaryId& curr_id : bins) {
+    for (const BinaryId& curr_id : bins) {
         failreq._binary_ids.push_back(curr_id.str());
     }
     failreq._trigger = trigger;
@@ -496,7 +390,7 @@ BGMasterClient::fail_over(
     bins.clear();
     // Now go through the fail replies and put all of the failed failovers in the vector
     typedef BGMasterClientProtocolSpec::FailoverReply::BinaryStatus BinStat;
-    for(BinStat& bs : failrep._statuses) {
+    for (BinStat& bs : failrep._statuses) {
         const BinaryId bid(bs._binary_id);
         bins.push_back(bid);
     }
@@ -506,11 +400,7 @@ BGMasterClient::fail_over(
     }
 }
 
-void
-BGMasterClient::reload_config(
-        const std::string& config_file
-        ) const
-{
+void BGMasterClient::reload_config(const std::string& config_file) const {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::ReloadRequest relreq;
     if (!config_file.empty())
@@ -539,12 +429,7 @@ BGMasterClient::reload_config(
     }
 }
 
-BinaryId
-BGMasterClient::alias_wait(
-        const std::string& alias,
-        unsigned timeout
-        ) const
-{
+BinaryId BGMasterClient::alias_wait(const std::string& alias, unsigned timeout) const {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::Alias_waitRequest waitreq(alias, timeout);
     BGMasterClientProtocolSpec::Alias_waitReply waitrep;
@@ -565,9 +450,7 @@ BGMasterClient::alias_wait(
     return waitrep._binary_id;
 }
 
-void
-BGMasterClient::event_monitor() const
-{
+void BGMasterClient::event_monitor() const {
     const BGMasterClientProtocolSpec::MonitorRequest monreq;
     BGMasterClientProtocolSpec::MonitorReply monrep;
     try {
@@ -588,22 +471,20 @@ BGMasterClient::event_monitor() const
     std::vector<std::string> sorted_msgs;
     // Note: The format of the messages is important. The "Event: " and "Error: " needs
     // to be there and be that length or the string parsification that happens later gets broken.
-    for(BGMasterClientProtocolSpec::MonitorReply::EventMessage curr_msg : monrep._eventmessages) {
+    for (BGMasterClientProtocolSpec::MonitorReply::EventMessage curr_msg : monrep._eventmessages) {
         all_messages.push_back("Event: " + curr_msg._eventmsg);
     }
-    for(BGMasterClientProtocolSpec::MonitorReply::ErrorMessage curr_msg : monrep._errormessages) {
+    for (BGMasterClientProtocolSpec::MonitorReply::ErrorMessage curr_msg : monrep._errormessages) {
         all_messages.push_back("Error: " + curr_msg._errormsg);
     }
 
     for (const std::string& curr_msg : all_messages) {
-        const auto curr_msg_time =
-            time_from_string(curr_msg.substr(7, 20));
+        const auto curr_msg_time = time_from_string(curr_msg.substr(7, 20));
 
         bool inserted = false;
 
         for (auto it = sorted_msgs.begin(); it != sorted_msgs.end(); ++it) {
-            const auto inner_msg_time =
-                time_from_string(it->substr(7, 20));
+            const auto inner_msg_time = time_from_string(it->substr(7, 20));
 
             if (curr_msg_time > inner_msg_time) {
                 sorted_msgs.insert(it, curr_msg);
@@ -687,9 +568,7 @@ BGMasterClient::event_monitor() const
     }
 }
 
-void
-BGMasterClient::end_monitor() const
-{
+void BGMasterClient::end_monitor() const {
     const BGMasterClientProtocolSpec::EndmonitorRequest endmonreq;
     BGMasterClientProtocolSpec::EndmonitorReply endmonrep;
     try {
@@ -705,16 +584,11 @@ BGMasterClient::end_monitor() const
     }
 }
 
-void
-BGMasterClient::log_level(
-        const std::vector<std::string>& input,
-        std::map<LogName, LogLevel>& output
-        ) const
-{
+void BGMasterClient::log_level(const std::vector<std::string>& input, std::map<LogName, LogLevel>& output) const {
     BGMasterClientProtocolSpec::LoglevelRequest loglevreq;
     BGMasterClientProtocolSpec::LoglevelReply loglevrep;
     // Load up the new log levels for the request.
-    for(const std::string& i : input) {
+    for (const std::string& i : input) {
         loglevreq._loggers.push_back(i);
     }
     try {
@@ -728,7 +602,7 @@ BGMasterClient::log_level(
     }
 
     output.clear();
-    for(const BGMasterClientProtocolSpec::Logger& curr_logger : loglevrep._loggers) {
+    for (const BGMasterClientProtocolSpec::Logger& curr_logger : loglevrep._loggers) {
         output[curr_logger._name] = curr_logger._level;
     }
 }

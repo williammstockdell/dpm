@@ -21,7 +21,6 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #include <iostream>
 #include <string>
 
@@ -29,21 +28,18 @@
 
 using std::string;
 
-
 namespace bgq {
 namespace utility {
 
-
 const ExitStatus ExitStatus::Normal(0);
 
-
-std::ostream& operator<<( std::ostream& os, const ExitStatus& exit_status )
-{
-    os << (exit_status.exited() ? (string() + "status " + std::to_string(exit_status.getExitStatus())) :
-           exit_status.signaled() ? (string() + "signal " + std::to_string(exit_status.getSignal())) :
-           (string() + "unknown " + std::to_string(exit_status.get())));
+std::ostream& operator<<(std::ostream& os, const ExitStatus& exit_status) {
+    os << (exit_status.exited()     ? (string() + "status " + std::to_string(exit_status.getExitStatus()))
+           : exit_status.signaled() ? (string() + "signal " + std::to_string(exit_status.getSignal()))
+                                    : (string() + "unknown " + std::to_string(exit_status.get())));
 
     return os;
 }
 
-} } // namespace bgq::utility
+} // namespace utility
+} // namespace bgq

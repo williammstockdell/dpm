@@ -21,55 +21,40 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include "Registrar.h"
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "ClientController.h"
 #include "ClientManager.h"
 #include "MasterController.h"
-#include "Registrar.h"
 #include "ras.h"
 
 #include "../lib/exceptions.h"
 
-
 #include <utility/include/cxxsockets/ListenerSet.h>
 #include <utility/include/cxxsockets/SockAddrList.h>
-
 
 #include <pthread.h>
 #include <signal.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-Registrar::Registrar() : _end(false), _failed(false), _my_tid(0)
-{
+Registrar::Registrar() : _end(false), _failed(false), _my_tid(0) {
     // Nothing to do
 }
 
-Registrar::~Registrar()
-{
-    _my_tid = 0;
-}
+Registrar::~Registrar() { _my_tid = 0; }
 
-void
-Registrar::processNew(
-        CxxSockets::TCPSocketPtr sock
-        )
-{
+void Registrar::processNew(CxxSockets::TCPSocketPtr sock) {
     bgq::utility::ServerPortConfiguration port_config(0, bgq::utility::ServerPortConfiguration::ConnectionType::AdministrativeCommand);
     port_config.setProperties(MasterController::getProps(), "");
     port_config.notifyComplete();
 
     CxxSockets::SecureTCPSocketPtr secure;
     try {
-        secure.reset(
-                new CxxSockets::SecureTCPSocket(
-                    sock,
-                    port_config
-                    )
-                );
+        secure.reset(new CxxSockets::SecureTCPSocket(sock, port_config));
     } catch (const CxxSockets::Error& e) {
-        LOG_ERROR_MSG( e.what() );
+        LOG_ERROR_MSG(e.what());
         return;
     }
 
@@ -116,8 +101,8 @@ Registrar::processNew(
 
     if (requestObject._initiator == "agent") {
         // 3) If 2, then ctor a AgentRepPtr with our prot. The AgentRep ctor sends the response.
-        const AgentProtocolPtr pt( new AgentProtocol );
-        pt->initializeResponder( secure );
+        const AgentProtocolPtr pt(new AgentProtocol);
+        pt->initializeResponder(secure);
 
         AgentRepPtr bgagent;
 
@@ -165,12 +150,7 @@ Registrar::processNew(
 
             // Initialize the requester. This will connect back to the agent's listener.
             try {
-                pt->initializeRequester(
-                        MasterController::getProps(),
-                        AF_UNSPEC,
-                        requestObject._ip_address,
-                        std::to_string(requestObject._port)
-                        );
+                pt->initializeRequester(MasterController::getProps(), AF_UNSPEC, requestObject._ip_address, std::to_string(requestObject._port));
             } catch (const CxxSockets::HardError& err) {
                 // Something bad happened on the reply or connecting back
                 std::ostringstream msg;
@@ -193,8 +173,8 @@ Registrar::processNew(
         }
     } else if (requestObject._initiator == "client") {
         // Create a new client controller which initializes itself
-        const ClientProtocolPtr pt( new ClientProtocol );
-        pt->initializeResponder( secure );
+        const ClientProtocolPtr pt(new ClientProtocol);
+        pt->initializeResponder(secure);
 
         ClientControllerPtr client;
 
@@ -209,10 +189,7 @@ Registrar::processNew(
             return;
         }
 
-        LOG_DEBUG_MSG(
-                "Client (" << secure->getUserId().getUser() << ") connected at IP address " <<
-                requestObject._ip_address << " port " << requestObject._port << "."
-                );
+        LOG_DEBUG_MSG("Client (" << secure->getUserId().getUser() << ") connected at IP address " << requestObject._ip_address << " port " << requestObject._port << ".");
         MasterController::get_client_manager().addClient(client);
     } else {
         // Log it and go
@@ -222,11 +199,7 @@ Registrar::processNew(
     }
 }
 
-void
-Registrar::listenForNew(
-        const bgq::utility::PortConfiguration::Pairs& portpairs
-        )
-{
+void Registrar::listenForNew(const bgq::utility::PortConfiguration::Pairs& portpairs) {
     LOG_TRACE_MSG(__FUNCTION__);
     _my_tid = pthread_self();
     _failed = false;
@@ -235,11 +208,11 @@ Registrar::listenForNew(
     // connections.  The new connections will be validated and
     // inserted into the agent vector in a separate thread.
     CxxSockets::SockAddrList masterlist; // One big list to rule them all!
-    for(const bgq::utility::PortConfiguration::Pair& curr_pair : portpairs) {
+    for (const bgq::utility::PortConfiguration::Pair& curr_pair : portpairs) {
         LOG_DEBUG_MSG("Listening on " << curr_pair.first << ":" << curr_pair.second);
         try {
             CxxSockets::SockAddrList salist(AF_UNSPEC, curr_pair.first, curr_pair.second);
-            for(const CxxSockets::SockAddr& curr_sockaddr : salist) {
+            for (const CxxSockets::SockAddr& curr_sockaddr : salist) {
                 // Now copy every SockAddr in to the master list
                 masterlist.push_back(curr_sockaddr);
             }
@@ -298,7 +271,7 @@ Registrar::listenForNew(
                 return;
             } catch (const CxxSockets::SoftError& e) {
                 LOG_DEBUG_MSG("Accept processing failed, retrying. Error is: " << e.what());
-                continue;  // Just try again
+                continue; // Just try again
             }
 
             if (accepted) {
@@ -310,22 +283,17 @@ Registrar::listenForNew(
     }
 }
 
-void
-Registrar::cancel()
-{
-    LOG_TRACE_MSG(__FUNCTION__ << " " <<  "0x" << std::hex << _my_tid);
+void Registrar::cancel() {
+    LOG_TRACE_MSG(__FUNCTION__ << " "
+                               << "0x" << std::hex << _my_tid);
     _end = true;
-    if ( _my_tid ) {
+    if (_my_tid) {
         pthread_kill(_my_tid, SIGUSR1);
     }
     _listenerThread.join();
 }
 
-void
-Registrar::run(
-        bool agent
-        )
-{
+void Registrar::run(bool agent) {
     // This starts our listener thread
     LOG_TRACE_MSG(__FUNCTION__);
     bgq::utility::PortConfiguration::Pairs portpairs;
@@ -335,7 +303,7 @@ Registrar::run(
 
     try {
         bgq::utility::ServerPortConfiguration port_config(servname, port_type, port_type);
-        port_config.setProperties( MasterController::getProps(), "master.server");
+        port_config.setProperties(MasterController::getProps(), "master.server");
         port_config.notifyComplete();
         portpairs = port_config.getPairs();
     } catch (const std::invalid_argument& e) {

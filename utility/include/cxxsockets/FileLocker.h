@@ -33,13 +33,12 @@
 
 namespace CxxSockets {
 
-struct FileLocker
-{
+struct FileLocker {
     PthreadMutexHolder _all;
     PthreadMutexHolder _send;
     PthreadMutexHolder _receive;
 };
 
-}
+} // namespace CxxSockets
 
 #endif

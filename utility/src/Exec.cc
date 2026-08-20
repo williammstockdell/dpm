@@ -26,75 +26,65 @@
 #include "Log.h"
 #include "Properties.h"
 #include "UserId.h"
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <filesystem>
-#include <csignal>
 #include <cerrno>
-#include <unistd.h>
-#include <sys/stat.h>
+#include <csignal>
 #include <fcntl.h>
+#include <filesystem>
 #include <grp.h>
-#include <sys/prctl.h>
-#include <sys/types.h>
+#include <iostream>
 #include <pwd.h>
+#include <sstream>
+#include <string>
+#include <sys/prctl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 LOG_DECLARE_FILE("utility");
 
-void
-dupfds(
-        const int logfd,
-        const int errorfd
-        )
-{
-    ::close( STDOUT_FILENO );
-    if ( dup2(logfd, STDOUT_FILENO) != STDOUT_FILENO ) {
+void dupfds(const int logfd, const int errorfd) {
+    ::close(STDOUT_FILENO);
+    if (dup2(logfd, STDOUT_FILENO) != STDOUT_FILENO) {
         std::ostringstream msg;
         char buf[256];
         msg << "dup2 failed to set STDOUT to the log file: " << strerror_r(errno, buf, sizeof(buf));
         LOG_ERROR_MSG(msg.str());
         ssize_t retcode = ::write(errorfd, msg.str().c_str(), msg.str().length());
-        if(retcode == -1) {
+        if (retcode == -1) {
 
             LOG_ERROR_MSG("write failed " << errno);
         }
     }
 
     // setup stderr to write to log
-    ::close( STDERR_FILENO );
-    if ( dup2(logfd, STDERR_FILENO) != STDERR_FILENO ) {
+    ::close(STDERR_FILENO);
+    if (dup2(logfd, STDERR_FILENO) != STDERR_FILENO) {
         std::ostringstream msg;
         char buf[256];
         msg << "dup2 failed to set STDERR to the log file: " << strerror_r(errno, buf, sizeof(buf));
         LOG_ERROR_MSG(msg.str());
         ssize_t retcode = ::write(errorfd, msg.str().c_str(), msg.str().length());
-        if(retcode == -1) {
+        if (retcode == -1) {
 
             LOG_ERROR_MSG("write failed " << errno);
         }
     }
 }
 
-int
-logoutput(
-        const std::string& logfilename,
-        const int errorfd
-        )
-{
-    #ifdef O_CLOEXEC
-    const int logfd = open(logfilename.c_str(), O_RDWR|O_CREAT|O_APPEND|O_CLOEXEC, S_IRUSR|S_IWUSR|S_IRGRP);
-    #else
-    const int logfd = open(logfilename.c_str(), O_RDWR|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR|S_IRGRP);
-    #endif
+int logoutput(const std::string& logfilename, const int errorfd) {
+#ifdef O_CLOEXEC
+    const int logfd = open(logfilename.c_str(), O_RDWR | O_CREAT | O_APPEND | O_CLOEXEC, S_IRUSR | S_IWUSR | S_IRGRP);
+#else
+    const int logfd = open(logfilename.c_str(), O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IRGRP);
+#endif
     if (logfd < 0) {
         std::ostringstream msg;
         char buf[256];
         msg << "Could not open log file " << logfilename << " error " << strerror_r(errno, buf, sizeof(buf));
         LOG_ERROR_MSG(msg.str());
         ssize_t retcode = ::write(errorfd, msg.str().c_str(), msg.str().length());
-        if(retcode == -1) {
+        if (retcode == -1) {
 
             LOG_ERROR_MSG("write failed " << errno);
         }
@@ -105,21 +95,11 @@ logoutput(
     return logfd;
 }
 
-pid_t
-Exec::fexec(
-        int& pipefd,
-        const std::string& path_and_args,
-        std::string& errorstring,
-        const bool managed,
-        const std::string& logfilename,
-        const std::string& propfile,
-        const std::string& userid
-        )
-{
+pid_t Exec::fexec(int& pipefd, const std::string& path_and_args, std::string& errorstring, const bool managed, const std::string& logfilename, const std::string& propfile, const std::string& userid) {
     LOG_TRACE_MSG("path and args=" << path_and_args);
 
     // arguments for exec
-    char* arg_array[128] = { NULL };
+    char* arg_array[128] = {NULL};
     std::vector<std::string> arg_vector;
 
     std::istringstream args_stream(path_and_args);
@@ -138,21 +118,16 @@ Exec::fexec(
 
     const std::string path = args[0];
 
-    const std::string executable =
-        std::filesystem::path(path).filename().string();
+    const std::string executable = std::filesystem::path(path).filename().string();
 
     arg_vector.clear();
     arg_vector.push_back(executable);
 
     arg_array[0] = arg_vector[0].data();
 
-
     for (std::size_t position = 1; position < args.size(); ++position) {
         if (position >= std::size(arg_array) - 1) {
-            LOG_ERROR_MSG(
-                          "more than " << std::size(arg_array) - 1
-                          << " arguments is not supported"
-                          );
+            LOG_ERROR_MSG("more than " << std::size(arg_array) - 1 << " arguments is not supported");
             return -1;
         }
 
@@ -162,32 +137,32 @@ Exec::fexec(
 
     arg_array[arg_vector.size()] = nullptr;
 
-    for ( std::vector<std::string>::iterator i = arg_vector.begin(); i != arg_vector.end(); ++i ) {
-        const size_t position = static_cast<size_t>(std::distance( arg_vector.begin(), i ));
+    for (std::vector<std::string>::iterator i = arg_vector.begin(); i != arg_vector.end(); ++i) {
+        const size_t position = static_cast<size_t>(std::distance(arg_vector.begin(), i));
         LOG_TRACE_MSG("arg[" << position << "]=" << *i);
     }
 
     // Create a pipe to read output from the child proc
     int pipeFromChild[2];
-    #ifdef O_CLOEXEC
+#ifdef O_CLOEXEC
     if (pipe2(pipeFromChild, O_CLOEXEC) != 0) {
-    #else
+#else
     if (pipe(pipeFromChild) != 0) {
-    #endif
+#endif
         char buf[256];
-        LOG_ERROR_MSG( "creating child pipe() failed: " << strerror_r(errno, buf, sizeof(buf)) );
+        LOG_ERROR_MSG("creating child pipe() failed: " << strerror_r(errno, buf, sizeof(buf)));
         return -1;
     }
 
     // Create error pipe
     int errorPipe[2];
-    #ifdef O_CLOEXEC
+#ifdef O_CLOEXEC
     if (pipe2(errorPipe, O_CLOEXEC) != 0) {
-    #else
+#else
     if (pipe(errorPipe) != 0) {
-    #endif
+#endif
         char buf[256];
-        LOG_ERROR_MSG( "creating error pipe() failed: " << strerror_r(errno, buf, sizeof(buf)) );
+        LOG_ERROR_MSG("creating error pipe() failed: " << strerror_r(errno, buf, sizeof(buf)));
         return -1;
     }
 
@@ -195,7 +170,7 @@ Exec::fexec(
     const gid_t my_egid = getegid();
     bool isroot = false;
     if (!userid.empty()) {
-        if ( seteuid(0) != 0 ) {
+        if (seteuid(0) != 0) {
             char buf[256];
             LOG_WARN_MSG("Cannot change uid to root.  Current uid is " << geteuid() << ".  " << strerror_r(errno, buf, sizeof(buf)));
             return -1;
@@ -209,7 +184,7 @@ Exec::fexec(
     if (pid < 0) {
         // Error on fork.
         char buf[256];
-        LOG_ERROR_MSG("fork() failed: " << strerror_r(errno, buf, sizeof(buf)) );
+        LOG_ERROR_MSG("fork() failed: " << strerror_r(errno, buf, sizeof(buf)));
         return -1;
     }
 
@@ -223,7 +198,7 @@ Exec::fexec(
         if (!userid.empty() && isroot) {
             // We have an assigned user id and we are root.
             try {
-                const bgq::utility::UserId uid( userid );
+                const bgq::utility::UserId uid(userid);
                 const gid_t my_gid = uid.getGroups().front().first;
                 if (setregid(my_gid, my_gid) != 0) {
                     char errorText[256];
@@ -233,8 +208,8 @@ Exec::fexec(
                 }
                 // Extract gid_t from each group returned in the UserId object
                 std::vector<gid_t> groups;
-                for( const bgq::utility::UserId::Group& i : uid.getGroups() ) {
-                    groups.push_back( i.first );
+                for (const bgq::utility::UserId::Group& i : uid.getGroups()) {
+                    groups.push_back(i.first);
                 }
                 // Assuming the storage of a std::vector is contiguous memory
                 if (setgroups(groups.size(), &groups[0]) < 0) {
@@ -250,11 +225,11 @@ Exec::fexec(
                     msg << "Cannot change real effective uid to " << uid.getUid() << ": " << strerror_r(errno, errorText, 256);
                     throw std::runtime_error(msg.str());
                 }
-            } catch ( const std::exception& e ) {
+            } catch (const std::exception& e) {
                 std::ostringstream msg;
                 msg << e.what();
                 ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
-                if(retcode == -1) {
+                if (retcode == -1) {
 
                     LOG_ERROR_MSG("write failed " << errno);
                 }
@@ -269,7 +244,7 @@ Exec::fexec(
                 errorstream << "Could not set real and effective gids of this process to " << my_egid << ": " << strerror_r(errno, buf, sizeof(buf));
                 LOG_ERROR_MSG(errorstream.str());
                 ssize_t retcode = ::write(errorPipe[1], errorstream.str().c_str(), errorstream.str().length());
-                if(retcode == -1) {
+                if (retcode == -1) {
 
                     LOG_ERROR_MSG("write failed " << errno);
                 }
@@ -284,7 +259,7 @@ Exec::fexec(
                 errorstream << "Could not set real and effective uids of this process to " << my_euid << ": " << strerror_r(errno, buf, sizeof(buf));
                 LOG_ERROR_MSG(errorstream.str());
                 ssize_t retcode = ::write(errorPipe[1], errorstream.str().c_str(), errorstream.str().length());
-                if(retcode == -1) {
+                if (retcode == -1) {
 
                     LOG_ERROR_MSG("write failed " << errno);
                 }
@@ -332,12 +307,12 @@ Exec::fexec(
         }
 
         // start a new process group
-        if (setpgid(0,0) < 0) {
+        if (setpgid(0, 0) < 0) {
             std::ostringstream msg;
             char buf[256];
             msg << "Could not set new process grou: " << strerror_r(errno, buf, sizeof(buf));
             ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
-            if(retcode == -1) {
+            if (retcode == -1) {
 
                 LOG_ERROR_MSG("write failed " << errno);
             }
@@ -350,7 +325,7 @@ Exec::fexec(
             char buf[256];
             msg << "Could not set process death signal: " << strerror_r(errno, buf, sizeof(buf));
             ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
-            if(retcode == -1) {
+            if (retcode == -1) {
 
                 LOG_ERROR_MSG("write failed " << errno);
             }
@@ -359,13 +334,13 @@ Exec::fexec(
 
         // zero signal mask inherited from parent process
         sigset_t mask;
-        sigemptyset( &mask );
-        if ( pthread_sigmask( SIG_SETMASK, &mask, NULL ) == -1 ) {
+        sigemptyset(&mask);
+        if (pthread_sigmask(SIG_SETMASK, &mask, NULL) == -1) {
             std::ostringstream msg;
             char buf[256];
             msg << "Could not set signal mask: " << strerror_r(errno, buf, sizeof(buf));
             ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
-            if(retcode == -1) {
+            if (retcode == -1) {
 
                 LOG_ERROR_MSG("write failed " << errno);
             }
@@ -379,7 +354,7 @@ Exec::fexec(
         char buf[256];
         msg << "execv(" << path << ") failed: " << strerror_r(error, buf, sizeof(buf));
         ssize_t retcode = ::write(errorPipe[1], msg.str().c_str(), msg.str().length());
-        if(retcode == -1) {
+        if (retcode == -1) {
 
             LOG_ERROR_MSG("write failed " << errno);
         }
@@ -391,7 +366,7 @@ Exec::fexec(
     ::close(errorPipe[1]);
 
     // Set uid back to non-privileged user.
-    if ( seteuid(my_euid) != 0 ) {
+    if (seteuid(my_euid) != 0) {
         char buf[256];
         LOG_ERROR_MSG("Cannot reset effective uid to " << my_euid << ": " << strerror_r(errno, buf, sizeof(buf)));
     } else {
@@ -401,17 +376,18 @@ Exec::fexec(
     char buf[1024];
     bzero(buf, 1024);
     ssize_t rc = 0;
-    while ( 1 ) {
-        rc = ::read( errorPipe[0], buf, sizeof(buf) );
-        if ( rc == -1 && errno == EINTR ) continue;
+    while (1) {
+        rc = ::read(errorPipe[0], buf, sizeof(buf));
+        if (rc == -1 && errno == EINTR)
+            continue;
         break;
     }
     ::close(errorPipe[0]);
 
     LOG_TRACE_MSG(rc << " bytes of error data found.");
-    if ( rc > 0 ) {
+    if (rc > 0) {
         errorstring = buf;
-        LOG_DEBUG_MSG( errorstring );
+        LOG_DEBUG_MSG(errorstring);
         int zero = 0;
         LOG_DEBUG_MSG("waiting for " << pid);
         if (waitpid(pid, &zero, zero) < 0) {

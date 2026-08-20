@@ -35,16 +35,9 @@
 
 namespace CxxSockets {
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
-bool
-SockAddr::Addrinf(
-        struct addrinfo*& addrinf,
-        const unsigned short family,
-        const std::string& nodename,
-        const std::string& service
-        )
-{
+bool SockAddr::Addrinf(struct addrinfo*& addrinf, const unsigned short family, const std::string& nodename, const std::string& service) {
     struct addrinfo hints;
     memset(&hints, 0, sizeof(addrinfo));
 
@@ -81,9 +74,7 @@ SockAddr::Addrinf(
     return true;
 }
 
-std::string
-SockAddr::getServiceName()
-{
+std::string SockAddr::getServiceName() {
     char svc_buf[NI_MAXSERV];
     const int rc = getnameinfo((sockaddr*)(this), sizeof(sockaddr_storage), NULL, 0, svc_buf, NI_MAXSERV, 0);
     if (rc != 0) {
@@ -96,9 +87,7 @@ SockAddr::getServiceName()
     return sname;
 }
 
-int
-SockAddr::getServicePort() const
-{
+int SockAddr::getServicePort() const {
     char svc_buf[NI_MAXSERV];
     const int rc = getnameinfo((sockaddr*)(this), sizeof(sockaddr_storage), NULL, 0, svc_buf, NI_MAXSERV, NI_NUMERICSERV);
     if (rc != 0) {
@@ -111,9 +100,7 @@ SockAddr::getServicePort() const
     return retval;
 }
 
-std::string
-SockAddr::getHostName() const
-{
+std::string SockAddr::getHostName() const {
     char host_buf[NI_MAXHOST];
     const int rc = getnameinfo((sockaddr*)(this), sizeof(sockaddr_storage), host_buf, sizeof(host_buf), 0, 0, 0);
     if (rc != 0) {
@@ -126,9 +113,7 @@ SockAddr::getHostName() const
     return sname;
 }
 
-std::string
-SockAddr::getHostAddr() const
-{
+std::string SockAddr::getHostAddr() const {
     char host_buf[NI_MAXHOST];
     socklen_t size = 0;
     if (family() == AF_INET) {
@@ -148,10 +133,7 @@ SockAddr::getHostAddr() const
     return sname;
 }
 
-SockAddr::SockAddr(
-        sockaddr* sa
-        )
-{
+SockAddr::SockAddr(sockaddr* sa) {
     // Make sure there's no junk in the base object.
     bzero(this, sizeof(SockAddr));
 
@@ -162,30 +144,25 @@ SockAddr::SockAddr(
     } else if (sa->sa_family == AF_INET6) {
         size = sizeof(sockaddr_in6);
     } else if (sa->sa_family == AF_LOCAL) {
-        size = static_cast<socklen_t>(SUN_LEN((sockaddr_un *)sa));
+        size = static_cast<socklen_t>(SUN_LEN((sockaddr_un*)sa));
     } else {
-         std::ostringstream msg;
-         msg << "Invalid address family: " << sa->sa_family;
-         LOG_DEBUG_MSG(msg.str());
-         throw SoftError(EINVAL, msg.str());
+        std::ostringstream msg;
+        msg << "Invalid address family: " << sa->sa_family;
+        LOG_DEBUG_MSG(msg.str());
+        throw SoftError(EINVAL, msg.str());
     }
 
     memcpy(this, sa, size);
 }
 
-SockAddr::SockAddr(
-        const unsigned short family,
-        const std::string& nodename,
-        const std::string& service
-        )
-{
+SockAddr::SockAddr(const unsigned short family, const std::string& nodename, const std::string& service) {
     bzero(this, sizeof(sockaddr_storage));
     struct addrinfo* addrinf = 0;
     Addrinf(addrinf, family, nodename, service);
     if (addrinf) {
         SockAddr sa(addrinf->ai_addr);
         if (family == AF_INET6_ONLY) {
-            sa.setFamily( AF_INET6_ONLY );
+            sa.setFamily(AF_INET6_ONLY);
         }
     }
 
@@ -202,4 +179,4 @@ SockAddr::SockAddr(
     freeaddrinfo(addrinf);
 }
 
-}
+} // namespace CxxSockets

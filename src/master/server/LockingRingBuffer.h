@@ -32,17 +32,15 @@
 #include <vector>
 
 //! \brief Fixed-size locking ring buffer specialized for strings.
-class LockingStringRingBuffer
-{
+class LockingStringRingBuffer {
     std::deque<std::string> _ring_buff;
     std::size_t _capacity;
     std::mutex _mutex;
 
-public:
-    explicit LockingStringRingBuffer(unsigned buffsize) : _capacity(buffsize) { }
+  public:
+    explicit LockingStringRingBuffer(unsigned buffsize) : _capacity(buffsize) {}
 
-    void push_back(const std::string& item)
-    {
+    void push_back(const std::string& item) {
         std::lock_guard scoped_lock(_mutex);
 
         if (_ring_buff.size() == _capacity) {
@@ -54,15 +52,10 @@ public:
 
     //! \brief Get the contents of the ring buffer in a string vector.
     //! \param messages The string vector to fill.
-    void getContents(std::vector<std::string>& messages)
-    {
+    void getContents(std::vector<std::string>& messages) {
         std::lock_guard scoped_lock(_mutex);
 
-        std::copy(
-            _ring_buff.begin(),
-            _ring_buff.end(),
-            std::back_inserter(messages)
-        );
+        std::copy(_ring_buff.begin(), _ring_buff.end(), std::back_inserter(messages));
     }
 };
 

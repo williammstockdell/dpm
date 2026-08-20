@@ -36,66 +36,45 @@
 using namespace bgq::utility;
 using namespace CxxSockets;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( file_set )
-{
-    struct Foo : public CxxSockets::FileSet
-    {
-
-    };
+BOOST_AUTO_TEST_CASE(file_set) {
+    struct Foo : public CxxSockets::FileSet {};
 
     Foo f;
-    const TCPSocketPtr foo( new TCPSocket );
+    const TCPSocketPtr foo(new TCPSocket);
 
     // add first should be ok
-    f.AddFile( foo );
+    f.AddFile(foo);
 
     // duplicate should throw
-    BOOST_CHECK_THROW(
-            f.AddFile( foo ),
-            UserError
-            );
+    BOOST_CHECK_THROW(f.AddFile(foo), UserError);
 }
 
-BOOST_AUTO_TEST_CASE( sock_addr_list )
-{
+BOOST_AUTO_TEST_CASE(sock_addr_list) {
     SockAddrList* list;
     BOOST_CHECK_THROW(
-            // empty service and nodename
-            list = new SockAddrList( 0, std::string(), std::string() ),
-            UserError
-            );
+        // empty service and nodename
+        list = new SockAddrList(0, std::string(), std::string()), UserError);
 }
 
-BOOST_AUTO_TEST_CASE( tcp_socket )
-{
+BOOST_AUTO_TEST_CASE(tcp_socket) {
     TCPSocket* t;
     BOOST_CHECK_THROW(
-            // descriptor and family both 0
-            t = new TCPSocket( 0, 0 ),
-            UserError
-            );
+        // descriptor and family both 0
+        t = new TCPSocket(0, 0), UserError);
 }
 
-BOOST_AUTO_TEST_CASE( listener_set )
-{
+BOOST_AUTO_TEST_CASE(listener_set) {
     SockAddrList list; // empty list
     ListenerSet* l;
-    BOOST_CHECK_THROW(
-            l = new ListenerSet(list),
-            UserError
-            );
+    BOOST_CHECK_THROW(l = new ListenerSet(list), UserError);
 }
-
-

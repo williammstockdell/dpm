@@ -46,9 +46,8 @@ namespace CxxSockets {
 //!     and polling for receiving operations
 //! 4)  Acquisition of BOTH locks is required for operations
 //!     like socket(), bind(), connect() and close().
-class Socket : public File
-{
-protected:
+class Socket : public File {
+  protected:
     Socket() : File() {}
 
     //! \brief Protected, non-locking bind.  Called from locking ops.
@@ -57,12 +56,12 @@ protected:
     void internal_getSockName(SockAddr& sa) const;
     void internal_getPeerName(SockAddr& sa) const;
 
-public:
+  public:
     //! \brief Which side of the connection to shut down
     enum ShutDownSide { RECEIVE, SEND };
 
     //! \brief Make sure we close on destruction
-    virtual ~Socket()  = 0;
+    virtual ~Socket() = 0;
 
     //! \brief bind() the socket
     void Bind(const SockAddr& addr);
@@ -77,6 +76,6 @@ public:
     bool Shutdown(ShutDownSide rw);
 };
 
-}
+} // namespace CxxSockets
 
 #endif

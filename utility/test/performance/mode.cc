@@ -32,60 +32,53 @@
 
 using namespace bgq::utility::performance;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
         Properties::Ptr properties = Properties::create();
-        bgq::utility::initializeLogging( *properties );
+        bgq::utility::initializeLogging(*properties);
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( basic_properties_set )
-{
-    unsetenv( bgq::utility::Properties::EnvironmentalName.c_str() );
-    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create( "basic.properties" );
-    bgq::utility::performance::init( props );
-
-    Mode::reset();
-    Mode& mode = Mode::instance();
-    BOOST_CHECK_EQUAL( mode.getMode(), Mode::Value::Basic );
-}
-
-BOOST_AUTO_TEST_CASE( extended_properties_set )
-{
-    unsetenv( bgq::utility::Properties::EnvironmentalName.c_str() );
-    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create( "extended.properties" );
-    bgq::utility::performance::init( props );
+BOOST_AUTO_TEST_CASE(basic_properties_set) {
+    unsetenv(bgq::utility::Properties::EnvironmentalName.c_str());
+    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create("basic.properties");
+    bgq::utility::performance::init(props);
 
     Mode::reset();
     Mode& mode = Mode::instance();
-    BOOST_CHECK_EQUAL( mode.getMode(), Mode::Value::Extended );
+    BOOST_CHECK_EQUAL(mode.getMode(), Mode::Value::Basic);
 }
 
-BOOST_AUTO_TEST_CASE( garbage_properties_set )
-{
-    unsetenv( bgq::utility::Properties::EnvironmentalName.c_str() );
-    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create( "garbage.properties" );
-    bgq::utility::performance::init( props );
+BOOST_AUTO_TEST_CASE(extended_properties_set) {
+    unsetenv(bgq::utility::Properties::EnvironmentalName.c_str());
+    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create("extended.properties");
+    bgq::utility::performance::init(props);
 
     Mode::reset();
     Mode& mode = Mode::instance();
-    BOOST_CHECK_EQUAL( mode.getMode(), Mode::DefaultMode );
+    BOOST_CHECK_EQUAL(mode.getMode(), Mode::Value::Extended);
 }
 
-BOOST_AUTO_TEST_CASE( none_properties_set )
-{
-    unsetenv( bgq::utility::Properties::EnvironmentalName.c_str() );
-    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create( "none.properties" );
-    bgq::utility::performance::init( props );
+BOOST_AUTO_TEST_CASE(garbage_properties_set) {
+    unsetenv(bgq::utility::Properties::EnvironmentalName.c_str());
+    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create("garbage.properties");
+    bgq::utility::performance::init(props);
 
     Mode::reset();
     Mode& mode = Mode::instance();
-    BOOST_CHECK_EQUAL( mode.getMode(), Mode::Value::None );
+    BOOST_CHECK_EQUAL(mode.getMode(), Mode::DefaultMode);
 }
 
+BOOST_AUTO_TEST_CASE(none_properties_set) {
+    unsetenv(bgq::utility::Properties::EnvironmentalName.c_str());
+    bgq::utility::Properties::Ptr props = bgq::utility::Properties::create("none.properties");
+    bgq::utility::performance::init(props);
+
+    Mode::reset();
+    Mode& mode = Mode::instance();
+    BOOST_CHECK_EQUAL(mode.getMode(), Mode::Value::None);
+}

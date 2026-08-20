@@ -25,24 +25,19 @@
 
 #include "ClientController.h"
 
+LOG_DECLARE_FILE("master");
 
-
-LOG_DECLARE_FILE( "master" );
-
-ClientManager::ClientManager() : _ending(false)
-{
+ClientManager::ClientManager() : _ending(false) {
     // Nothing to do
 }
 
-void
-ClientManager::cancel()
-{
+void ClientManager::cancel() {
     LOG_TRACE_MSG(__FUNCTION__);
     _ending = true;
 
     std::vector<ClientControllerPtr> clients;
     {
-        std::lock_guard lock( _clientMutex );
+        std::lock_guard lock(_clientMutex);
         clients = _clients;
     }
 
@@ -50,35 +45,25 @@ ClientManager::cancel()
         clients[i]->cancel();
 }
 
-void
-ClientManager::removeClient(
-        ClientControllerPtr c
-        )
-{
+void ClientManager::removeClient(ClientControllerPtr c) {
     LOG_TRACE_MSG(__FUNCTION__);
-    std::lock_guard lock( _clientMutex );
+    std::lock_guard lock(_clientMutex);
     _clients.erase(remove(_clients.begin(), _clients.end(), c), _clients.end());
 }
 
-std::vector<ClientControllerPtr>
-ClientManager::getClients()
-{
+std::vector<ClientControllerPtr> ClientManager::getClients() {
     LOG_TRACE_MSG(__FUNCTION__);
-    std::lock_guard lock( _clientMutex );
+    std::lock_guard lock(_clientMutex);
     return _clients;
 }
 
-void
-ClientManager::addClient(
-        ClientControllerPtr c
-        )
-{
+void ClientManager::addClient(ClientControllerPtr c) {
     LOG_TRACE_MSG(__FUNCTION__);
     if (_ending)
-        return;  // Don't accept anybody new if we're going away.
-    std::lock_guard lock( _clientMutex );
+        return; // Don't accept anybody new if we're going away.
+    std::lock_guard lock(_clientMutex);
     _clients.push_back(c);
-    LOG_DEBUG_MSG( _clients.size() << " clients managed");
+    LOG_DEBUG_MSG(_clients.size() << " clients managed");
     c->startPoller();
     return;
 }

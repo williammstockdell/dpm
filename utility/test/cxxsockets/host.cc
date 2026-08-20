@@ -33,49 +33,41 @@
 using namespace bgq::utility;
 using namespace CxxSockets;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( default_ctor )
-{
+BOOST_AUTO_TEST_CASE(default_ctor) {
     Host h;
-    BOOST_CHECK( h.ip().empty() );
-    BOOST_CHECK( h.fqhn().empty() );
-    BOOST_CHECK( h.uhn().empty() );
+    BOOST_CHECK(h.ip().empty());
+    BOOST_CHECK(h.fqhn().empty());
+    BOOST_CHECK(h.uhn().empty());
 }
 
-BOOST_AUTO_TEST_CASE( localhost_explicit_ctor )
-{
-    Host h( "127.0.0.1" );
-    BOOST_CHECK( !h.ip().empty() );
-    BOOST_CHECK( !h.fqhn().empty() );
-    BOOST_CHECK( !h.uhn().empty() );
+BOOST_AUTO_TEST_CASE(localhost_explicit_ctor) {
+    Host h("127.0.0.1");
+    BOOST_CHECK(!h.ip().empty());
+    BOOST_CHECK(!h.fqhn().empty());
+    BOOST_CHECK(!h.uhn().empty());
 }
 
-BOOST_AUTO_TEST_CASE( equality_operator )
-{
-    Host h1( "127.0.0.1" );
-    Host h2( "192.168.0.1" );
-    BOOST_CHECK( h1 == h1 );
-    BOOST_CHECK( h2 == h2 );
+BOOST_AUTO_TEST_CASE(equality_operator) {
+    Host h1("127.0.0.1");
+    Host h2("192.168.0.1");
+    BOOST_CHECK(h1 == h1);
+    BOOST_CHECK(h2 == h2);
 }
 
-BOOST_AUTO_TEST_CASE( less_than_operator )
-{
-    Host h1( "1.9.1.9" );
-    Host h2( "1.9.1.10" );
-    if ( !(h1 == h2) ) {
-        BOOST_CHECK( h2 < h1 );
+BOOST_AUTO_TEST_CASE(less_than_operator) {
+    Host h1("1.9.1.9");
+    Host h2("1.9.1.10");
+    if (!(h1 == h2)) {
+        BOOST_CHECK(h2 < h1);
     }
 }
-
-

@@ -33,9 +33,9 @@
 #include <cstring>
 #include <string>
 
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <netdb.h>
 
 namespace CxxSockets {
 
@@ -47,17 +47,11 @@ const short AF_INET6_ONLY = 21;
 //! for generic address calls like getnameinfo().
 //! There are no data members.  This allows us to pass a pointer
 //! to this object to the BSD C API.
-class SockAddr : sockaddr_storage
-{
+class SockAddr : sockaddr_storage {
     friend class SockAddrList;
-    static bool Addrinf(
-            struct addrinfo*& addrinf,
-            unsigned short family,
-            const std::string& nodename,
-            const std::string& service
-            );
+    static bool Addrinf(struct addrinfo*& addrinf, unsigned short family, const std::string& nodename, const std::string& service);
 
-public:
+  public:
     //! Constructors:
     SockAddr() { memset(this, 0, sizeof(sockaddr_storage)); }
 
@@ -65,11 +59,10 @@ public:
     explicit SockAddr(sockaddr* sa);
 
     //! \brief Build a SockAddr from passed in data.
-    explicit SockAddr(
-            unsigned short family,                          //!< [in] family Address family e.g. AF_INET, AF_INET6, AF_UNSPEC
-            const std::string& nodename = std::string(),    //!< [in] nodename hostname or IP address string
-            const std::string& service = std::string()      //!< [in] port or service name from /etc/services
-            );
+    explicit SockAddr(unsigned short family,                       //!< [in] family Address family e.g. AF_INET, AF_INET6, AF_UNSPEC
+                      const std::string& nodename = std::string(), //!< [in] nodename hostname or IP address string
+                      const std::string& service = std::string()   //!< [in] port or service name from /etc/services
+    );
 
     //! \brief getnameinfo wrappers
     //! Returns the service associated with the port
@@ -95,6 +88,6 @@ public:
     void setFamily(const short fam) { ss_family = fam; }
 };
 
-}
+} // namespace CxxSockets
 
 #endif

@@ -24,10 +24,9 @@
 #ifndef MASTER_PROTOCOL_H_
 #define MASTER_PROTOCOL_H_
 
-
+#include <utility/include/Properties.h>
 #include <utility/include/cxxsockets/SecureTCPSocket.h>
 #include <utility/include/cxxsockets/SockAddr.h>
-#include <utility/include/Properties.h>
 
 #include <xml/include/library/XML.h>
 
@@ -35,12 +34,10 @@
 
 #include <string>
 
-
 //! \brief Base protocol object for BGMaster.  It encapsulates secure communications
 //!        and object serialization/deserialization.
-class Protocol
-{
-public:
+class Protocol {
+  public:
     Protocol();
 
     virtual ~Protocol();
@@ -48,27 +45,17 @@ public:
     /*!
      * Connect to the remote host specified
      */
-    virtual void initializeRequester(
-            const bgq::utility::Properties::ConstPtr& props,
-            int ipv,
-            const std::string& host,
-            const std::string& port,
-            unsigned attempts = 1
-            );
+    virtual void initializeRequester(const bgq::utility::Properties::ConstPtr& props, int ipv, const std::string& host, const std::string& port, unsigned attempts = 1);
 
     /*!
      * Set a previously connected socket as the request socket.
      */
-    virtual void setRequester(
-            CxxSockets::SecureTCPSocketPtr sock
-            );
+    virtual void setRequester(CxxSockets::SecureTCPSocketPtr sock);
 
     /*!
      * Already have a sock to use for responses.  Master uses this.
      */
-    virtual void initializeResponder(
-            CxxSockets::SecureTCPSocketPtr sock
-            );
+    virtual void initializeResponder(CxxSockets::SecureTCPSocketPtr sock);
 
     /*!
      * Wait on the responder socket for an incoming request. Return when it arrives.
@@ -80,28 +67,17 @@ public:
     /*!
      * Send a reply on the responder socket
      */
-    void sendReply(
-            const std::string& requestName,
-            const XML::Serializable& replyObject
-            );
+    void sendReply(const std::string& requestName, const XML::Serializable& replyObject);
 
     CxxSockets::SecureTCPSocketPtr& getRequester() { return _requester; }
 
     CxxSockets::SecureTCPSocketPtr& getResponder() { return _responder; }
 
-    void sendOnly(
-            const std::string& requestName,
-            const XML::Serializable& requestObject
-            );
+    void sendOnly(const std::string& requestName, const XML::Serializable& requestObject);
 
-protected:
+  protected:
     //! \brief send our message and receive our reply
-    void sendReceive(
-            const std::string& requestName,
-            const XML::Serializable& requestObject,
-            const std::string& replyName,
-            XML::Serializable& replyObject
-            );
+    void sendReceive(const std::string& requestName, const XML::Serializable& requestObject, const std::string& replyName, XML::Serializable& replyObject);
 
     CxxSockets::SecureTCPSocketPtr _requester;
     CxxSockets::SecureTCPSocketPtr _responder;

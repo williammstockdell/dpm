@@ -30,22 +30,16 @@
 
 #include <utility/include/Log.h>
 
-
 #include <csignal>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
 static bool monitor_ending = false;
-static int signals[] = { SIGHUP, SIGINT, SIGQUIT, SIGUSR1, SIGTERM, SIGPIPE, SIGXFSZ, SIGABRT,
-                         SIGSEGV, SIGILL, SIGFPE, SIGTERM, SIGBUS };
+static int signals[] = {SIGHUP, SIGINT, SIGQUIT, SIGUSR1, SIGTERM, SIGPIPE, SIGXFSZ, SIGABRT, SIGSEGV, SIGILL, SIGFPE, SIGTERM, SIGBUS};
 static int num_signals = sizeof(signals) / sizeof(signals[0]);
 static bool sig_caught = false;
 
-void
-sig_handler(
-        int signum
-        )
-{
+void sig_handler(int signum) {
     if (signum != SIGPIPE && sig_caught == false) {
         sig_caught = true; // Don't keep trying to do stuff if we fail.
         monitor_ending = true;
@@ -54,23 +48,11 @@ sig_handler(
     }
 }
 
-void
-help()
-{
-    std::cerr << "Continuously monitor bgmaster_server for events and errors." << std::endl;
-}
+void help() { std::cerr << "Continuously monitor bgmaster_server for events and errors." << std::endl; }
 
-void
-usage()
-{
-    std::cerr << "monitor_master [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
-}
+void usage() { std::cerr << "monitor_master [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
-void
-doMonitor(
-        BGMasterClient& client
-        )
-{
+void doMonitor(BGMasterClient& client) {
     try {
         client.event_monitor();
     } catch (const exceptions::BGMasterError& e) {
@@ -78,9 +60,7 @@ doMonitor(
     }
 }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     const Args largs(argc, argv, &usage, &help, validargs, singles);
@@ -113,7 +93,7 @@ main(int argc, const char** argv)
             continue;
         }
         count = 1;
-        doMonitor( client );
+        doMonitor(client);
     }
     std::cout << "Ending bgmaster monitor." << std::endl;
 }

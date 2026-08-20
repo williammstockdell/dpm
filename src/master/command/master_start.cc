@@ -29,36 +29,24 @@
 #include <utility/include/Exec.h>
 #include <utility/include/Log.h>
 
-
 #include <sys/types.h>
 #include <sys/wait.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-pid_t
-startMaster(
-        const std::string& path,
-        const std::string& args
-        )
-{
+pid_t startMaster(const std::string& path, const std::string& args) {
     const std::string path_and_args = path + args;
     int pipefd;
     std::string error;
     const pid_t result = Exec::fexec(pipefd, path_and_args, error, false);
-    if ( result == -1 ) {
+    if (result == -1) {
         std::cerr << error << std::endl;
     }
 
     return result;
 }
 
-void
-doStart(
-        BGMasterClient& client,
-        const Args& args,
-        const std::string& target
-        )
-{
+void doStart(BGMasterClient& client, const Args& args, const std::string& target) {
     std::string commandstring;
     if (!target.empty()) {
         try {
@@ -95,12 +83,12 @@ doStart(
         int exit_status = 0;
         waitpid(child, &exit_status, 0);
 
-        if ( WIFEXITED(exit_status) ) {
-            exit( WEXITSTATUS(exit_status) );
-        } else if ( WIFSIGNALED(exit_status) ) {
-            exit( 128 + WTERMSIG(exit_status) );
+        if (WIFEXITED(exit_status)) {
+            exit(WEXITSTATUS(exit_status));
+        } else if (WIFSIGNALED(exit_status)) {
+            exit(128 + WTERMSIG(exit_status));
         } else {
-            exit( EXIT_FAILURE );
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -109,34 +97,26 @@ doStart(
     BinaryId started_id;
     try {
         started_id = client.start(target, &id);
-    } catch ( const exceptions::BGMasterError& e ) {
+    } catch (const exceptions::BGMasterError& e) {
         std::cerr << "Unable to start all selected binaries. Error is: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    if ( !target.empty() ) {
+    if (!target.empty()) {
         std::cout << "started " << target << ":" << std::string(started_id) << std::endl;
     } else {
         std::cout << "started all binaries" << std::endl;
     }
 }
 
-void
-help()
-{
+void help() {
     std::cerr << "Starts a controlled process or bgmaster_server." << std::endl;
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-void
-usage()
-{
-    std::cerr << "master_start [ alias ] | [ \"bgmaster\" ] [ \"binaries\" ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
-}
+void usage() { std::cerr << "master_start [ alias ] | [ \"bgmaster\" ] [ \"binaries\" ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     validargs.push_back("*"); // One argument without a "--" is allowed
@@ -160,8 +140,7 @@ main(int argc, const char** argv)
         s = "bgmaster_server";
     else if (binaries) {
         s.clear();
-    }
-    else {
+    } else {
         if (largs.size() != 0)
             s = *largs.begin();
         else {
@@ -173,8 +152,7 @@ main(int argc, const char** argv)
     if (s != "bgmaster_server") {
         try {
             client.connectMaster(largs.get_props(), largs.get_portpairs());
-        }
-        catch ( const exceptions::BGMasterError& e ) {
+        } catch (const exceptions::BGMasterError& e) {
             std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
             exit(EXIT_FAILURE);
         }

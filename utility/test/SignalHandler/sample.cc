@@ -31,48 +31,23 @@
 
 #include <unistd.h>
 
-class MyHandler : public bgq::utility::SignalHandler<SIGALRM>, public boost::enable_shared_from_this<MyHandler>
-{
-public:
-    MyHandler(
-            boost::asio::io_service& io_service
-            ) :
-        bgq::utility::SignalHandler<SIGALRM>( io_service )
-    {
+class MyHandler : public bgq::utility::SignalHandler<SIGALRM>, public boost::enable_shared_from_this<MyHandler> {
+  public:
+    MyHandler(boost::asio::io_service& io_service) : bgq::utility::SignalHandler<SIGALRM>(io_service) {}
 
-    }
+    void start() { this->async_wait(boost::bind(&MyHandler::handler, shared_from_this(), _1, _2)); }
 
-    void start()
-    {
-        this->async_wait(
-                boost::bind(
-                    &MyHandler::handler,
-                    shared_from_this(),
-                    _1,
-                    _2
-                    )
-                );
-    }
-
-private:
-    void handler(
-            const boost::system::error_code& error,
-            const siginfo_t& siginfo
-           )
-    {
-        if ( !error ) {
+  private:
+    void handler(const boost::system::error_code& error, const siginfo_t& siginfo) {
+        if (!error) {
             std::cout << "received signal " << siginfo.si_signo << std::endl;
         }
     }
 };
 
-int
-main()
-{
+int main() {
     boost::asio::io_service io_service;
-    boost::shared_ptr<MyHandler> foo(
-            new MyHandler( io_service )
-            );
+    boost::shared_ptr<MyHandler> foo(new MyHandler(io_service));
     foo->start();
 
     // other setup for your application
@@ -83,4 +58,3 @@ main()
 
     return 0;
 }
-

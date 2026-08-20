@@ -30,37 +30,36 @@
 
 #include <utility/include/pthreadmutex.h>
 
-#include <vector>
 #include <list>
+#include <vector>
 
 namespace CxxSockets {
 
-class FileSet
-{
-public:
+class FileSet {
+  public:
     virtual ~FileSet() = 0;
     void AddFile(FilePtr file);
     void RemoveFile(FilePtr file);
     const FilePtr& front() const { return _filevec.front(); }
 
-protected:
+  protected:
     FileSet();
     void LockSet(PthreadMutexHolder& mutex);
 
-protected:
+  protected:
     typedef std::vector<FilePtr>::iterator iterator;
     typedef std::vector<FilePtr>::const_iterator const_iterator;
 
-private:
+  private:
     void pAddFile(FilePtr file);
 
-protected:
+  protected:
     std::vector<FilePtr> _filevec;
 
-private:
+  private:
     PthreadMutex _setLock;
 };
 
-}
+} // namespace CxxSockets
 
 #endif

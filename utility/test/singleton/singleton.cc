@@ -36,54 +36,49 @@
 
 using namespace bgq::utility;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-struct Foo : public bgq::utility::Singleton<Foo>
-{
-    Foo() : _bar(0) { }
+struct Foo : public bgq::utility::Singleton<Foo> {
+    Foo() : _bar(0) {}
     unsigned _bar;
 };
 
-BOOST_AUTO_TEST_CASE( dismiss )
-{
+BOOST_AUTO_TEST_CASE(dismiss) {
     // reset singleton
     Foo::reset();
 
     // get instance and increment its member
     {
         Foo& foo = Foo::instance();
-        BOOST_CHECK_EQUAL( foo._bar, 0u );
+        BOOST_CHECK_EQUAL(foo._bar, 0u);
         ++foo._bar;
     }
 
     // get instance again, member should be the same
     {
         Foo& foo = Foo::instance();
-        BOOST_CHECK_EQUAL( foo._bar, 1u );
+        BOOST_CHECK_EQUAL(foo._bar, 1u);
     }
 }
 
-BOOST_AUTO_TEST_CASE( reset )
-{
+BOOST_AUTO_TEST_CASE(reset) {
     // reset singleton
     Foo::reset();
 
     // get instance and increment member
     {
         Foo& foo = Foo::instance();
-        BOOST_CHECK_EQUAL( foo._bar, 0u );
+        BOOST_CHECK_EQUAL(foo._bar, 0u);
         ++foo._bar;
-        BOOST_CHECK_EQUAL( foo._bar, 1u );
+        BOOST_CHECK_EQUAL(foo._bar, 1u);
     }
 
     // reset instance
@@ -92,7 +87,6 @@ BOOST_AUTO_TEST_CASE( reset )
     // get instance and ensure member is initialized
     {
         Foo& foo = Foo::instance();
-        BOOST_CHECK_EQUAL( foo._bar, 0u );
+        BOOST_CHECK_EQUAL(foo._bar, 0u);
     }
 }
-

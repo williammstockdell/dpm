@@ -21,23 +21,22 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <thread>
-#include <poll.h>
 #include <csignal>
+#include <poll.h>
+#include <thread>
 
-#include "MasterConnection.h"
 #include "Agent.h"
+#include "MasterConnection.h"
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
 void MasterConnection::makeConnection() {
 
-    while(!_ending) {
+    while (!_ending) {
 
         static constexpr unsigned MaxAttempts = 30;
 
         bool connected = false;
-
 
         // Loop through all ports to attempt a connection.
         for (const bgq::utility::PortConfiguration::Pair& port : _ports) {
@@ -78,7 +77,8 @@ void MasterConnection::makeConnection() {
         }
 
         // Exhausted all configured ports; start over.
-        if (connected) return;
+        if (connected)
+            return;
     }
 }
 
@@ -86,7 +86,7 @@ bool MasterConnection::pollConnection(const int signal_read_fd) {
 
     const int master_fd = _agent->getMasterFD();
 
-    struct pollfd fds[2] {};
+    struct pollfd fds[2]{};
 
     fds[0].fd = signal_read_fd;
     fds[0].events = POLLIN;
@@ -107,10 +107,9 @@ bool MasterConnection::pollConnection(const int signal_read_fd) {
         }
 
         if (fds[0].revents & POLLIN) {
-            siginfo_t siginfo {};
+            siginfo_t siginfo{};
 
-            const ssize_t bytes =
-                ::read(signal_read_fd, &siginfo, sizeof(siginfo));
+            const ssize_t bytes = ::read(signal_read_fd, &siginfo, sizeof(siginfo));
 
             if (bytes == static_cast<ssize_t>(sizeof(siginfo))) {
                 _ending = true;
@@ -131,9 +130,7 @@ bool MasterConnection::pollConnection(const int signal_read_fd) {
     return false;
 }
 
-
-void MasterConnection::run(const int signal_read_fd)
-{
+void MasterConnection::run(const int signal_read_fd) {
 
     // Main thread loop
     makeConnection();
@@ -154,10 +151,8 @@ void MasterConnection::run(const int signal_read_fd)
         // This is a blocking wait on new requests.
         if (_agent->processRequest()) {
 
-            LOG_INFO_MSG(
-                         "Connection to dpm_server ended. "
-                         "Waiting 5 seconds before attempting to reconnect."
-                         );
+            LOG_INFO_MSG("Connection to dpm_server ended. "
+                         "Waiting 5 seconds before attempting to reconnect.");
 
             std::this_thread::sleep_for(std::chrono::seconds(5));
 
@@ -166,18 +161,10 @@ void MasterConnection::run(const int signal_read_fd)
     }
 }
 
-
-
-MasterConnection::MasterConnection(const bgq::utility::PortConfiguration::Pairs& ports, Agent* const agent) :
-    _ports( ports ),
-    _agent( agent )
-{
-    LOG_TRACE_MSG( __FUNCTION__ );
-    BOOST_ASSERT( _agent );
-    BOOST_ASSERT( !_ports.empty() );
+MasterConnection::MasterConnection(const bgq::utility::PortConfiguration::Pairs& ports, Agent* const agent) : _ports(ports), _agent(agent) {
+    LOG_TRACE_MSG(__FUNCTION__);
+    BOOST_ASSERT(_agent);
+    BOOST_ASSERT(!_ports.empty());
 }
 
-MasterConnection::~MasterConnection()
-{
-    LOG_DEBUG_MSG( "Terminating" );
-}
+MasterConnection::~MasterConnection() { LOG_DEBUG_MSG("Terminating"); }

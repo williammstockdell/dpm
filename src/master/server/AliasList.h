@@ -21,10 +21,8 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef MASTER_ALIAS_LIST_H_
 #define MASTER_ALIAS_LIST_H_
-
 
 #include "types.h"
 #include <mutex>
@@ -33,13 +31,12 @@
 #include <string>
 #include <vector>
 
-
 //! \brief Locking wrapper for alias vector
-class AliasList
-{
+class AliasList {
     std::vector<AliasPtr> _alias_list;
     mutable std::mutex _mutex;
-public:
+
+  public:
     //! \brief Find the alias associated with the passed string
     bool find_alias(const std::string& al, AliasPtr& alias);
 
@@ -51,35 +48,44 @@ public:
     typedef std::vector<AliasPtr>::const_iterator const_iterator;
     size_t size() {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.size(); }
+        return _alias_list.size();
+    }
     void push_back(AliasPtr sp) {
         std::lock_guard scoped_lock(_mutex);
-        _alias_list.push_back(sp); }
+        _alias_list.push_back(sp);
+    }
     void pop_back() {
         std::lock_guard scoped_lock(_mutex);
-        _alias_list.pop_back(); }
-    iterator insert (iterator position, AliasPtr sp) {
+        _alias_list.pop_back();
+    }
+    iterator insert(iterator position, AliasPtr sp) {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.insert(position, sp); }
+        return _alias_list.insert(position, sp);
+    }
     iterator begin() {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.begin(); }
+        return _alias_list.begin();
+    }
     iterator end() {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.end(); }
-    iterator erase ( iterator first, iterator last ) {
+        return _alias_list.end();
+    }
+    iterator erase(iterator first, iterator last) {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.erase(first, last); }
+        return _alias_list.erase(first, last);
+    }
     const_iterator begin() const {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.begin(); }
+        return _alias_list.begin();
+    }
     const_iterator end() const {
         std::lock_guard scoped_lock(_mutex);
-        return _alias_list.end(); }
+        return _alias_list.end();
+    }
     void clear() {
         std::lock_guard scoped_lock(_mutex);
-        _alias_list.clear(); }
+        _alias_list.clear();
+    }
 };
-
 
 #endif

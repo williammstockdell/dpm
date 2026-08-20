@@ -31,12 +31,10 @@
 
 using namespace bgq::utility;
 
-int
-main()
-{
+int main() {
     typedef std::vector<unsigned> Vector;
     const unsigned value = 5;
-    Vector foo = boost::assign::list_of( value );
+    Vector foo = boost::assign::list_of(value);
 
     try {
         //
@@ -44,18 +42,11 @@ main()
         //
 
         // clear our vector if we throw
-        ScopeGuard guard(
-                boost::bind(
-                    &Vector::clear,
-                    boost::ref( foo )
-                    )
-                );
+        ScopeGuard guard(boost::bind(&Vector::clear, boost::ref(foo)));
 
-        throw std::runtime_error( "hello world" );
-    } catch ( const std::runtime_error& e ) {
-
+        throw std::runtime_error("hello world");
+    } catch (const std::runtime_error& e) {
     }
 
     return 0;
 }
-

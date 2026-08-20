@@ -19,7 +19,7 @@
 #ifndef HLCS_RAS_H
 #define HLCS_RAS_H
 
-// BGQ RAS Error Codes for the MMCS Component 
+// BGQ RAS Error Codes for the MMCS Component
 //
 // Rules:
 //  1) The MMCS range is 0x0006xxxx
@@ -27,7 +27,7 @@
 //  2) We will define subranges within this range, such as 0x00060xxx   and  0x00061xxx
 
 // MMCS Operations = 00060000 - 00060fff  (MMCSOps_xxxx)
-        
+
 // MMCS Hardware Monitor =  00061000 - 00061fff
 // These are defined in the MMCSEnvMonitor.cc, and start at 0x00061001
 
@@ -37,6 +37,4 @@
 // security RAS = 00063000 - 00063fff
 // these are defined in the security source
 
-
 #endif
-

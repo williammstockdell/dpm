@@ -28,8 +28,8 @@
 #ifndef CXXSOCKET_TYPES_H
 #define CXXSOCKET_TYPES_H
 
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 namespace CxxSockets {
 
@@ -54,6 +54,6 @@ typedef std::shared_ptr<TCPSocket> TCPSocketPtr;
 
 typedef std::stringstream Message;
 
-}
+} // namespace CxxSockets
 
 #endif

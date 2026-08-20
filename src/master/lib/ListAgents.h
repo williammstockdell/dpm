@@ -21,21 +21,14 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef MASTER_LIST_AGENTS_H_
 #define MASTER_LIST_AGENTS_H_
-
 
 class BGMasterClient;
 
 namespace ListAgents {
 
-void doListAgents(
-        const BGMasterClient& client, 
-        bool agents_only = false, 
-        bool fancy = false
-        );
+void doListAgents(const BGMasterClient& client, bool agents_only = false, bool fancy = false);
 }
-
 
 #endif

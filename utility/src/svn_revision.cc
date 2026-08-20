@@ -24,9 +24,7 @@
 
 #include <iostream>
 
-int
-main()
-{
+int main() {
     std::cout << "svn revision " << bgq::utility::SvnRevision << std::endl;
     std::cout << "built on " << __DATE__ << " at " << __TIME__ << std::endl;
 

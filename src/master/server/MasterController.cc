@@ -21,16 +21,16 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <ranges>
-#include <string_view>
 #include <barrier>
 #include <poll.h>
+#include <ranges>
 #include <signal.h>
 #include <stdlib.h>
+#include <string_view>
 #include <unistd.h>
 
-#include <utility/include/version.h>
 #include <utility/include/TimeStuff.h>
+#include <utility/include/version.h>
 
 #include "AgentManager.h"
 #include "AgentRep.h"
@@ -39,12 +39,12 @@
 #include "ClientManager.h"
 #include "LockFile.h"
 #include "MasterController.h"
-#include "ras.h"
 #include "Registrar.h"
+#include "ras.h"
 
 #include "../lib/exceptions.h"
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
 const int CIRC_BUFFER_SIZE = 50;
 
@@ -76,20 +76,9 @@ ClientManager MasterController::_client_manager;
 Registrar MasterController::_agent_registrar;
 Registrar MasterController::_client_registrar;
 
-MasterController::MasterController(
-        const bgq::utility::Properties::Ptr& properties
-        )
-{
-    _props = properties;
-}
+MasterController::MasterController(const bgq::utility::Properties::Ptr& properties) { _props = properties; }
 
-
-void
-MasterController::stopThreads(
-        const bool end_binaries,
-        const int signal
-        )
-{
+void MasterController::stopThreads(const bool end_binaries, const int signal) {
     LOG_TRACE_MSG(__FUNCTION__);
     if (_stop_once) {
         return;
@@ -112,13 +101,11 @@ MasterController::stopThreads(
     _client_registrar.cancel();
     std::map<std::string, std::string> details;
     details["PID"] = std::to_string(getpid());
-
 }
 
-void
-MasterController::handleErrorMessage(const std::string& msg) {
+void MasterController::handleErrorMessage(const std::string& msg) {
 
-    LOG_ERROR_MSG( __FUNCTION__ << ": " << msg);
+    LOG_ERROR_MSG(__FUNCTION__ << ": " << msg);
     std::ostringstream errmsg;
     std::vector<ClientProtocolPtr> deadClients;
 
@@ -129,7 +116,7 @@ MasterController::handleErrorMessage(const std::string& msg) {
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::ErrorMessage error(errmsg.str());
     std::scoped_lock scoped_lock(_monitor_prots_mutex);
-    for(const ClientProtocolPtr& prot : _monitor_prots) {
+    for (const ClientProtocolPtr& prot : _monitor_prots) {
         try {
             prot->sendOnly(error.getClassName(), error);
         } catch (const CxxSockets::Error& e) {
@@ -144,14 +131,8 @@ MasterController::handleErrorMessage(const std::string& msg) {
     // Loop through the deadClients and remove them from _monitor_prots container.
     for (unsigned i = 0; i < deadClients.size(); ++i) {
         LOG_WARN_MSG("Removing master_monitor client instance after socket error ...");
-        MasterController::get_monitor_prots().erase(
-                std::remove(
-                    MasterController::get_monitor_prots().begin(),
-                    MasterController::get_monitor_prots().end(),
-                    deadClients[i]
-                    ),
-                MasterController::get_monitor_prots().end()
-                );
+        MasterController::get_monitor_prots().erase(std::remove(MasterController::get_monitor_prots().begin(), MasterController::get_monitor_prots().end(), deadClients[i]),
+                                                    MasterController::get_monitor_prots().end());
     }
 
     MasterController::addHistoryMessage(msg);
@@ -159,22 +140,14 @@ MasterController::handleErrorMessage(const std::string& msg) {
     return;
 }
 
-void
-MasterController::getErrorMessages(
-        std::vector<std::string>& messages
-        )
-{
+void MasterController::getErrorMessages(std::vector<std::string>& messages) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Going to pop items out of the circular buffer.
     _err_buff.getContents(messages);
 }
 
-void
-MasterController::addHistoryMessage(
-        const std::string& message
-        )
-{
+void MasterController::addHistoryMessage(const std::string& message) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream msg;
     std::vector<ClientProtocolPtr> deadClients;
@@ -187,7 +160,7 @@ MasterController::addHistoryMessage(
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::EventMessage event(msg.str());
     std::scoped_lock scoped_lock(_monitor_prots_mutex);
-    for(const ClientProtocolPtr& prot : _monitor_prots) {
+    for (const ClientProtocolPtr& prot : _monitor_prots) {
         try {
             prot->sendOnly(event.getClassName(), event);
         } catch (const CxxSockets::Error& e) {
@@ -202,42 +175,26 @@ MasterController::addHistoryMessage(
     // Loop through the deadClients and remove them from _monitor_prots container.
     for (unsigned i = 0; i < deadClients.size(); ++i) {
         LOG_WARN_MSG("Removing master_monitor client instance after socket error ...");
-        MasterController::get_monitor_prots().erase(
-                std::remove(
-                    MasterController::get_monitor_prots().begin(),
-                    MasterController::get_monitor_prots().end(),
-                    deadClients[i]
-                    ),
-                MasterController::get_monitor_prots().end()
-                );
+        MasterController::get_monitor_prots().erase(std::remove(MasterController::get_monitor_prots().begin(), MasterController::get_monitor_prots().end(), deadClients[i]),
+                                                    MasterController::get_monitor_prots().end());
     }
     return;
 }
 
-void
-MasterController::getHistoryMessages(
-        std::vector<std::string>& messages
-        )
-{
+void MasterController::getHistoryMessages(std::vector<std::string>& messages) {
     LOG_TRACE_MSG(__FUNCTION__);
     _history_buff.getContents(messages);
 }
 
-void
-MasterController::buildHostList(
-        const bgq::utility::Properties::Section& hosts,
-        const std::vector<std::string>& exclude_list,
-        std::ostringstream& failmsg
-        )
-{
+void MasterController::buildHostList(const bgq::utility::Properties::Section& hosts, const std::vector<std::string>& exclude_list, std::ostringstream& failmsg) {
     LOG_TRACE_MSG(__FUNCTION__);
     bool firstdup = true;
 
-    for(const bgq::utility::Properties::Pair& keyval : hosts) {
+    for (const bgq::utility::Properties::Pair& keyval : hosts) {
         bool found = false;
 
-        for(const AliasPtr& al : _aliases) {
-            const std::string &all_hosts(keyval.second);
+        for (const AliasPtr& al : _aliases) {
+            const std::string& all_hosts(keyval.second);
             if (keyval.first == al->get_name()) {
                 std::vector<std::string>::const_iterator it = std::find(exclude_list.begin(), exclude_list.end(), al->get_name());
                 if (it != exclude_list.end()) {
@@ -274,9 +231,7 @@ MasterController::buildHostList(
 
                             first = false;
 
-                            LOG_DEBUG_MSG(
-                                          "Adding host " << h.uhn() << " to alias " << al->get_name()
-                                          );
+                            LOG_DEBUG_MSG("Adding host " << h.uhn() << " to alias " << al->get_name());
 
                             al->add_host(h);
 
@@ -293,21 +248,16 @@ MasterController::buildHostList(
         if (!found) {
             // Didn't find an alias.  Assume the [master.binmap] entry has been commented out.
             // Log a warning message in case something else is going on.
-            LOG_WARN_MSG( "Alias " << keyval.first << " was not defined. Skipping [master.policy.host_list] entry ...");
+            LOG_WARN_MSG("Alias " << keyval.first << " was not defined. Skipping [master.policy.host_list] entry ...");
         }
     }
 }
 
-void
-MasterController::buildFailover(
-        const bgq::utility::Properties::Section& failover,
-        std::multimap<Policy::Trigger,Behavior>& behaviors
-        )
-{
+void MasterController::buildFailover(const bgq::utility::Properties::Section& failover, std::multimap<Policy::Trigger, Behavior>& behaviors) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Finally, go through the failover list
-    for(const bgq::utility::Properties::Pair& keyval : failover) {
+    for (const bgq::utility::Properties::Pair& keyval : failover) {
 
         LOG_DEBUG_MSG("Building policy for " << keyval.first << "=" << keyval.second);
 
@@ -324,8 +274,7 @@ MasterController::buildFailover(
 
         if (tokens.empty()) {
             std::ostringstream msg;
-            msg << "Invalid failover policy configuration. No policy specified for "
-                << keyval.first;
+            msg << "Invalid failover policy configuration. No policy specified for " << keyval.first;
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
@@ -343,8 +292,7 @@ MasterController::buildFailover(
         // Second is the action to take
         if (tokens.size() < 2) {
             std::ostringstream msg;
-            msg << "Invalid failure configuration for " << keyval.first
-                << ". No action specified.";
+            msg << "Invalid failure configuration for " << keyval.first << ". No action specified.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
@@ -361,8 +309,7 @@ MasterController::buildFailover(
         // Third is number of retries
         if (tokens.size() < 3) {
             std::ostringstream msg;
-            msg << "Invalid failure configuration for " << keyval.first
-                << ". No retries specified.";
+            msg << "Invalid failure configuration for " << keyval.first << ". No retries specified.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
@@ -386,9 +333,7 @@ MasterController::buildFailover(
 
         if (retries == 0) {
             std::ostringstream msg;
-            msg << "Invalid retry configuration for " << keyval.first
-                << ". Number of retries, " << retries
-                << ", must be greater than zero.";
+            msg << "Invalid retry configuration for " << keyval.first << ". Number of retries, " << retries << ", must be greater than zero.";
             handleErrorMessage(msg.str());
             throw exceptions::ConfigError(exceptions::WARN, msg.str());
         }
@@ -398,10 +343,7 @@ MasterController::buildFailover(
         // Fourth is associated host pairs
         if (tokens.size() < 4) {
             if (act == Behavior::FAILOVER) {
-                LOG_INFO_MSG(
-                             "Failure configuration for " << keyval.first
-                             << " 'failover' action specified, but no failover pair specified."
-                             );
+                LOG_INFO_MSG("Failure configuration for " << keyval.first << " 'failover' action specified, but no failover pair specified.");
             }
         } else {
             if (act == Behavior::RESTART) {
@@ -429,19 +371,17 @@ MasterController::buildFailover(
 
                 if (first_colon != current.rfind(':')) {
                     std::ostringstream msg;
-                    msg << "Failover configuration syntax incorrect. More than one ':' in the pair \""
-                        << current << "\"";
+                    msg << "Failover configuration syntax incorrect. More than one ':' in the pair \"" << current << "\"";
                     handleErrorMessage(msg.str());
                     throw exceptions::ConfigError(exceptions::WARN, msg.str());
                 }
 
                 const std::string from = current.substr(0, first_colon);
-                const std::string to   = current.substr(first_colon + 1);
+                const std::string to = current.substr(first_colon + 1);
 
                 if (to.empty()) {
                     std::ostringstream msg;
-                    msg << "Failover pair for policy " << keyval.first
-                        << " missing a target.";
+                    msg << "Failover pair for policy " << keyval.first << " missing a target.";
                     handleErrorMessage(msg.str());
                     throw exceptions::ConfigError(exceptions::WARN, msg.str());
                 }
@@ -450,11 +390,7 @@ MasterController::buildFailover(
                     CxxSockets::Host from_host(from);
                     CxxSockets::Host to_host(to);
 
-                    LOG_DEBUG_MSG(
-                                  "Created failover pair for " << from_host.uhn()
-                                  << " to " << to_host.uhn()
-                                  << " for alias " << keyval.first
-                                  );
+                    LOG_DEBUG_MSG("Created failover pair for " << from_host.uhn() << " to " << to_host.uhn() << " for alias " << keyval.first);
 
                     failpairs[from_host] = to_host;
 
@@ -469,21 +405,15 @@ MasterController::buildFailover(
     }
 }
 
-void
-MasterController::buildInstances(
-        const bgq::utility::Properties::Section& instances,
-        const std::vector<std::string>& exclude_list,
-        std::ostringstream& failmsg
-        )
-{
+void MasterController::buildInstances(const bgq::utility::Properties::Section& instances, const std::vector<std::string>& exclude_list, std::ostringstream& failmsg) {
     LOG_TRACE_MSG(__FUNCTION__);
     // Update the alias object for each instance found
     bool firstdup = true;
-    for(const bgq::utility::Properties::Pair& keyval : instances) {
+    for (const bgq::utility::Properties::Pair& keyval : instances) {
         bool found = false;
 
-        for(const AliasPtr& al : _aliases) {
-            const std::string &instance_policy(keyval.second);
+        for (const AliasPtr& al : _aliases) {
+            const std::string& instance_policy(keyval.second);
             if (keyval.first == al->get_name()) {
                 const std::vector<std::string>::const_iterator it = std::find(exclude_list.begin(), exclude_list.end(), al->get_name());
                 if (it != exclude_list.end()) {
@@ -537,18 +467,14 @@ MasterController::buildInstances(
     }
 }
 
-void
-MasterController::buildArgs(
-        const bgq::utility::Properties::Section& args
-        )
-{
+void MasterController::buildArgs(const bgq::utility::Properties::Section& args) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Args are optional. Don't complain if we find nothing.
-    for(const bgq::utility::Properties::Pair& keyval : args) {
+    for (const bgq::utility::Properties::Pair& keyval : args) {
         bool found = false;
 
-        for(const AliasPtr& al : _aliases) {
+        for (const AliasPtr& al : _aliases) {
 
             if (keyval.first == al->get_name()) {
                 found = true;
@@ -560,15 +486,12 @@ MasterController::buildArgs(
         if (!found) {
             // Didn't find an alias, Assume the [master.binmap] entry has been commented out.
             // Log a warning message in case something else is going on.
-            LOG_WARN_MSG( "Alias " << keyval.first << " not defined in [master.binmap] section. Skipping [master.binargs] entry ...");
+            LOG_WARN_MSG("Alias " << keyval.first << " not defined in [master.binmap] section. Skipping [master.binargs] entry ...");
         }
     }
 }
 
-void MasterController::addBehaviors(
-    const bgq::utility::Properties::Section& failmap,
-    std::multimap<Policy::Trigger, Behavior>& behaviors)
-{
+void MasterController::addBehaviors(const bgq::utility::Properties::Section& failmap, std::multimap<Policy::Trigger, Behavior>& behaviors) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     using Bevmap = std::multimap<Policy::Trigger, Behavior>;
@@ -580,10 +503,7 @@ void MasterController::addBehaviors(
         const std::string& policy_set = keyval.second;
         bool alias_found = false;
 
-        LOG_TRACE_MSG(
-            "Checking for policies for alias "
-            << current_alias << " against " << policy_set
-        );
+        LOG_TRACE_MSG("Checking for policies for alias " << current_alias << " against " << policy_set);
 
         for (auto&& part : policy_set | std::views::split(',')) {
             const std::string current_policy(part.begin(), part.end());
@@ -592,10 +512,7 @@ void MasterController::addBehaviors(
                 continue;
             }
 
-            LOG_TRACE_MSG(
-                "Evaluating policy "
-                << current_policy << " against alias " << current_alias
-            );
+            LOG_TRACE_MSG("Evaluating policy " << current_policy << " against alias " << current_alias);
 
             bool policy_found = false;
 
@@ -605,7 +522,7 @@ void MasterController::addBehaviors(
                     // Got a match.  Now find the alias with the name that matches keyval.first and insert the behavior.
                     policy_found = true;
                     std::ostringstream logmsg;
-                    for(const AliasPtr& al : _aliases) {
+                    for (const AliasPtr& al : _aliases) {
                         LOG_TRACE_MSG("Comparing alias " << al->get_name() << " to policy alias " << keyval.first);
                         if (keyval.first == al->get_name()) {
                             // Found an existing alias so update the policy
@@ -621,7 +538,7 @@ void MasterController::addBehaviors(
                                 // Now check to make sure that if there are failover pairs,
                                 // all hosts are in the alias' host list.
                                 typedef std::pair<CxxSockets::Host, CxxSockets::Host> HostPair;
-                                for(const HostPair pair : it->second.get_host_pairs()) {
+                                for (const HostPair pair : it->second.get_host_pairs()) {
                                     std::string failname = "";
                                     if (al->find_host(pair.first) == false) {
                                         failname = pair.first.fqhn();
@@ -633,8 +550,7 @@ void MasterController::addBehaviors(
                                         LOG_ERROR_MSG("Host " << failname << " not in host list for alias " << al->get_name());
                                     }
                                 }
-                                LOG_DEBUG_MSG("Added trigger " << it->first << " and behavior "
-                                              << it->second.get_name() << " to " << al->get_name());
+                                LOG_DEBUG_MSG("Added trigger " << it->first << " and behavior " << it->second.get_name() << " to " << al->get_name());
                             }
                             break;
                         }
@@ -649,7 +565,6 @@ void MasterController::addBehaviors(
                 // Didn't find a policy, Assume the [master.binmap] entry has been commented out.
                 // Log warning message in case something else is going on.
                 LOG_WARN_MSG("Policy " << current_policy << " found for undefined alias: " << keyval.first << " Skipping [master.policy.map] entry ...");
-
             }
         }
         if (!alias_found) {
@@ -660,13 +575,9 @@ void MasterController::addBehaviors(
     }
 }
 
-
-void MasterController::buildStartList(
-        const bgq::utility::Properties::Section& startlist
-        )
-{
+void MasterController::buildStartList(const bgq::utility::Properties::Section& startlist) {
     LOG_TRACE_MSG(__FUNCTION__);
-    for(const bgq::utility::Properties::Pair& keyval : startlist) {
+    for (const bgq::utility::Properties::Pair& keyval : startlist) {
         if (keyval.first == "start_servers") {
             if (keyval.second == "true") {
                 _start_servers = true;
@@ -678,15 +589,11 @@ void MasterController::buildStartList(
     }
 }
 
-void
-MasterController::buildUidList(
-        const bgq::utility::Properties::Section& uidlist
-        )
-{
+void MasterController::buildUidList(const bgq::utility::Properties::Section& uidlist) {
     LOG_TRACE_MSG(__FUNCTION__);
-    for(const bgq::utility::Properties::Pair& keyval : uidlist) {
+    for (const bgq::utility::Properties::Pair& keyval : uidlist) {
         bool found = false;
-        for(const AliasPtr& al : _aliases) {
+        for (const AliasPtr& al : _aliases) {
             if (keyval.first == al->get_name()) {
                 found = true;
                 LOG_DEBUG_MSG("Adding user id " << keyval.second << " for " << keyval.first);
@@ -701,16 +608,12 @@ MasterController::buildUidList(
     }
 }
 
-void
-MasterController::buildLogDirs(
-        const bgq::utility::Properties::Section& logdirs
-        )
-{
+void MasterController::buildLogDirs(const bgq::utility::Properties::Section& logdirs) {
     LOG_TRACE_MSG(__FUNCTION__);
     // For each alias/directory pair, find the alias.
-    for(const bgq::utility::Properties::Pair& keyval : logdirs) {
+    for (const bgq::utility::Properties::Pair& keyval : logdirs) {
         bool found = false;
-        for(const AliasPtr& al : _aliases) {
+        for (const AliasPtr& al : _aliases) {
             if (keyval.first == al->get_name()) {
                 found = true;
                 LOG_DEBUG_MSG("Adding log directory " << keyval.second << " for " << keyval.first);
@@ -725,11 +628,7 @@ MasterController::buildLogDirs(
     }
 }
 
-void
-MasterController::buildPolicies(
-        std::ostringstream& failmsg
-        )
-{
+void MasterController::buildPolicies(std::ostringstream& failmsg) {
     LOG_TRACE_MSG(__FUNCTION__);
     typedef bgq::utility::Properties::Section Sect;
 
@@ -787,7 +686,7 @@ MasterController::buildPolicies(
     // Need to get preferred_host_wait time to send to the alias constructor.
     try {
         preferredHostWait = std::stoi(_props->getValue("master.server", "preferred_host_wait"));
-        if (  preferredHostWait <= 0 ) {
+        if (preferredHostWait <= 0) {
             std::ostringstream msg;
             msg << "Invalid preferred_host_wait setting in [master.server] section: Value must be an integer greater than 0.";
             LOG_ERROR_MSG(msg.str());
@@ -802,7 +701,7 @@ MasterController::buildPolicies(
         std::ostringstream msg;
         msg << "Did not find optional preferred_host_wait key in [master.server] section. Setting default of 15 seconds.";
         LOG_DEBUG_MSG(msg.str());
-        preferredHostWait=15;
+        preferredHostWait = 15;
     } catch (const std::out_of_range& e) {
         std::ostringstream msg;
         msg << "Out of range: Invalid preferred_host_wait setting in [master.server] section: " << e.what();
@@ -810,9 +709,8 @@ MasterController::buildPolicies(
         throw exceptions::ConfigError(exceptions::WARN, msg.str());
     }
 
-
     // Create an alias object for every alias in the master map
-    for(const bgq::utility::Properties::Pair& keyval : master) {
+    for (const bgq::utility::Properties::Pair& keyval : master) {
         AliasPtr alp;
         if (_aliases.find_alias(keyval.first, alp) == false) {
             // Alias doesn't yet exist, make it so.
@@ -823,14 +721,14 @@ MasterController::buildPolicies(
             _aliases.push_back(al);
             alp = al;
         } else {
-            exclude_list.push_back(keyval.first);  // Refreshing!
+            exclude_list.push_back(keyval.first); // Refreshing!
         }
 
         // The $BG_DRIVER environment variable can be part of the path.
         // We need to replace what's in the property file with the env var.
         std::string path = keyval.second;
         const size_t path_loc = path.find("$BG_DRIVER");
-        if (path_loc != std::string::npos) { // If $BG_DRIVER is in the path...
+        if (path_loc != std::string::npos) {    // If $BG_DRIVER is in the path...
             path.replace(path_loc, 10, driver); // ...replace it with the driver variable
         }
         LOG_DEBUG_MSG("Setting path to " << path);
@@ -838,9 +736,9 @@ MasterController::buildPolicies(
     }
 
     try {
-        const std::string value( _props->getValue("master.server","max_agents_per_host") );
-        const int max_agents( std::stoi(value) );
-        if ( max_agents <= 0 ) {
+        const std::string value(_props->getValue("master.server", "max_agents_per_host"));
+        const int max_agents(std::stoi(value));
+        if (max_agents <= 0) {
             std::ostringstream msg;
             msg << "Invalid max_agents_per_host setting in [master.server] section: value must be greater than zero";
             LOG_ERROR_MSG(msg.str());
@@ -849,7 +747,7 @@ MasterController::buildPolicies(
         _agent_manager.setCount(static_cast<unsigned>(max_agents));
     } catch (const std::invalid_argument& e) {
         // this is OK, missing means default to 1
-        LOG_DEBUG_MSG( "missing max_agents_per_host setting in [master.server] section, using default value of 1" );
+        LOG_DEBUG_MSG("missing max_agents_per_host setting in [master.server] section, using default value of 1");
     } catch (const std::out_of_range& e) {
         std::ostringstream msg;
         msg << "Out of range: Invalid max_agents_per_host setting in [master.server] section: " << e.what();
@@ -860,12 +758,12 @@ MasterController::buildPolicies(
     buildArgs(args);
 
     buildHostList(hosts, exclude_list, failmsg);
-    if ( !failmsg.str().empty() ) {
+    if (!failmsg.str().empty()) {
         failmsg << ". ";
     }
 
     buildInstances(instances, exclude_list, failmsg);
-    std::multimap<Policy::Trigger,Behavior> behaviors;
+    std::multimap<Policy::Trigger, Behavior> behaviors;
     buildFailover(failover, behaviors);
     addBehaviors(failmap, behaviors);
     buildStartList(startlist);
@@ -875,12 +773,7 @@ MasterController::buildPolicies(
     }
 }
 
-void
-MasterController::startServers(
-        std::map<std::string, std::string>& failed_aliases,
-        AgentRepPtr agentrep
-        )
-{
+void MasterController::startServers(std::map<std::string, std::string>& failed_aliases, AgentRepPtr agentrep) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     LOG_INFO_MSG("Starting all listed binaries for agent " << (agentrep ? agentrep->get_agent_id().str() : "all agents") << ".");
@@ -913,19 +806,13 @@ MasterController::startServers(
                 continue;
             } else {
                 failreason = e.what();
-                sleep( 1 );
+                sleep(1);
             }
         }
 
         if (agent) {
             // If we got here, we have an agent ready.
-            const BGMasterAgentProtocolSpec::StartRequest agentreq(
-                    al->get_path(),
-                    al->get_args(),
-                    al->get_logdir(),
-                    al->get_name(),
-                    al->get_user()
-                    );
+            const BGMasterAgentProtocolSpec::StartRequest agentreq(al->get_path(), al->get_args(), al->get_logdir(), al->get_name(), al->get_user());
             BGMasterAgentProtocolSpec::StartReply reply;
             reply._rc = exceptions::OK;
 
@@ -947,11 +834,7 @@ MasterController::startServers(
     }
 }
 
-void
-MasterController::startup(
-        const int signal_fd
-        )
-{
+void MasterController::startup(const int signal_fd) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream version;
     version << "DPM";
@@ -959,7 +842,8 @@ MasterController::startup(
     version << "(revision " << "barney" << ")";
     version << " " << __DATE__ << " " << __TIME__;
     _version_string = version.str();
-    LOG_INFO_MSG("dpm_master_server [" << getpid() << "] " << _version_string << " starting...");;
+    LOG_INFO_MSG("dpm_master_server [" << getpid() << "] " << _version_string << " starting...");
+    ;
     LOG_INFO_MSG("Using " << _props->getFilename() << " for properties.");
     _master_db = false;
     std::string db_val = "true";
@@ -967,7 +851,7 @@ MasterController::startup(
 
     try {
         _master_logdir = _props->getValue("master.server", "logdir");
-        if (access(_master_logdir.c_str(), R_OK|W_OK) < 0) {
+        if (access(_master_logdir.c_str(), R_OK | W_OK) < 0) {
             std::ostringstream errmsg;
             errmsg << "Log directory " << _master_logdir << " is not accessible to dpm_master_server.";
             handleErrorMessage(errmsg.str());
@@ -1003,29 +887,29 @@ MasterController::startup(
 
     _start_barrier.arrive_and_wait();
 
-    while ( !_master_terminating ) {
+    while (!_master_terminating) {
 
         struct pollfd pollfd;
         pollfd.fd = signal_fd;
         pollfd.events = POLLIN;
         pollfd.revents = 0;
         const int seconds = 5;
-        const int rc = poll( &pollfd, 1, seconds );
+        const int rc = poll(&pollfd, 1, seconds);
 
-        if ( rc == -1 ) {
-            if ( errno != EINTR) {
+        if (rc == -1) {
+            if (errno != EINTR) {
                 char errorText[256];
                 LOG_ERROR_MSG("Could not poll: " << std::string(strerror_r(errno, errorText, 256)));
             }
-        } else if ( rc ) {
+        } else if (rc) {
             // Read siginfo from pipe
             siginfo_t siginfo;
-            while ( 1 ) {
-                const ssize_t rc = read( signal_fd, &siginfo, sizeof(siginfo) );
-                if ( rc > 0 ) {
+            while (1) {
+                const ssize_t rc = read(signal_fd, &siginfo, sizeof(siginfo));
+                if (rc > 0) {
                     break;
                 }
-                if ( rc == -1 && errno == EINTR ) {
+                if (rc == -1 && errno == EINTR) {
                     continue;
                 } else {
                     char errorText[256];
@@ -1033,8 +917,8 @@ MasterController::startup(
                     exit(1);
                 }
             }
-            if ( siginfo.si_signo == SIGUSR1 || siginfo.si_signo == SIGPIPE || siginfo.si_signo == SIGHUP) {
-                LOG_DEBUG_MSG( "Received signal " << siginfo.si_signo << " from " << siginfo.si_pid );
+            if (siginfo.si_signo == SIGUSR1 || siginfo.si_signo == SIGPIPE || siginfo.si_signo == SIGHUP) {
+                LOG_DEBUG_MSG("Received signal " << siginfo.si_signo << " from " << siginfo.si_pid);
             } else {
                 LOG_FATAL_MSG("dpm_master_server ending due to signal " << siginfo.si_signo << " from " << siginfo.si_pid << ".");
                 // Send RAS
@@ -1049,9 +933,9 @@ MasterController::startup(
 
                 // use _exit instead of exit since other threads are running and we don't want to
                 // run global destructors
-                _exit( 128 + siginfo.si_signo );
+                _exit(128 + siginfo.si_signo);
             }
-        } else if ( !rc ) {
+        } else if (!rc) {
             // Check if either registrar has failed. If so, restart it.
             bool reregister = false;
             if (_agent_registrar.get_failed()) {
@@ -1065,7 +949,7 @@ MasterController::startup(
                 _agent_registrar.run(true);
                 reregister = true;
             }
-            if (reregister) {  // Only barrier wait if we restarted registrars
+            if (reregister) { // Only barrier wait if we restarted registrars
                 _start_barrier.arrive_and_wait();
             }
         }

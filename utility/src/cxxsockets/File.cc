@@ -21,7 +21,6 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -31,20 +30,16 @@
 
 #include "Log.h"
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
-void
-File::LockFile(
-        FileLocker& locker
-        ) const
-{
+void File::LockFile(FileLocker& locker) const {
     // Get the whole socket lock first to ensure that
     // neither the sender nor the receiver gets invalidated
     // between the existence check and the lock() call.
     int rc = locker._all.Lock(&_fileLock);
-    if ( rc ) {
+    if (rc) {
         std::ostringstream msg;
         char buf[256];
         msg << "Could not lock file: " << strerror_r(rc, buf, sizeof(buf));
@@ -55,7 +50,7 @@ File::LockFile(
     // been invalidated, we don't care here.
     if (_sender) {
         rc = locker._send.Lock(_sender.get());
-        if ( rc ) {
+        if (rc) {
             std::ostringstream msg;
             char buf[256];
             msg << "Could not lock sender: " << strerror_r(rc, buf, sizeof(buf));
@@ -64,7 +59,7 @@ File::LockFile(
     }
     if (_receiver) {
         rc = locker._receive.Lock(_receiver.get());
-        if ( rc ) {
+        if (rc) {
             std::ostringstream msg;
             char buf[256];
             msg << "Could not lock receiver: " << strerror_r(rc, buf, sizeof(buf));
@@ -73,25 +68,11 @@ File::LockFile(
     }
 }
 
-File::File() :
-    _fileLock(),
-    _fileDescriptor(-1),
-    _receiver( new PthreadMutex ),
-    _sender( new PthreadMutex )
-{
+File::File() : _fileLock(), _fileDescriptor(-1), _receiver(new PthreadMutex), _sender(new PthreadMutex) {}
 
-}
+File::~File() {}
 
-File::~File()
-{
-
-}
-
-int
-File::LockSend(
-        PthreadMutexHolder& smutex
-        )
-{
+int File::LockSend(PthreadMutexHolder& smutex) {
     int rc = 0;
     if (_sender) {
         rc = smutex.Lock(_sender.get());
@@ -101,11 +82,7 @@ File::LockSend(
     return rc;
 }
 
-int
-File::LockReceive(
-        PthreadMutexHolder& rmutex
-        )
-{
+int File::LockReceive(PthreadMutexHolder& rmutex) {
     int rc = 0;
     if (_receiver) {
         rc = rmutex.Lock(_receiver.get());
@@ -115,12 +92,11 @@ File::LockReceive(
     return rc;
 }
 
-int
-File::Close()
-{
-    if ( _fileDescriptor == -1 ) return 0;
+int File::Close() {
+    if (_fileDescriptor == -1)
+        return 0;
 
     return ::close(_fileDescriptor);
 }
 
-}
+} // namespace CxxSockets

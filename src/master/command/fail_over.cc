@@ -28,45 +28,30 @@
 
 #include <utility/include/Log.h>
 
+LOG_DECLARE_FILE("master");
 
-
-LOG_DECLARE_FILE( "master" );
-
-void
-doFailover(
-        BGMasterClient& client,
-        const std::string& target,
-        const std::string& trigger
-        )
-{
+void doFailover(BGMasterClient& client, const std::string& target, const std::string& trigger) {
     std::vector<BinaryId> bids;
     bids.push_back(target);
     try {
         client.fail_over(bids, trigger);
-    } catch ( const exceptions::BGMasterError& e ) {
+    } catch (const exceptions::BGMasterError& e) {
         std::cerr << "Could not fail over selected binaries. Error is: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 
     if (!bids.empty()) {
         // Some didn't fail over
-        for (std::vector<BinaryId>::iterator it = bids.begin();
-            it != bids.end(); ++it) {
+        for (std::vector<BinaryId>::iterator it = bids.begin(); it != bids.end(); ++it) {
             std::cerr << "Could not fail over " << it->str() << std::endl;
         }
         exit(EXIT_FAILURE);
     }
 }
 
-void
-usage()
-{
-    std::cerr << "fail_over binary [ OPTIONS ]" << std::endl;
-}
+void usage() { std::cerr << "fail_over binary [ OPTIONS ]" << std::endl; }
 
-void
-help()
-{
+void help() {
     usage();
     std::cerr << "Force a specific binary id to be killed and restarted on another node" << std::endl;
     std::cerr << "This behavior is managed by the configured policy." << std::endl << std::endl;
@@ -80,9 +65,7 @@ help()
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     std::string trigarg = "--trigger";
@@ -93,8 +76,7 @@ main(int argc, const char** argv)
 
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
-    }
-    catch (exceptions::BGMasterError& e) {
+    } catch (exceptions::BGMasterError& e) {
         std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }

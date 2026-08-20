@@ -24,7 +24,6 @@
 #ifndef MASTER_MASTER_CONTROLLER_H_
 #define MASTER_MASTER_CONTROLLER_H_
 
-
 #include "Behavior.h"
 #include "LockingRingBuffer.h"
 #include "Policy.h"
@@ -34,8 +33,8 @@
 
 #include <utility/include/cxxsockets/Host.h>
 
-#include <thread>
 #include <barrier>
+#include <thread>
 
 #include <iosfwd>
 #include <map>
@@ -43,7 +42,6 @@
 #include <vector>
 
 #include <sys/types.h>
-
 
 // * Member variables: Leading underscore, all lower case.  _my_variable.
 // * Types: Start with cap, cap for each word.  MyClass
@@ -53,7 +51,6 @@
 // * API calls that are analogs to program commands use command naming convention and mirror
 //   the command names.  All lowercase separated by underscores.
 
-
 //! There are two classes of "clients" that are completely different
 //! in function and behavior.  There are "agents" and "clients".  "Agents"
 //! are process monitors running remotely or locally.  "Clients" are
@@ -61,9 +58,8 @@
 
 //! \brief MasterController is the main data structure in BGMaster.  There's only
 //! one and it contains some static members for managing agents and clients.
-class MasterController
-{
-public:
+class MasterController {
+  public:
     static std::string _version_string;
 
     static Registrar _agent_registrar;
@@ -74,12 +70,12 @@ public:
     void startup(int signal_fd);
 
     static bool get_master_terminating() { return _master_terminating; }
-    static void set_master_terminating()  { _master_terminating = true; }
+    static void set_master_terminating() { _master_terminating = true; }
 
     static bool get_end_requested() { return _end_requested; }
-    static void set_end_requested()  { _end_requested = true; }
+    static void set_end_requested() { _end_requested = true; }
 
-    static std::vector<ClientProtocolPtr>& get_monitor_prots()  { return _monitor_prots; }
+    static std::vector<ClientProtocolPtr>& get_monitor_prots() { return _monitor_prots; }
 
     //! \brief log error message and save it to the ring buffer
     //! \param msg the error message the handle
@@ -92,13 +88,13 @@ public:
     static void addHistoryMessage(const std::string& message);
     static void getHistoryMessages(std::vector<std::string>& messages);
     static void stopThreads(bool end_binaries, int signal);
-    static const bgq::utility::Properties::Ptr& getProps()  { return _props; }
+    static const bgq::utility::Properties::Ptr& getProps() { return _props; }
 
     static bool isStartServers() { return _start_servers; }
 
-    static void startServers(std::map<std::string,std::string>& failed_aliases, AgentRepPtr agent);
+    static void startServers(std::map<std::string, std::string>& failed_aliases, AgentRepPtr agent);
 
-    static void waitStartBarrier()  { _start_barrier.arrive_and_wait(); }
+    static void waitStartBarrier() { _start_barrier.arrive_and_wait(); }
 
     //! \brief Build the policies from the config files by calling the various internal methods.
     static void buildPolicies(std::ostringstream& failmsg);
@@ -111,24 +107,18 @@ public:
     //! \brief monitor_prots container mutex
     static std::mutex _monitor_prots_mutex;
 
-private:
+  private:
     //! Parse alias args from config file.
     static void buildArgs(const bgq::utility::Properties::Section& args);
 
     //! Parse the hosts in the config and add them to the correct Alias.
-    static void buildHostList(const bgq::utility::Properties::Section& hosts,
-                              const std::vector<std::string>& exclude_list,
-                              std::ostringstream& failmsg);
+    static void buildHostList(const bgq::utility::Properties::Section& hosts, const std::vector<std::string>& exclude_list, std::ostringstream& failmsg);
     //! Parse the instances in the config and add them to the correct Alias.
-    static void buildInstances(const bgq::utility::Properties::Section& instances,
-                               const std::vector<std::string>& exclude_list,
-                               std::ostringstream& failmsg);
+    static void buildInstances(const bgq::utility::Properties::Section& instances, const std::vector<std::string>& exclude_list, std::ostringstream& failmsg);
     //! Parse the failover behaviors.
-    static void buildFailover(const bgq::utility::Properties::Section& failover,
-                              std::multimap<Policy::Trigger, Behavior>& behaviors);
+    static void buildFailover(const bgq::utility::Properties::Section& failover, std::multimap<Policy::Trigger, Behavior>& behaviors);
     //! Add the failover behaviors to the correct Aliases.
-    static void addBehaviors(const bgq::utility::Properties::Section& failmap,
-                             std::multimap<Policy::Trigger, Behavior>& behaviors);
+    static void addBehaviors(const bgq::utility::Properties::Section& failmap, std::multimap<Policy::Trigger, Behavior>& behaviors);
 
     //! Build the list of alias to start by default
     static void buildStartList(const bgq::utility::Properties::Section& startlist);

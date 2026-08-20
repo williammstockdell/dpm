@@ -21,27 +21,24 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #ifndef IDS_H
 #define IDS_H
-
 
 #include <utility/include/cxxsockets/Host.h>
 
 #include <string>
 
-
 //! \brief base class for ID representations
-class Id
-{
-protected:
+class Id {
+  protected:
     //! \brief The ONLY data member
     //! Everything else is sugar
     std::string _id;
 
     //! \brief Construction without a string not allowed
     Id();
-public:
+
+  public:
     //! \brief Copy constructor
     Id(const Id& id);
     Id(const std::string& id_string);
@@ -49,7 +46,10 @@ public:
     //! \brief conversion operator
     operator std::string() const { return _id; }
     Id& operator=(const Id& id);
-    Id& operator=(const std::string& id) { _id = id; return *this; }
+    Id& operator=(const std::string& id) {
+        _id = id;
+        return *this;
+    }
     bool operator==(const Id& id) const;
     bool operator<(const Id& id) const;
 
@@ -69,9 +69,8 @@ public:
 //! A BGAgentId is a unique identifier for a bgagentd consisting
 //! of its hostname and listening port in the format
 //! host:port
-class BGAgentId : public Id
-{
-public:
+class BGAgentId : public Id {
+  public:
     BGAgentId() : Id("") {}
     BGAgentId(const std::string& id_string);
     BGAgentId(const BGAgentId& id);
@@ -84,9 +83,8 @@ public:
 //! A BinaryId is a unique identifier for a managed binary
 //! consisting of its hostname and process id in the format
 //! host:pid
-class BinaryId : public Id
-{
-public:
+class BinaryId : public Id {
+  public:
     BinaryId() : Id("") {}
     BinaryId(const std::string& id_string);
     BinaryId(const BinaryId& id);
@@ -102,9 +100,8 @@ public:
 //! A ClientId is a unique identifier for a client consisting
 //! of its hostname and local port.  (There is no listener on a client connection.)
 //! host:port
-class ClientId : public Id
-{
-public:
+class ClientId : public Id {
+  public:
     ClientId() {}
     ClientId(const std::string& id_string);
     ClientId(const ClientId& id);

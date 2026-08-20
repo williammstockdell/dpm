@@ -32,84 +32,65 @@
 
 using namespace bgq::utility::performance;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
 
         // initialize performance API
-        performance::init( Properties::create( "good.properties" ) );
+        performance::init(Properties::create("good.properties"));
     }
 };
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
-BOOST_AUTO_TEST_CASE( output )
-{
+BOOST_AUTO_TEST_CASE(output) {
     // create persistent count set
-    std::string container( "test" );
-    PERFORMANCE_LIST_INIT( container );
+    std::string container("test");
+    PERFORMANCE_LIST_INIT(container);
     typedef PersistentStatisticList::Timer Timer;
 
     // time something
     {
-        Timer timer( container, "test_metric", "123", Mode::Value::Basic );
+        Timer timer(container, "test_metric", "123", Mode::Value::Basic);
     }
 
     // get statistics
-    PersistentStatisticList::Ptr stats = GlobalStatistics::instance().get<PersistentStatisticList::Ptr>( container );
+    PersistentStatisticList::Ptr stats = GlobalStatistics::instance().get<PersistentStatisticList::Ptr>(container);
 
     // ensure we have one data point
-    BOOST_CHECK_EQUAL(
-            stats->getCount(),
-            1u
-            );
+    BOOST_CHECK_EQUAL(stats->getCount(), 1u);
 
     // output them
     stats->output();
 
     // ensure we have no data points
-    BOOST_CHECK_EQUAL(
-            stats->getCount(),
-            0u
-            );
+    BOOST_CHECK_EQUAL(stats->getCount(), 0u);
 }
 
-BOOST_AUTO_TEST_CASE( units )
-{
+BOOST_AUTO_TEST_CASE(units) {
     // create container
-    typedef StatisticSet< List< DataPoint > > Container;
-    Container::Ptr counters(
-            new Container("unit_test")
-            );
+    typedef StatisticSet<List<DataPoint>> Container;
+    Container::Ptr counters(new Container("unit_test"));
 
     // iterate through all possible units
-    for ( unsigned int i = 0; i < static_cast<unsigned>( LogOutput::Units::NumValues ); ++i ) {
+    for (unsigned int i = 0; i < static_cast<unsigned>(LogOutput::Units::NumValues); ++i) {
         // cast loop index to unit value
         const LogOutput::Units::Value value = static_cast<LogOutput::Units::Value>(i);
 
         // time something
         {
-            Container::Timer::Ptr timer = counters->create()
-                ->function( "some_function" )
-                ->id( 123 )
-                ;
+            Container::Timer::Ptr timer = counters->create()->function("some_function")->id(123);
         }
 
         // set units
-        counters->setUnits( value );
+        counters->setUnits(value);
 
         // validate we set the units
-        BOOST_CHECK_EQUAL(
-                counters->getUnits(),
-                value
-                );
+        BOOST_CHECK_EQUAL(counters->getUnits(), value);
 
         // output
         counters->output();
     }
 }
-

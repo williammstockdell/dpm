@@ -32,30 +32,19 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
-Socket::~Socket()
-{
-    Close();
-}
+Socket::~Socket() { Close(); }
 
-void
-Socket::Bind(
-        const SockAddr& addr
-        )
-{
+void Socket::Bind(const SockAddr& addr) {
     FileLocker locker;
     LockFile(locker);
     pBind(addr);
 }
 
-void
-Socket::pBind(
-        const SockAddr& addr
-        )
-{
+void Socket::pBind(const SockAddr& addr) {
     const int reuse = 1;
     if (setsockopt(_fileDescriptor, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == -1) {
         std::ostringstream msg;
@@ -83,7 +72,7 @@ Socket::pBind(
     } else if (addr.family() == AF_INET6) {
         size = sizeof(sockaddr_in6);
     } else if (addr.family() == AF_LOCAL) {
-        size = static_cast<socklen_t>(SUN_LEN((sockaddr_un *)&addr));
+        size = static_cast<socklen_t>(SUN_LEN((sockaddr_un*)&addr));
     } else {
         std::ostringstream msg;
         msg << "Invalid address family: " << addr.family();
@@ -93,18 +82,13 @@ Socket::pBind(
 
     if (bind(_fileDescriptor, (sockaddr*)(&addr), size) == -1) {
         std::ostringstream msg;
-        msg << "Unable to bind to host " << addr.getHostName() << " and port "
-            << addr.getServicePort() << ". Error is: " << strerror(errno);
+        msg << "Unable to bind to host " << addr.getHostName() << " and port " << addr.getServicePort() << ". Error is: " << strerror(errno);
         LOG_DEBUG_MSG(msg.str());
         throw HardError(errno, msg.str());
     }
 }
 
-void
-Socket::internal_getSockName(
-        SockAddr& sa
-        ) const
-{
+void Socket::internal_getSockName(SockAddr& sa) const {
     socklen_t size = sizeof(sockaddr_storage);
     if (getsockname(_fileDescriptor, (sockaddr*)(&sa), &size) < 0) {
         std::ostringstream msg;
@@ -114,21 +98,13 @@ Socket::internal_getSockName(
     }
 }
 
-void
-Socket::getSockName(
-        SockAddr& sa
-        ) const
-{
+void Socket::getSockName(SockAddr& sa) const {
     FileLocker locker;
     LockFile(locker);
     return internal_getSockName(sa);
 }
 
-void
-Socket::internal_getPeerName(
-        SockAddr& sa
-        ) const
-{
+void Socket::internal_getPeerName(SockAddr& sa) const {
     socklen_t size = sizeof(sockaddr_storage);
     if (getpeername(_fileDescriptor, (sockaddr*)(&sa), &size) < 0) {
         std::ostringstream msg;
@@ -138,21 +114,13 @@ Socket::internal_getPeerName(
     }
 }
 
-void
-Socket::getPeerName(
-        SockAddr& sa
-        ) const
-{
+void Socket::getPeerName(SockAddr& sa) const {
     FileLocker locker;
     LockFile(locker);
     return internal_getPeerName(sa);
 }
 
-bool
-Socket::Shutdown(
-        const ShutDownSide rw
-        )
-{
+bool Socket::Shutdown(const ShutDownSide rw) {
     if (rw == RECEIVE && _receiver) {
         _receiver.reset();
         if (_fileDescriptor) {
@@ -169,4 +137,4 @@ Socket::Shutdown(
     return true;
 }
 
-}
+} // namespace CxxSockets

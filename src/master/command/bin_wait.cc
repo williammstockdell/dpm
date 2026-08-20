@@ -28,16 +28,9 @@
 
 #include <utility/include/Log.h>
 
+LOG_DECLARE_FILE("master");
 
-
-LOG_DECLARE_FILE( "master" );
-
-void
-doWaitBin(
-        BGMasterClient& client,
-        const std::string& target
-        )
-{
+void doWaitBin(BGMasterClient& client, const std::string& target) {
     const BinaryId bid(target);
     int rc = client.wait_for_terminate(bid);
     if (rc < 0) {
@@ -47,22 +40,14 @@ doWaitBin(
     std::cout << "Exit status=" << rc << std::endl;
 }
 
-void
-help()
-{
+void help() {
     std::cerr << "Connects to bgmaster_server and waits for a specific" << std::endl;
     std::cerr << "binary id to complete execution." << std::endl;
 }
 
-void
-usage()
-{
-    std::cerr << "binary_wait [ binary id ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
-}
+void usage() { std::cerr << "binary_wait [ binary id ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     validargs.push_back("*"); // One argument without a "--" is allowed
@@ -71,8 +56,7 @@ main(int argc, const char** argv)
 
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
-    }
-    catch (exceptions::BGMasterError& e) {
+    } catch (exceptions::BGMasterError& e) {
         std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }

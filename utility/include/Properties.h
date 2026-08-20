@@ -28,8 +28,8 @@
 #ifndef BGQ_UTILITY_PROPERTIES_H
 #define BGQ_UTILITY_PROPERTIES_H
 
-#include <shared_mutex>
 #include <memory>
+#include <shared_mutex>
 
 #include <map>
 #include <stdexcept>
@@ -37,7 +37,6 @@
 #include <vector>
 
 #include <inttypes.h>
-
 
 namespace bgq {
 namespace utility {
@@ -156,7 +155,7 @@ namespace utility {
  *
  */
 class Properties {
-public:
+  public:
     Properties(const Properties&) = delete;
     Properties& operator=(const Properties&) = delete;
 
@@ -170,61 +169,54 @@ public:
      */
     static const std::string DefaultLocation;
 
-public:
-    typedef std::pair<std::string, std::string> Pair;       //!< key=value pair
-    typedef std::vector<Pair> Section;                      //!< container of Pairs
-    typedef std::map<std::string, Section> Map;             //!< mapping of names to Sections
-    typedef std::shared_ptr<Properties> Ptr;              //!< pointer type
-    typedef std::shared_ptr<const Properties> ConstPtr;   //!< const pointer type
+  public:
+    typedef std::pair<std::string, std::string> Pair;   //!< key=value pair
+    typedef std::vector<Pair> Section;                  //!< container of Pairs
+    typedef std::map<std::string, Section> Map;         //!< mapping of names to Sections
+    typedef std::shared_ptr<Properties> Ptr;            //!< pointer type
+    typedef std::shared_ptr<const Properties> ConstPtr; //!< const pointer type
 
     /*
      * \brief Properties file cannot be found or opened.
      */
-    struct FileError : public std::runtime_error
-    {
-        FileError(const std::string& what) : std::runtime_error(what) { }
+    struct FileError : public std::runtime_error {
+        FileError(const std::string& what) : std::runtime_error(what) {}
     };
 
     /*!
      * \brief [section] contains a duplicate key.
      */
-    struct DuplicateKey : public std::runtime_error
-    {
-        DuplicateKey(const std::string& what) : std::runtime_error(what) { }
+    struct DuplicateKey : public std::runtime_error {
+        DuplicateKey(const std::string& what) : std::runtime_error(what) {}
     };
 
     /*!
      * \brief file contains a duplicate section.
      */
-    struct DuplicateSection : public std::runtime_error
-    {
-        DuplicateSection(const std::string& what) : std::runtime_error(what) { }
+    struct DuplicateSection : public std::runtime_error {
+        DuplicateSection(const std::string& what) : std::runtime_error(what) {}
     };
 
     /*!
      * \brief line is missing an equals character
      */
-    struct MalformedKey : public std::runtime_error
-    {
-        MalformedKey(const std::string& what) : std::runtime_error(what) { }
+    struct MalformedKey : public std::runtime_error {
+        MalformedKey(const std::string& what) : std::runtime_error(what) {}
     };
 
     /*!
      * \brief line is missing a left or right bracket or both
      */
-    struct MalformedSection : public std::runtime_error
-    {
-        MalformedSection(const std::string& what) : std::runtime_error(what) { }
+    struct MalformedSection : public std::runtime_error {
+        MalformedSection(const std::string& what) : std::runtime_error(what) {}
     };
 
     /*!
      * \brief key=value found before a section
      */
-    struct MissingSection : public std::runtime_error
-    {
-        MissingSection(const std::string& what) : std::runtime_error(what) { }
+    struct MissingSection : public std::runtime_error {
+        MissingSection(const std::string& what) : std::runtime_error(what) {}
     };
-
 
     // FIXME:  Replace this for CLI options parsing
     /*!
@@ -255,8 +247,7 @@ public:
     //     std::string _filename;
     // };
 
-
-public:
+  public:
     /*!
      * \brief ctor.
      *
@@ -270,18 +261,15 @@ public:
      * \throws MalformedSection
      * \throws MissingSection
      */
-    explicit Properties(
-            const std::string& file = std::string()     //!< [in] file to open
-            );
+    explicit Properties(const std::string& file = std::string() //!< [in] file to open
+    );
 
     /*!
      * \copydoc Properties::Properties()
      */
-    static Ptr create(
-            const std::string& file = std::string()     //!< [in] file to open
-            )
-    {
-        return Ptr( new Properties(file) );
+    static Ptr create(const std::string& file = std::string() //!< [in] file to open
+    ) {
+        return Ptr(new Properties(file));
     }
 
     /*!
@@ -294,19 +282,17 @@ public:
      *
      * \throws std::invalid_argument if the section  cannot be found
      */
-    const std::string& getValue(
-            const std::string& section,     //!< [in] section name
-            const std::string& key          //!< [in] key name
-            ) const;
+    const std::string& getValue(const std::string& section, //!< [in] section name
+                                const std::string& key      //!< [in] key name
+    ) const;
 
     /*!
      * \brief get all values for a given section.
      *
      * \throws std::invalid_argument if the section cannot be found.
      */
-    const Section& getValues(
-            const std::string& section      //!< [in] section name
-            ) const;
+    const Section& getValues(const std::string& section //!< [in] section name
+    ) const;
 
     /*!
      * \brief reloads the config file.
@@ -318,11 +304,10 @@ public:
      *
      * \post The internal Map is unchanged if reloading fails.
      */
-    bool reload(
-            const std::string& filename = std::string() //!< [in]
-            );
+    bool reload(const std::string& filename = std::string() //!< [in]
+    );
 
-private:
+  private:
     /*!
      * \brief read config file.
      *
@@ -338,10 +323,9 @@ private:
      * \throws DuplicateSection if the section already exists
      * \throws MalformedSection if the section is missing either bracket
      */
-    Map::iterator parseSection(
-            const std::string& name,    //!< [in] line text
-            uint32_t lineno             //!< [in] line number
-            );
+    Map::iterator parseSection(const std::string& name, //!< [in] line text
+                               uint32_t lineno          //!< [in] line number
+    );
 
     /*!
      * \brief parse a line looking for a key=value pair.
@@ -351,36 +335,34 @@ private:
      *
      * \post the key=value pair is added to the Section specified by section
      */
-    void parseLine(
-            Map::iterator section,      //!< [in]
-            const std::string& line,    //!< [in]
-            uint32_t lineno             //!< [in]
-            );
+    void parseLine(Map::iterator section,   //!< [in]
+                   const std::string& line, //!< [in]
+                   uint32_t lineno          //!< [in]
+    );
 
     /*!
      * \brief
      */
-    const std::string& getValueImpl(
-            const std::string& section,     //!< [in] section name
-            const std::string& key          //!< [in] key name
-            ) const;
+    const std::string& getValueImpl(const std::string& section, //!< [in] section name
+                                    const std::string& key      //!< [in] key name
+    ) const;
 
     /*!
      * \brief
      */
-    const Section& getValuesImpl(
-            const std::string& section      //!< [in] section name
-            ) const;
-private:
+    const Section& getValuesImpl(const std::string& section //!< [in] section name
+    ) const;
+
+  private:
     typedef std::shared_mutex Mutex;
 
-private:
-    std::string _filename;              //!< properties file name
-    Map _map;                           //!< key/value pairs
-    mutable Mutex _mutex;               //!< reader/writer lock to protect map
+  private:
+    std::string _filename; //!< properties file name
+    Map _map;              //!< key/value pairs
+    mutable Mutex _mutex;  //!< reader/writer lock to protect map
 };
 
-} // utility
-} // bgq
+} // namespace utility
+} // namespace bgq
 
 #endif

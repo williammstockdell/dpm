@@ -44,15 +44,14 @@ namespace utility {
 /*!
  * \brief Container for a user's real uid and group IDs.
  */
-class UserId
-{
-public:
+class UserId {
+  public:
     typedef std::pair<gid_t, std::string> Group;
     typedef std::list<Group> GroupList;
     typedef std::shared_ptr<UserId> Ptr;
     typedef std::shared_ptr<const UserId> ConstPtr;
 
-public:
+  public:
     /*!
      * \brief ctor.
      *
@@ -60,9 +59,8 @@ public:
      *
      * \throws std::runtime_error if getpwuid_r fails
      */
-    explicit UserId(
-            uid_t uid = getuid()        //!< [in] uid to lookup
-            );
+    explicit UserId(uid_t uid = getuid() //!< [in] uid to lookup
+    );
 
     /*!
      * \brief ctor.
@@ -72,10 +70,9 @@ public:
      *
      * \throws std::runtime_error if getpwnam_r fails unless remote user indicator is true
      */
-    explicit UserId(
-            const std::string& user,            //!< [in] User to lookup
-            const bool allowRemoteUser = false  //!< [in] Remote user indicator
-            );
+    explicit UserId(const std::string& user,           //!< [in] User to lookup
+                    const bool allowRemoteUser = false //!< [in] Remote user indicator
+    );
 
     /*!
      * \brief ctor.
@@ -84,9 +81,7 @@ public:
      *
      * \throws boost::archive::archive_error
      */
-    explicit UserId(
-            const std::vector<char>& buf
-            );
+    explicit UserId(const std::vector<char>& buf);
 
     /*!
      * \brief Get the username as a string.
@@ -96,10 +91,8 @@ public:
     /*!
      * \brief Set the username.
      */
-    void setUser(
-            const std::string& name //!< [in]
-            )
-    {
+    void setUser(const std::string& name //!< [in]
+    ) {
         _name = name;
     }
 
@@ -111,10 +104,8 @@ public:
     /*!
      * \brief Set the uid.
      */
-    void setUid(
-            uid_t uid       //!< [in]
-            )
-    {
+    void setUid(uid_t uid //!< [in]
+    ) {
         _uid = uid;
     }
 
@@ -126,10 +117,8 @@ public:
     /*!
      * \brief Set the user's group list.
      */
-    void setGroups(
-            const GroupList& groups //!< [in]
-            )
-    {
+    void setGroups(const GroupList& groups //!< [in]
+    ) {
         _groups = groups;
     }
 
@@ -144,23 +133,20 @@ public:
      * \returns true if the user is a member.
      * \returns false if the user is not a member.
      */
-    bool isMember(
-            const std::string& group        //!< [in/
-            ) const;
+    bool isMember(const std::string& group //!< [in/
+    ) const;
 
     /*!
      * \brief Serialize into a string.
      */
     std::string serialize();
 
-private:
+  private:
     friend class boost::serialization::access;
     template <class Archive>
-    void serialize(
-            Archive &ar,            //!< [in] archive
-            const unsigned int      //!< [in] version number
-            )
-    {
+    void serialize(Archive& ar,       //!< [in] archive
+                   const unsigned int //!< [in] version number
+    ) {
         ar & _name;
         ar & _uid;
         ar & _groups;
@@ -169,17 +155,16 @@ private:
     /*!
      * \brief
      */
-    void setGroupList(
-            gid_t gid       //!< [in]
-            );
+    void setGroupList(gid_t gid //!< [in]
+    );
 
-private:
-    std::string _name;          //!< user name
-    uid_t _uid;                 //!< real uid
-    GroupList _groups;          //!< secondary groups
+  private:
+    std::string _name; //!< user name
+    uid_t _uid;        //!< real uid
+    GroupList _groups; //!< secondary groups
 };
 
-} // utility
-} // bgq
+} // namespace utility
+} // namespace bgq
 
 #endif

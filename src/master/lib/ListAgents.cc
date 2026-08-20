@@ -30,17 +30,11 @@
 #include <utility/include/Log.h>
 #include <utility/include/TimeStuff.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
 namespace ListAgents {
 
-void
-doListAgents(
-        const BGMasterClient& client,
-        const bool agents_only,
-        const bool fancy
-        )
-{
+void doListAgents(const BGMasterClient& client, const bool agents_only, const bool fancy) {
     typedef std::map<BGAgentId, std::vector<BinaryControllerPtr>, Id::Comp> AgentMap;
     AgentMap agentmap;
     client.get_agents(agentmap);
@@ -69,19 +63,17 @@ doListAgents(
                 if (fancy) {
                     if (firstbin) {
                         std::cout << std::endl;
-                        std::cout << std::left << std::setw(17) << "Agent host" << std::setw(22) << "Binary id (IP:PID)" << std::setw(17) << "Alias name" << std::setw(13) << "Status" << std::setw(11) << "User" << std::setw(12) << "Start time" << std::endl;
-                        std::cout << std::left << std::setw(17) << "----------" << std::setw(22) << "------------------" << std::setw(17) << "----------" << std::setw(13) << "------" << std::setw(11) << "----" << std::setw(12) << "----------" << std::endl;
+                        std::cout << std::left << std::setw(17) << "Agent host" << std::setw(22) << "Binary id (IP:PID)" << std::setw(17) << "Alias name" << std::setw(13) << "Status" << std::setw(11)
+                                  << "User" << std::setw(12) << "Start time" << std::endl;
+                        std::cout << std::left << std::setw(17) << "----------" << std::setw(22) << "------------------" << std::setw(17) << "----------" << std::setw(13) << "------" << std::setw(11)
+                                  << "----" << std::setw(12) << "----------" << std::endl;
                         firstbin = false;
                     }
-                    std::cout << std::left << std::setw(17) << id->get_host().uhn().substr(0,16) << std::setw(22)
-                              << (*bin_it)->get_binid().str().substr(0,21) << std::setw(17)
-                              << (*bin_it)->get_alias_name().substr(0,16) << std::setw(13)
-                              << BinaryController::status_to_string((*bin_it)->get_status())
-                              << std::setw(11) << (*bin_it)->get_user().substr(0,10) << std::setw(11)
-                              << time_to_string((*bin_it)->get_start_time()) << std::endl;
+                    std::cout << std::left << std::setw(17) << id->get_host().uhn().substr(0, 16) << std::setw(22) << (*bin_it)->get_binid().str().substr(0, 21) << std::setw(17)
+                              << (*bin_it)->get_alias_name().substr(0, 16) << std::setw(13) << BinaryController::status_to_string((*bin_it)->get_status()) << std::setw(11)
+                              << (*bin_it)->get_user().substr(0, 10) << std::setw(11) << time_to_string((*bin_it)->get_start_time()) << std::endl;
                 } else {
-                    std::cout << idstr << "|" << (*bin_it)->get_binid().str() << ":" << (*bin_it)->get_alias_name()
-                              << "|" << BinaryController::status_to_string((*bin_it)->get_status()) << "|"
+                    std::cout << idstr << "|" << (*bin_it)->get_binid().str() << ":" << (*bin_it)->get_alias_name() << "|" << BinaryController::status_to_string((*bin_it)->get_status()) << "|"
                               << (*bin_it)->get_user() << "|" << time_to_string((*bin_it)->get_start_time()) << std::endl;
                 }
             }
@@ -102,7 +94,7 @@ doListAgents(
                 std::cout << std::left << std::setw(36) << "----------" << std::setw(22) << "------------------" << std::endl;
                 firstagent = false;
             }
-            std::cout << std::left << std::setw(36) << id->get_host().fqhn().substr(0,35) << std::setw(22) << idstr.substr(0,21) << std::endl;
+            std::cout << std::left << std::setw(36) << id->get_host().fqhn().substr(0, 35) << std::setw(22) << idstr.substr(0, 21) << std::endl;
         }
     }
 }

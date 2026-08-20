@@ -46,49 +46,49 @@
 //! ever be picked up by the receiver.  The receiver still has to do
 //! the work of calling pickUp().
 
-#include <ostream>
-#include <iostream>
-#include <thread>
 #include <atomic>
+#include <iostream>
+#include <ostream>
+#include <thread>
 
 #ifndef MASTER_DROPOFFQUEUE_H
 #define MASTER_DROPOFFQUEUE_H
 
-template<class Type> class DropoffQueue
-{
+template <class Type> class DropoffQueue {
     // Helper node class.
-    template<class NodeType> class Node
-    {
+    template <class NodeType> class Node {
         friend class DropoffQueue;
-        template<class NT>
+        template <class NT>
         // Print the node data for debug.
-        friend std::ostream& operator<<(std::ostream& os, const std::shared_ptr<Node<NT> >& n) {
-            if(n)
-                os << n->_element << "::" << n->_prev.get() << "<-" << n.get()
-                   << "->" << n->_next.get() << "::" << n->_dirtybit;
+        friend std::ostream& operator<<(std::ostream& os, const std::shared_ptr<Node<NT>>& n) {
+            if (n)
+                os << n->_element << "::" << n->_prev.get() << "<-" << n.get() << "->" << n->_next.get() << "::" << n->_dirtybit;
             return os;
         }
-
 
         std::atomic<bool> _dirtybit{false};
         NodeType _element;
         std::shared_ptr<Node> _next, _prev;
-    public:
-        Node(NodeType element) : _dirtybit(false), _element(element) { _next.reset(); _prev.reset(); }
+
+      public:
+        Node(NodeType element) : _dirtybit(false), _element(element) {
+            _next.reset();
+            _prev.reset();
+        }
         Node(const Node& n) : _dirtybit(false) { _element = n._element; };
         NodeType getElement() { return _element; }
         ~Node() {}
         std::string print();
     };
 
-
-    std::shared_ptr<Node<Type> > _head;
-    std::shared_ptr<Node<Type> > _tail;
+    std::shared_ptr<Node<Type>> _head;
+    std::shared_ptr<Node<Type>> _tail;
     std::mutex _dropofflock;
     unsigned _removed;
     unsigned _dropped_off;
     unsigned clearRead_nl();
-public:
+
+  public:
     //! \brief constructor
     DropoffQueue();
 
@@ -129,31 +129,27 @@ public:
     unsigned clear();
 };
 
-template<class Type>
-DropoffQueue<Type>::DropoffQueue() : _removed(0), _dropped_off(0) {
-    clear();
-}
+template <class Type> DropoffQueue<Type>::DropoffQueue() : _removed(0), _dropped_off(0) { clear(); }
 
-template<class Type>
-unsigned int DropoffQueue<Type>::clearRead_nl() {
-    typedef std::shared_ptr<Node<Type> > NodePtr;
+template <class Type> unsigned int DropoffQueue<Type>::clearRead_nl() {
+    typedef std::shared_ptr<Node<Type>> NodePtr;
     // Now loop through the list and remove anything that has
     // been read by the pickup side.
     NodePtr prev = _head;
     NodePtr curr = _head;
     unsigned cleared = 0;
     unsigned unread = 0;
-    while(curr != 0) {
+    while (curr != 0) {
         NodePtr removed_node;
-        if(curr->_dirtybit) {
+        if (curr->_dirtybit) {
             // Remove it because it has been picked up.
             prev->_next = curr->_next;
-            if(prev->_next) {
+            if (prev->_next) {
                 prev->_next->_prev = prev;
             }
-            if(curr == _tail)
+            if (curr == _tail)
                 _tail = prev; // If we're picking off the last one, move the tail pointer.
-            if(curr == _head)
+            if (curr == _head)
                 curr->_prev.reset();
             ++_removed;
             removed_node = curr;
@@ -161,23 +157,23 @@ unsigned int DropoffQueue<Type>::clearRead_nl() {
             prev = curr;
         }
         curr = curr->_next;
-        if(removed_node) {
+        if (removed_node) {
             ++cleared;
             removed_node->_next.reset();
             removed_node->_prev.reset();
-            if(_head == _tail && _head == removed_node) {
+            if (_head == _tail && _head == removed_node) {
                 // This is the only node left.
                 // Make sure it goes away.
                 _head.reset();
                 _tail.reset();
             }
-        } else ++unread;
+        } else
+            ++unread;
     }
     return cleared;
 }
 
-template<class Type>
-unsigned int DropoffQueue<Type>::clearRead() {
+template <class Type> unsigned int DropoffQueue<Type>::clearRead() {
     std::lock_guard scope_lock(_dropofflock);
     return clearRead_nl();
 }
@@ -185,18 +181,17 @@ unsigned int DropoffQueue<Type>::clearRead() {
 // Dropoff side places a new element in the queue
 // and then removes anything that has already
 // been read.
-template<class Type>
-void DropoffQueue<Type>::dropOff(const Type element) {
+template <class Type> void DropoffQueue<Type>::dropOff(const Type element) {
     ++_dropped_off;
-    typedef std::shared_ptr<Node<Type> > NodePtr;
+    typedef std::shared_ptr<Node<Type>> NodePtr;
     NodePtr newnode(new Node<Type>(element));
     std::lock_guard scope_lock(_dropofflock);
     // Put it in the head of the list.
-    if(_head == 0) {
+    if (_head == 0) {
         // First add.
         assert(_tail == 0);
         _tail = newnode;
-      } else {
+    } else {
         newnode->_next = _head;
         _head->_prev = newnode;
     }
@@ -209,45 +204,43 @@ void DropoffQueue<Type>::dropOff(const Type element) {
 // and return it.  The smart pointer guarantees
 // its existence so the dropoff side can't take it
 // away.
-template<class Type>
-bool DropoffQueue<Type>::pickUp(Type& pu) {
-    typedef std::shared_ptr<Node<Type> > NodePtr;
+template <class Type> bool DropoffQueue<Type>::pickUp(Type& pu) {
+    typedef std::shared_ptr<Node<Type>> NodePtr;
     NodePtr retptr, tmp;
-    for(tmp = _tail; tmp != 0; tmp = tmp->_prev) {
-        if(!tmp->_dirtybit) {
+    for (tmp = _tail; tmp != 0; tmp = tmp->_prev) {
+        if (!tmp->_dirtybit) {
             tmp->_dirtybit = true;
             retptr = tmp;
             break;
         }
     }
-    if(retptr == 0) {
+    if (retptr == 0) {
         return false;
     }
     pu = retptr->getElement();
     return true;
 }
 
-template<class Type>
-void DropoffQueue<Type>::printChain() {
-    typedef std::shared_ptr<Node<Type> > NodePtr;
-    for(NodePtr curr = _head; curr != _tail; curr = curr->_next) {
+template <class Type> void DropoffQueue<Type>::printChain() {
+    typedef std::shared_ptr<Node<Type>> NodePtr;
+    for (NodePtr curr = _head; curr != _tail; curr = curr->_next) {
         std::cout << curr.get() << "->";
     }
     std::cout << _tail.get() << "->0" << std::endl;
 }
 
-template<class Type>
-unsigned DropoffQueue<Type>::clear() {
-    typedef std::shared_ptr<Node<Type> > NodePtr;
+template <class Type> unsigned DropoffQueue<Type>::clear() {
+    typedef std::shared_ptr<Node<Type>> NodePtr;
     std::lock_guard scope_lock(_dropofflock);
     unsigned cleared = 0;
     unsigned db = 0;
     NodePtr curr = _head;
-    while(curr != 0) {
-        if(curr->_dirtybit) ++db;
+    while (curr != 0) {
+        if (curr->_dirtybit)
+            ++db;
         NodePtr next = curr->_next;
         curr->_next.reset();
-        if(next)
+        if (next)
             next->_prev.reset();
         curr = next;
         ++cleared;
@@ -258,27 +251,25 @@ unsigned DropoffQueue<Type>::clear() {
     return cleared;
 }
 
-template<class Type>
-unsigned DropoffQueue<Type>::size() {
-    typedef std::shared_ptr<Node<Type> > NodePtr;
+template <class Type> unsigned DropoffQueue<Type>::size() {
+    typedef std::shared_ptr<Node<Type>> NodePtr;
     std::lock_guard scope_lock(_dropofflock);
     unsigned size = 0;
     NodePtr curr = _head;
-    while(curr != 0) {
+    while (curr != 0) {
         ++size;
         curr = curr->_next;
     }
     return size;
 }
 
-template<class Type>
-unsigned DropoffQueue<Type>::get_unread() {
-    typedef std::shared_ptr<Node<Type> > NodePtr;
+template <class Type> unsigned DropoffQueue<Type>::get_unread() {
+    typedef std::shared_ptr<Node<Type>> NodePtr;
     std::lock_guard scope_lock(_dropofflock);
     unsigned unread_count = 0;
     NodePtr curr = _head;
-    while(curr != 0) {
-        if(!curr->_dirtybit)
+    while (curr != 0) {
+        if (!curr->_dirtybit)
             ++unread_count;
         curr = curr->_next;
     }

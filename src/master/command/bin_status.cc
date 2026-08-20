@@ -29,16 +29,9 @@
 
 #include <utility/include/Log.h>
 
+LOG_DECLARE_FILE("master");
 
-
-LOG_DECLARE_FILE( "master" );
-
-void
-doStatus(
-        const BGMasterClient& client,
-        const std::string& target
-        )
-{
+void doStatus(const BGMasterClient& client, const std::string& target) {
     std::map<BinaryId, BinaryControllerPtr, Id::Comp> mm;
     bool bins_specified = false;
     if (!target.empty()) {
@@ -55,34 +48,24 @@ doStatus(
         exit(EXIT_FAILURE);
     }
 
-    for (std::map<BinaryId, BinaryControllerPtr, Id::Comp>::iterator it = mm.begin();
-        it != mm.end(); ++it) {
+    for (std::map<BinaryId, BinaryControllerPtr, Id::Comp>::iterator it = mm.begin(); it != mm.end(); ++it) {
         BinaryId id = it->first;
         BinaryControllerPtr ptr = it->second;
-        std::cout << id.str() << "|" << ptr->get_alias_name() << "|"
-                  << BinaryController::status_to_string((BinaryController::Status)(ptr->get_status()))
-                  << "|" << ptr->get_user() << "|" << ptr->get_start_time() << std::endl;
+        std::cout << id.str() << "|" << ptr->get_alias_name() << "|" << BinaryController::status_to_string((BinaryController::Status)(ptr->get_status())) << "|" << ptr->get_user() << "|"
+                  << ptr->get_start_time() << std::endl;
     }
 }
 
-void
-help()
-{
+void help() {
     std::cerr << "Returns the status of one or all binaries currently" << std::endl;
     std::cerr << "under control of bgmaster_server.  By default it returns" << std::endl;
     std::cerr << "the binary id (IP:PID), status, alias name and start time of all binaries." << std::endl;
     std::cerr << "If a binary id is specified, it returns the status of that binary." << std::endl;
 }
 
-void
-usage()
-{
-    std::cerr << "binary_status [binary id] [ --properties filename ] [ --help ] [ --host host:port ]" << std::endl;
-}
+void usage() { std::cerr << "binary_status [binary id] [ --properties filename ] [ --help ] [ --host host:port ]" << std::endl; }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     validargs.push_back("*"); // One argument without a "--" is allowed
@@ -91,8 +74,7 @@ main(int argc, const char** argv)
 
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
-    }
-    catch (exceptions::BGMasterError& e) {
+    } catch (exceptions::BGMasterError& e) {
         std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }

@@ -24,18 +24,15 @@
 #ifndef MASTER_CLIENT_MANAGER_H_
 #define MASTER_CLIENT_MANAGER_H_
 
-
 #include "types.h"
 
-#include <thread>
 #include <mutex>
+#include <thread>
 #include <vector>
 
-
 //! \brief ClientManager class maintains a list of all of the BGMaster clients
-class ClientManager
-{
-public:
+class ClientManager {
+  public:
     ClientManager();
 
     //! \brief end thread processing of all clients
@@ -48,10 +45,10 @@ public:
     void removeClient(ClientControllerPtr c);
     std::vector<ClientControllerPtr> getClients();
     bool _ending;
-private:
+
+  private:
     std::mutex _clientMutex;
     std::vector<ClientControllerPtr> _clients;
 };
-
 
 #endif

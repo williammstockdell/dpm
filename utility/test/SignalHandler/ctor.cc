@@ -32,23 +32,16 @@
 
 using namespace bgq::utility;
 
-class InitializeLoggingFixture
-{
-public:
-    InitializeLoggingFixture()
-    {
+class InitializeLoggingFixture {
+  public:
+    InitializeLoggingFixture() {
         using namespace bgq::utility;
-        bgq::utility::initializeLogging( *Properties::create() );
+        bgq::utility::initializeLogging(*Properties::create());
     }
 };
 
-void handler(
-        const boost::system::error_code& error,
-        const siginfo_t& siginfo,
-        bool& handled
-        )
-{
-    if ( !error ) {
+void handler(const boost::system::error_code& error, const siginfo_t& siginfo, bool& handled) {
+    if (!error) {
         std::cout << "received signal " << siginfo.si_signo << std::endl;
         handled = true;
     } else {
@@ -57,9 +50,8 @@ void handler(
     }
 }
 
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
-BOOST_AUTO_TEST_CASE( ctor )
-{
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
+BOOST_AUTO_TEST_CASE(ctor) {
     // create I/O service
     boost::asio::io_service io;
 
@@ -68,14 +60,7 @@ BOOST_AUTO_TEST_CASE( ctor )
 
     // wait for signal
     bool handled = false;
-    sig.async_wait(
-            boost::bind(
-                &handler,
-                _1,
-                _2,
-                boost::ref(handled)
-                )
-            );
+    sig.async_wait(boost::bind(&handler, _1, _2, boost::ref(handled)));
 
     // raise the signal
     raise(SIGINT);
@@ -84,7 +69,5 @@ BOOST_AUTO_TEST_CASE( ctor )
     io.run();
 
     // ensure we handled it
-    BOOST_CHECK_EQUAL( handled, true );
+    BOOST_CHECK_EQUAL(handled, true);
 }
-
-

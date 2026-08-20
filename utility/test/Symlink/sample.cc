@@ -28,18 +28,15 @@
 
 using namespace bgq::utility;
 
-int
-main()
-{
+int main() {
     boost::filesystem::path path;
     path = path / "/proc" / "self" / "exe";
     try {
-        Symlink link( path );
+        Symlink link(path);
         std::cout << path << " links to " << std::string(link) << std::endl;
-    } catch ( const boost::system::system_error& e ) {
+    } catch (const boost::system::system_error& e) {
         std::cerr << e.what() << std::endl;
     }
 
     return 0;
 }
-

@@ -24,18 +24,14 @@
  * \file utility/include/portConfiguration/types.h
  */
 
-
 #ifndef BGQ_UTILITY_PC_TYPES_H_
 #define BGQ_UTILITY_PC_TYPES_H_
 
-
 #include <iosfwd>
-
 
 namespace bgq {
 namespace utility {
 namespace portConfig {
-
 
 /*! \brief The type of user that's connected. */
 struct UserType {
@@ -46,9 +42,7 @@ struct UserType {
     };
 };
 
-
-std::ostream& operator<<( std::ostream& os, UserType::Value user_type );
-
+std::ostream& operator<<(std::ostream& os, UserType::Value user_type);
 
 //! \brief Indicator to expect the UserId first or skip it.
 struct UserIdHandling {
@@ -58,7 +52,8 @@ struct UserIdHandling {
     };
 };
 
-
-} } } // namespace bgq::utility::portConfig
+} // namespace portConfig
+} // namespace utility
+} // namespace bgq
 
 #endif

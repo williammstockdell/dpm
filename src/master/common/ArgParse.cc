@@ -33,37 +33,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-typedef std::map<std::string,log4cxx::LevelPtr> Loggers;
-Loggers loggers = {
-    { "dpm.master", log4cxx::Level::getFatal() },
-    { "dpm.utility", log4cxx::Level::getFatal() },
-    { "dpm.utility.cxxsockets", log4cxx::Level::getFatal()}};
+typedef std::map<std::string, log4cxx::LevelPtr> Loggers;
+Loggers loggers = {{"dpm.master", log4cxx::Level::getFatal()}, {"dpm.utility", log4cxx::Level::getFatal()}, {"dpm.utility.cxxsockets", log4cxx::Level::getFatal()}};
 
-void
-Args::setupLoggerDefaults() const
-{
-    for ( Loggers::const_iterator i = loggers.begin(); i != loggers.end(); ++i ) {
+void Args::setupLoggerDefaults() const {
+    for (Loggers::const_iterator i = loggers.begin(); i != loggers.end(); ++i) {
         const std::string& logger = i->first;
         const log4cxx::LevelPtr& level = i->second;
-        if ( log4cxx::LoggerPtr log = log4cxx::Logger::getLogger( logger ) ) {
-            log->setLevel( level );
+        if (log4cxx::LoggerPtr log = log4cxx::Logger::getLogger(logger)) {
+            log->setLevel(level);
         }
     }
 }
 
-bool
-Args::setupLogger(
-        const std::string& verbarg
-        ) const
-{
+bool Args::setupLogger(const std::string& verbarg) const {
     // parse --verbose arguments
     // they are in the form --verbose logger=level or --verbose level
-    const std::string::size_type split_pos( verbarg.find( '=' ) );
+    const std::string::size_type split_pos(verbarg.find('='));
     std::string logger_name;
-    if ( split_pos != std::string::npos ) {
-        logger_name = verbarg.substr( 0, split_pos );
+    if (split_pos != std::string::npos) {
+        logger_name = verbarg.substr(0, split_pos);
     } else {
         // Assume level for default logger
         logger_name = "dpm.master";
@@ -73,22 +64,31 @@ Args::setupLogger(
     const log4cxx::LoggerPtr loggerp = log4cxx::Logger::getLogger(logger_name);
 
     // Remove any loggers specified in --verbose from the default logger list
-    const Loggers::iterator i = loggers.find( logger_name );
-    if ( i != loggers.end() ) {
-        loggers.erase( i );
+    const Loggers::iterator i = loggers.find(logger_name);
+    if (i != loggers.end()) {
+        loggers.erase(i);
     }
 
     // Get the specified log level
-    std::string log_level_string = verbarg.substr(split_pos + 1,verbarg.length());
-    if (log_level_string == "O" || log_level_string == "OFF" || log_level_string == "0") log_level_string = "OFF";
-    else if (log_level_string == "F" || log_level_string == "FATAL" || log_level_string == "1") log_level_string = "FATAL";
-    else if (log_level_string == "E" || log_level_string == "ERROR" || log_level_string == "2") log_level_string = "ERROR";
-    else if (log_level_string == "W" || log_level_string == "WARN" || log_level_string == "3") log_level_string = "WARN";
-    else if (log_level_string == "I" || log_level_string == "INFO" || log_level_string == "4") log_level_string = "INFO";
-    else if (log_level_string == "D" || log_level_string == "DEBUG" || log_level_string == "5") log_level_string = "DEBUG";
-    else if (log_level_string == "T" || log_level_string == "TRACE" || log_level_string == "6") log_level_string = "TRACE";
-    else if (log_level_string == "A" || log_level_string == "ALL" || log_level_string == "7") log_level_string = "ALL";
-    else return false;
+    std::string log_level_string = verbarg.substr(split_pos + 1, verbarg.length());
+    if (log_level_string == "O" || log_level_string == "OFF" || log_level_string == "0")
+        log_level_string = "OFF";
+    else if (log_level_string == "F" || log_level_string == "FATAL" || log_level_string == "1")
+        log_level_string = "FATAL";
+    else if (log_level_string == "E" || log_level_string == "ERROR" || log_level_string == "2")
+        log_level_string = "ERROR";
+    else if (log_level_string == "W" || log_level_string == "WARN" || log_level_string == "3")
+        log_level_string = "WARN";
+    else if (log_level_string == "I" || log_level_string == "INFO" || log_level_string == "4")
+        log_level_string = "INFO";
+    else if (log_level_string == "D" || log_level_string == "DEBUG" || log_level_string == "5")
+        log_level_string = "DEBUG";
+    else if (log_level_string == "T" || log_level_string == "TRACE" || log_level_string == "6")
+        log_level_string = "TRACE";
+    else if (log_level_string == "A" || log_level_string == "ALL" || log_level_string == "7")
+        log_level_string = "ALL";
+    else
+        return false;
 
     const log4cxx::LevelPtr levelp = log4cxx::Level::toLevel(log_level_string);
     loggerp->setLevel(levelp);
@@ -96,28 +96,15 @@ Args::setupLogger(
     return true;
 }
 
-void
-APusage(
-        void (*usage)(),
-        const bool silent = false
-        )
-{
+void APusage(void (*usage)(), const bool silent = false) {
     usage();
-    if ( silent ) return;
+    if (silent)
+        return;
 
     std::cerr << "Try the --help or -h option for more information." << std::endl;
 }
 
-Args::Args(
-        const int argc,
-        const char** argv,
-        void (*usage)(),
-        void (*help)(),
-        std::vector<std::string>& valargs,
-        const std::vector<std::string>& singles,
-        bin_type utype
-        )
-{
+Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), std::vector<std::string>& valargs, const std::vector<std::string>& singles, bin_type utype) {
     valargs.push_back("--verbose");
     valargs.push_back("-v");
     valargs.push_back("--properties");
@@ -132,7 +119,7 @@ Args::Args(
                 std::cerr << "--properties already specified." << std::endl;
                 exit(EXIT_FAILURE);
             } else if (argc == ++i) {
-                std::cerr << "Please give a file name after " << argv[i-1] << std::endl;
+                std::cerr << "Please give a file name after " << argv[i - 1] << std::endl;
                 exit(EXIT_FAILURE);
             }
             try {
@@ -175,19 +162,16 @@ Args::Args(
     const std::string default_logger("dpm.master");
 
     setupLoggerDefaults();
-    const bgq::utility::LoggingProgramOptions logging_program_options( default_logger );
+    const bgq::utility::LoggingProgramOptions logging_program_options(default_logger);
     bgq::utility::initializeLogging(*_props, logging_program_options, "master");
 
-
     // Needs to get master location from properties and command line
-    bgq::utility::ClientPortConfiguration port_config(
-            32042, bgq::utility::ClientPortConfiguration::ConnectionType::Command
-            );
-    if(utype == CLIENT)
-        port_config.setProperties( _props, "master.client");
-    else if(utype == SERVER)
+    bgq::utility::ClientPortConfiguration port_config(32042, bgq::utility::ClientPortConfiguration::ConnectionType::Command);
+    if (utype == CLIENT)
+        port_config.setProperties(_props, "master.client");
+    else if (utype == SERVER)
         port_config.setProperties(_props, "master.server");
-    else if(utype == AGENT)
+    else if (utype == AGENT)
         port_config.setProperties(_props, "master.agent");
     else
         exit(0); // FIXME:  Do better
@@ -277,15 +261,11 @@ Args::Args(
     }
 }
 
-std::string
-Args::operator[](
-        const std::string& value
-        ) const
-{
+std::string Args::operator[](const std::string& value) const {
     try {
         return _argpairs.at(value);
-    } catch ( const std::exception& e ) {
-        LOG_TRACE_MSG( e.what() );
+    } catch (const std::exception& e) {
+        LOG_TRACE_MSG(e.what());
         return std::string();
     }
 }

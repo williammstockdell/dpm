@@ -38,7 +38,7 @@ namespace utility {
 
 Initialize the library using the \link bgq::utility::performance::init init\endlink method in the
 performance.h header.  For linking, you probably want to do something like:
-  
+
 \verbatim
 utility_library_dir=$(BGQ_INSTALL_DIR)/utility/lib
 \endverbatim
@@ -58,9 +58,8 @@ namespace performance {
 /*!
  * \brief Initialize the API.
  */
-void init(
-        Properties::ConstPtr properties //!< [in]
-        );
+void init(Properties::ConstPtr properties //!< [in]
+);
 
 /*!
  * \brief Get properties file.
@@ -69,8 +68,8 @@ void init(
  */
 Properties::ConstPtr getProperties();
 
-} // performance
-} // utility
-} // bgq
+} // namespace performance
+} // namespace utility
+} // namespace bgq
 
 #endif

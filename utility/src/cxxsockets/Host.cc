@@ -22,52 +22,40 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include "cxxsockets/Host.h"
-#include "cxxsockets/exception.h"
 #include "cxxsockets/SockAddr.h"
+#include "cxxsockets/exception.h"
 
 #include "Log.h"
 
 #include <sstream>
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
-void
-Host::build(
-        const std::string& identifier
-        )
-{
+void Host::build(const std::string& identifier) {
     try {
         SockAddr sa(AF_UNSPEC, identifier, "");
         _ip = sa.getHostAddr();
         _name = sa.getHostName();
         if (_name == _ip) {
-            LOG_DEBUG_MSG( "Unresolved IP: " << _ip );
+            LOG_DEBUG_MSG("Unresolved IP: " << _ip);
             _name = _ip;
         }
     } catch (const SoftError& e) {
         LOG_DEBUG_MSG(e.what() << " Will use IP address instead of name.");
     } catch (const Error& e) {
         std::ostringstream errormsg;
-        errormsg << "Invalid host specification " << identifier
-                 << ". Not resolvable on local network. "
-                 << "Check DNS, hostname and local network settings. "
-                 << e.what();
-        LOG_DEBUG_MSG( errormsg.str() );
-        throw Error( e.errcode, errormsg.str() );
+        errormsg << "Invalid host specification " << identifier << ". Not resolvable on local network. "
+                 << "Check DNS, hostname and local network settings. " << e.what();
+        LOG_DEBUG_MSG(errormsg.str());
+        throw Error(e.errcode, errormsg.str());
     }
 }
 
-const std::string&
-Host::fqhn() const
-{
-    return _name;
-}
+const std::string& Host::fqhn() const { return _name; }
 
-std::string
-Host::uhn() const
-{
+std::string Host::uhn() const {
     if (_name == _ip) {
         return _ip;
     }
@@ -81,4 +69,4 @@ Host::uhn() const
     return _name.substr(0, dot);
 }
 
-}
+} // namespace CxxSockets

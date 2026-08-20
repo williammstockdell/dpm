@@ -22,16 +22,13 @@
 /* end_generated_IBM_copyright_prolog                               */
 #include <utility/include/Singleton.h>
 
-class Foo : public bgq::utility::Singleton<Foo>
-{
-public:
-    Foo() { }
-    void doSomething() { }
+class Foo : public bgq::utility::Singleton<Foo> {
+  public:
+    Foo() {}
+    void doSomething() {}
 };
 
-int
-main()
-{
+int main() {
     Foo::instance().doSomething();
 
     return 0;

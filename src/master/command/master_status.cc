@@ -24,21 +24,16 @@
 #include "common/ArgParse.h"
 
 #include "lib/BGMasterClient.h"
-#include "lib/exceptions.h"
 #include "lib/ListAgents.h"
+#include "lib/exceptions.h"
 
 #include <utility/include/Log.h>
 
 #include <iostream>
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-void
-doStat(
-        const BGMasterClient& client,
-        bool fancy
-        )
-{
+void doStat(const BGMasterClient& client, bool fancy) {
     int mpid = 0;
     std::string start_time;
     std::string version;
@@ -57,7 +52,7 @@ doStat(
         if (!idles.empty()) {
             std::cout << "Aliases not currently running" << std::endl;
             std::cout << "-----------------------------" << std::endl;
-            for(std::string& al : idles) {
+            for (std::string& al : idles) {
                 if (al != "bgmaster_server") {
                     std::cout << al << std::endl;
                 }
@@ -76,30 +71,18 @@ doStat(
     }
     if (mpid > 0) {
         ListAgents::doListAgents(client, false, fancy);
-        std::cout << std::endl << version << " running under pid " << mpid
-                  << " since " << start_time << std::endl;
+        std::cout << std::endl << version << " running under pid " << mpid << " since " << start_time << std::endl;
         std::cout << "configured from " << properties << std::endl;
     } else {
         std::cerr << "bgmaster_server process id unavailable" << std::endl;
     }
-
 }
 
-void
-help()
-{
-    std::cerr << "Return the process id of bgmaster_server and information about managed processes." << std::endl;
-}
+void help() { std::cerr << "Return the process id of bgmaster_server and information about managed processes." << std::endl; }
 
-void
-usage()
-{
-    std::cerr << "master_status [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
-}
+void usage() { std::cerr << "master_status [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     std::string fancyarg = "--fancy"; // hidden for backwards compatibility
@@ -117,7 +100,7 @@ main(int argc, const char** argv)
 
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
-    } catch ( const exceptions::CommunicationError& e ) {
+    } catch (const exceptions::CommunicationError& e) {
         std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
         exit(1);
     }

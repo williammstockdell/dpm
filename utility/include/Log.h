@@ -55,7 +55,8 @@ Your .cc files that do logging should contain:
 LOG_DECLARE_FILE( &quot;<i>component</i>&quot; );
 </pre>
 
-where component is a name you choose for your component. Each of the files in your component should use the same component name. You can specify subcomponents by separating with '.'. For example, we use "bgsched" as a component and "bgsched.allocator".
+where component is a name you choose for your component. Each of the files in your component should use the same component name. You can specify subcomponents by separating with '.'. For example, we
+use "bgsched" as a component and "bgsched.allocator".
 
 To print out a log message, use one of the macros from Log.h:
 <pre>
@@ -201,19 +202,15 @@ LDFLAGS += -L\$(utility_library_dir) -lbgutility -Wl,-rpath,\$(utility_library_d
 
 #include <string>
 
-
 namespace bgq {
 namespace utility {
-
 
 class LoggingProgramOptions;
 class Properties;
 
-
 /*! \brief The logging subsection used when no subsection name is given, 'default'.
  */
 extern const std::string DEFAULT_LOGGING_SUBSECTION;
-
 
 /*! \brief Initialize logging from the properties file and program options.
  *
@@ -236,28 +233,18 @@ extern const std::string DEFAULT_LOGGING_SUBSECTION;
  *  documentation for PropertyConfigurator(File).
  *
  */
-void initializeLogging(
-        const Properties& bg_properties,
-        const LoggingProgramOptions& logging_program_options,
-        const std::string& subsection_name = DEFAULT_LOGGING_SUBSECTION
-    );
-
+void initializeLogging(const Properties& bg_properties, const LoggingProgramOptions& logging_program_options, const std::string& subsection_name = DEFAULT_LOGGING_SUBSECTION);
 
 /*!
  *  \brief Initialize logging from the properties file.
  *
  */
-void initializeLogging(
-        const Properties& bg_properties,
-        const std::string& subsection_name = DEFAULT_LOGGING_SUBSECTION
-    );
-
+void initializeLogging(const Properties& bg_properties, const std::string& subsection_name = DEFAULT_LOGGING_SUBSECTION);
 
 /*!
  *  \brief Used internally by LOG_DECLARE_FILE.
  */
-std::string calcLoggername( const std::string& base, const std::string& file );
-
+std::string calcLoggername(const std::string& base, const std::string& file);
 
 /*!
  * \brief Declare the logger for this file.
@@ -275,61 +262,61 @@ std::string calcLoggername( const std::string& base, const std::string& file );
 //        log4cxx::Logger::getLogger( "dpm" )\
 //      )
 
-#define LOG_DECLARE_FILE( base )              \
-     static log4cxx::LoggerPtr log_logger_(                              \
-            log4cxx::Logger::getLogger( bgq::utility::calcLoggername( (base), __FILE__ ) ) \
-            )
-
+#define LOG_DECLARE_FILE(base) static log4cxx::LoggerPtr log_logger_(log4cxx::Logger::getLogger(bgq::utility::calcLoggername((base), __FILE__)))
 
 // The following macros write log messages at different log levels.
 // Note that the message_expr parameter can be an expression, such as:
 // "the error from function is " << return_code
 
-#define LOG_DEBUG_MSG( message_expr ) \
- LOG4CXX_DEBUG( log_logger_, message_expr )
+#define LOG_DEBUG_MSG(message_expr) LOG4CXX_DEBUG(log_logger_, message_expr)
 
-#define LOG_TRACE_MSG( message_expr ) \
- LOG4CXX_TRACE( log_logger_, message_expr )
+#define LOG_TRACE_MSG(message_expr) LOG4CXX_TRACE(log_logger_, message_expr)
 
-#define LOG_INFO_MSG( message_expr ) \
- LOG4CXX_INFO( log_logger_, message_expr )
+#define LOG_INFO_MSG(message_expr) LOG4CXX_INFO(log_logger_, message_expr)
 
-#define LOG_WARN_MSG( message_expr ) \
- LOG4CXX_WARN( log_logger_, message_expr )
+#define LOG_WARN_MSG(message_expr) LOG4CXX_WARN(log_logger_, message_expr)
 
-#define LOG_ERROR_MSG( message_expr ) \
- LOG4CXX_ERROR( log_logger_, message_expr )
+#define LOG_ERROR_MSG(message_expr) LOG4CXX_ERROR(log_logger_, message_expr)
 
-#define LOG_FATAL_MSG( message_expr ) \
- LOG4CXX_FATAL( log_logger_, message_expr )
+#define LOG_FATAL_MSG(message_expr) LOG4CXX_FATAL(log_logger_, message_expr)
 
+#define LOG_DEBUG_MSG_FORCED(message_expr)                                                                                                                                                             \
+    {                                                                                                                                                                                                  \
+        ::log4cxx::helpers::MessageBuffer oss_;                                                                                                                                                        \
+        log_logger_->forcedLog(::log4cxx::Level::getDebug(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION);                                                                                        \
+    }
 
-#define LOG_DEBUG_MSG_FORCED( message_expr ) { \
-    ::log4cxx::helpers::MessageBuffer oss_; \
-    log_logger_->forcedLog(::log4cxx::Level::getDebug(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION); }
+#define LOG_TRACE_MSG_FORCED(message_expr)                                                                                                                                                             \
+    {                                                                                                                                                                                                  \
+        ::log4cxx::helpers::MessageBuffer oss_;                                                                                                                                                        \
+        log_logger_->forcedLog(::log4cxx::Level::getTrace(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION);                                                                                        \
+    }
 
-#define LOG_TRACE_MSG_FORCED( message_expr ) { \
-    ::log4cxx::helpers::MessageBuffer oss_; \
-    log_logger_->forcedLog(::log4cxx::Level::getTrace(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION); }
+#define LOG_INFO_MSG_FORCED(message_expr)                                                                                                                                                              \
+    {                                                                                                                                                                                                  \
+        ::log4cxx::helpers::MessageBuffer oss_;                                                                                                                                                        \
+        log_logger_->forcedLog(::log4cxx::Level::getInfo(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION);                                                                                         \
+    }
 
-#define LOG_INFO_MSG_FORCED( message_expr ) { \
-    ::log4cxx::helpers::MessageBuffer oss_; \
-    log_logger_->forcedLog(::log4cxx::Level::getInfo(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION); }
+#define LOG_WARN_MSG_FORCED(message_expr)                                                                                                                                                              \
+    {                                                                                                                                                                                                  \
+        ::log4cxx::helpers::MessageBuffer oss_;                                                                                                                                                        \
+        log_logger_->forcedLog(::log4cxx::Level::getWarn(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION);                                                                                         \
+    }
 
-#define LOG_WARN_MSG_FORCED( message_expr ) { \
-    ::log4cxx::helpers::MessageBuffer oss_; \
-    log_logger_->forcedLog(::log4cxx::Level::getWarn(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION); }
+#define LOG_ERROR_MSG_FORCED(message_expr)                                                                                                                                                             \
+    {                                                                                                                                                                                                  \
+        ::log4cxx::helpers::MessageBuffer oss_;                                                                                                                                                        \
+        log_logger_->forcedLog(::log4cxx::Level::getError(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION);                                                                                        \
+    }
 
-#define LOG_ERROR_MSG_FORCED( message_expr ) { \
-    ::log4cxx::helpers::MessageBuffer oss_; \
-    log_logger_->forcedLog(::log4cxx::Level::getError(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION); }
+#define LOG_FATAL_MSG_FORCED(message_expr)                                                                                                                                                             \
+    {                                                                                                                                                                                                  \
+        ::log4cxx::helpers::MessageBuffer oss_;                                                                                                                                                        \
+        log_logger_->forcedLog(::log4cxx::Level::getFatal(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION);                                                                                        \
+    }
 
-#define LOG_FATAL_MSG_FORCED( message_expr ) { \
-    ::log4cxx::helpers::MessageBuffer oss_; \
-    log_logger_->forcedLog(::log4cxx::Level::getFatal(), oss_.str(oss_ << message_expr), LOG4CXX_LOCATION); }
-
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq
-
 
 #endif

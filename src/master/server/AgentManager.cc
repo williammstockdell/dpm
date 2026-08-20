@@ -31,34 +31,23 @@
 
 #include "../lib/exceptions.h"
 
-LOG_DECLARE_FILE( "master" );
+LOG_DECLARE_FILE("master");
 
-AgentManager::AgentManager():
-    _ending_agents(false),
-    _agents_per_host( 1 )
-{
+AgentManager::AgentManager() : _ending_agents(false), _agents_per_host(1) {
     // Nothing to do
 }
 
-void
-AgentManager::setCount(
-        const unsigned count
-        )
-{
+void AgentManager::setCount(const unsigned count) {
     _agents_per_host = count;
-    LOG_DEBUG_MSG( "Set maximum agents per host to " << _agents_per_host );
+    LOG_DEBUG_MSG("Set maximum agents per host to " << _agents_per_host);
 }
 
-bool
-AgentManager::addNew(
-        AgentRepPtr agent
-        )
-{
+bool AgentManager::addNew(AgentRepPtr agent) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     LOG_DEBUG_MSG("Adding agent " << agent->get_agent_id().str() << " from list.");
     unsigned agent_count = 0;
-    for(const AgentRepPtr& ptr : _agents) {
+    for (const AgentRepPtr& ptr : _agents) {
         if (ptr->get_host().ip() == agent->get_host().ip()) {
             // We've got one
             ++agent_count;
@@ -74,8 +63,7 @@ AgentManager::addNew(
     return true;
 }
 
-void
-AgentManager::removeAgent(AgentRepPtr agent) {
+void AgentManager::removeAgent(AgentRepPtr agent) {
 
     _agent_manager_mutex.lock();
 
@@ -84,13 +72,13 @@ AgentManager::removeAgent(AgentRepPtr agent) {
     // Get copies of the binaries and the agent id
     BGAgentId failing = agent->get_agent_id();
     std::vector<BinaryControllerPtr> binlist = agent->get_binaries();
-    _agents.erase(remove(_agents.begin(),_agents.end(), agent), _agents.end());
+    _agents.erase(remove(_agents.begin(), _agents.end(), agent), _agents.end());
 
     // Don't need the lock any more.  Won't be using local resources.
     _agent_manager_mutex.unlock();
 
     // For each binary, run through the policy checks and restart.
-    for(const BinaryControllerPtr& binptr : binlist) {
+    for (const BinaryControllerPtr& binptr : binlist) {
 
         // Mark the binary done!  If the agent is gone, so is the binary.
         binptr->set_status(BinaryController::COMPLETED);
@@ -98,7 +86,7 @@ AgentManager::removeAgent(AgentRepPtr agent) {
         BinaryId reqbid = binptr->get_binid();
         if (binptr->stopping() != true) {
             // We haven't explicitly stopped, so we have to check our policy
-            for(const AliasPtr& al : MasterController::_aliases) {
+            for (const AliasPtr& al : MasterController::_aliases) {
                 if (al->find_binary(reqbid)) {
                     // This alias has my binary id, so remove my id and execute the policy
                     LOG_TRACE_MSG("Found alias " << al->get_name());
@@ -108,13 +96,7 @@ AgentManager::removeAgent(AgentRepPtr agent) {
                         AgentRepPtr rep_p = al->evaluatePolicy(t, failing, reqbid, binptr);
                         if (rep_p && !rep_p->runningAlias(al->get_name())) {
                             // Now we've got a new agent that isn't already running this alias.
-                            const BGMasterAgentProtocolSpec::StartRequest agentreq(
-                                    al->get_path(),
-                                    al->get_args(),
-                                    al->get_logdir(),
-                                    al->get_name(),
-                                    al->get_user()
-                                    );
+                            const BGMasterAgentProtocolSpec::StartRequest agentreq(al->get_path(), al->get_args(), al->get_logdir(), al->get_name(), al->get_user());
                             std::ostringstream logmsg;
                             logmsg << "start request path=" << agentreq._path << " "
                                    << "arguments=" << agentreq._arguments << " "
@@ -141,14 +123,11 @@ AgentManager::removeAgent(AgentRepPtr agent) {
     }
 }
 
-AgentRepPtr AgentManager::findAgentRep(
-        const BGAgentId& aid
-        )
-{
+AgentRepPtr AgentManager::findAgentRep(const BGAgentId& aid) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
-    for(const AgentRepPtr& agent : _agents) {
+    for (const AgentRepPtr& agent : _agents) {
         if (agent->get_agent_id() == aid) {
             p = agent;
         }
@@ -156,17 +135,13 @@ AgentRepPtr AgentManager::findAgentRep(
     return p;
 }
 
-BGAgentId
-AgentManager::findAgentId(
-        const CxxSockets::Host& host
-        )
-{
+BGAgentId AgentManager::findAgentId(const CxxSockets::Host& host) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     BGAgentId p;
 
     // Find and return the =first= active agent on this host
-    for(const AgentRepPtr& agent : _agents) {
+    for (const AgentRepPtr& agent : _agents) {
         if (agent->get_host() == host) {
             p = agent->get_agent_id();
             break;
@@ -175,15 +150,11 @@ AgentManager::findAgentId(
     return p;
 }
 
-AgentRepPtr
-AgentManager::findAgentRep(
-        const CxxSockets::Host& host
-        )
-{
+AgentRepPtr AgentManager::findAgentRep(const CxxSockets::Host& host) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
-    for(const AgentRepPtr& agent : _agents) {
+    for (const AgentRepPtr& agent : _agents) {
         const CxxSockets::Host lname = agent->get_host();
         if (lname == host) {
             p = agent;
@@ -192,9 +163,7 @@ AgentManager::findAgentRep(
     return p;
 }
 
-AgentRepPtr
-AgentManager::pickAgent()
-{
+AgentRepPtr AgentManager::pickAgent() {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     // We'll start simple and use either the first one with zero
@@ -212,12 +181,7 @@ AgentManager::pickAgent()
     return p;
 }
 
-bool
-AgentManager::findBinary(
-        const BinaryId& id,
-        BinaryLocation& loc
-        )
-{
+bool AgentManager::findBinary(const BinaryId& id, BinaryLocation& loc) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     BinaryControllerPtr ptr;
@@ -226,10 +190,10 @@ AgentManager::findBinary(
     bool found = false;
 
     // Loop through agents
-    for(const AgentRepPtr& agent : _agents) {
+    for (const AgentRepPtr& agent : _agents) {
         // Now loop through the binaries it controls
         const std::vector<BinaryControllerPtr> binaries = agent->get_binaries();
-        for(const BinaryControllerPtr& binary : binaries) {
+        for (const BinaryControllerPtr& binary : binaries) {
             if (binary->get_binid() == id) {
                 // This is the one
                 ptr = binary;
@@ -242,20 +206,15 @@ AgentManager::findBinary(
     return found;
 }
 
-bool
-AgentManager::findBinary(
-        const std::string& alias,
-        std::vector<BinaryLocation>& loc
-        )
-{
+bool AgentManager::findBinary(const std::string& alias, std::vector<BinaryLocation>& loc) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::lock_guard scoped_lock(_agent_manager_mutex);
     bool found = false;
 
-    for(const AgentRepPtr& agent : _agents) {
+    for (const AgentRepPtr& agent : _agents) {
         // Now loop through the binaries it controls
         const std::vector<BinaryControllerPtr> binaries = agent->get_binaries();
-        for(const BinaryControllerPtr& binary : binaries) {
+        for (const BinaryControllerPtr& binary : binaries) {
             if (binary->get_alias_name() == alias) {
                 // Got one
                 BinaryLocation foundling(binary, agent);
@@ -267,19 +226,14 @@ AgentManager::findBinary(
     return found;
 }
 
-void
-AgentManager::cancel(
-        const bool end_binaries,
-        const int signal
-        )
-{
+void AgentManager::cancel(const bool end_binaries, const int signal) {
     LOG_TRACE_MSG(__FUNCTION__);
     _ending_agents = true;
     // Loop through the agents and call the cancel for each
     std::vector<AgentRepPtr> agents;
     {
         std::lock_guard lock(_agent_manager_mutex);
-        for(const AgentRepPtr& agent : _agents) {
+        for (const AgentRepPtr& agent : _agents) {
             agents.push_back(agent);
         }
     }

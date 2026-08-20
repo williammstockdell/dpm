@@ -21,32 +21,26 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+#include <cstring>
 #include <filesystem>
 #include <pwd.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstring>
 
 #include <utility/include/Exec.h>
 #include <utility/include/Log.h>
-#include <utility/include/TimeStuff.h>
 #include <utility/include/ScopeExit.h>
+#include <utility/include/TimeStuff.h>
 
 #include "BinaryController.h"
 
-#include "types.h"
 #include "../lib/exceptions.h"
-
+#include "types.h"
 
 LOG_DECLARE_FILE("master");
 
-void
-switchBackUID(
-        uid_t my_euid,
-        gid_t my_egid
-        )
-{
+void switchBackUID(uid_t my_euid, gid_t my_egid) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Done. Go back to our user, but do it through root.
@@ -77,34 +71,13 @@ switchBackUID(
     LOG_DEBUG_MSG("Current uid: " << geteuid() << " Current gid: " << getegid());
 }
 
-BinaryController::BinaryController() :
-    _status(UNINITIALIZED),
-    _exit_status(0),
-    _binary_bin_path(""),
-    _alias_name(""),
-    _stop_requested(false)
-{
+BinaryController::BinaryController() : _status(UNINITIALIZED), _exit_status(0), _binary_bin_path(""), _alias_name(""), _stop_requested(false) {
     _start_time = std::chrono::system_clock::now();
     _user = "";
 }
 
-BinaryController::BinaryController(
-        const BinaryId& id,
-        const std::string& bin_path,
-        const std::string& alias,
-        const std::string& user,
-        int exit_status,
-        Status stat,
-        const std::string& start_time
-        ) :
-    _status(stat),
-    _exit_status(exit_status),
-    _binary_bin_path(bin_path),
-    _alias_name(alias),
-    _host(),
-    _binid(id),
-    _user(user)
-{
+BinaryController::BinaryController(const BinaryId& id, const std::string& bin_path, const std::string& alias, const std::string& user, int exit_status, Status stat, const std::string& start_time)
+    : _status(stat), _exit_status(exit_status), _binary_bin_path(bin_path), _alias_name(alias), _host(), _binid(id), _user(user) {
     _stop_requested = false;
     if (start_time.length() == 0)
         _start_time = std::chrono::system_clock::now();
@@ -113,15 +86,7 @@ BinaryController::BinaryController(
     _stop_requested = false;
 }
 
-BinaryController::BinaryController(
-        const std::string& path,
-        const std::string& arguments,
-        const std::string& logfile,
-        const std::string& alias,
-        const CxxSockets::Host& host,
-        const std::string& user
-        )
-{
+BinaryController::BinaryController(const std::string& path, const std::string& arguments, const std::string& logfile, const std::string& alias, const CxxSockets::Host& host, const std::string& user) {
     _binary_bin_path = path + (arguments.empty() ? "" : " " + arguments);
     _logfile = logfile;
     _alias_name = alias;
@@ -133,19 +98,8 @@ BinaryController::BinaryController(
     _exit_status = 0;
 }
 
-BinaryController::BinaryController(
-        const std::string& id,
-        const std::string& bin_path,
-        const std::string& alias,
-        const std::string& user,
-        int exit_status,
-        int stat,
-        const std::string& start_time
-        ) :
-    _binary_bin_path(bin_path),
-    _alias_name(alias),
-    _user(user)
-{
+BinaryController::BinaryController(const std::string& id, const std::string& bin_path, const std::string& alias, const std::string& user, int exit_status, int stat, const std::string& start_time)
+    : _binary_bin_path(bin_path), _alias_name(alias), _user(user) {
     _exit_status = exit_status;
     _status = (Status)stat;
     _binid = id;
@@ -153,12 +107,7 @@ BinaryController::BinaryController(
     _start_time = time_from_string(start_time);
 }
 
-BinaryId
-BinaryController::startBinary(
-        const std::string& user_list,
-        const std::string& properties
-        )
-{
+BinaryId BinaryController::startBinary(const std::string& user_list, const std::string& properties) {
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Pull out the full path and see if it exists
@@ -187,20 +136,12 @@ BinaryController::startBinary(
     }
     std::string error;
     int pipefd = 0;
-    const pid_t pid = Exec::fexec(
-            pipefd,
-            _binary_bin_path,
-            error,
-            true,
-            _logfile.c_str(),
-            properties,
-            _user
-            );
+    const pid_t pid = Exec::fexec(pipefd, _binary_bin_path, error, true, _logfile.c_str(), properties, _user);
     LOG_DEBUG_MSG("Returned from fexec for " << _alias_name << " pid=" << pid);
     if (pid < 0) {
         LOG_DEBUG_MSG("Error from exec: " << error);
         _exec_error = error;
-        BinaryId badid(pid,"");
+        BinaryId badid(pid, "");
         return badid;
     }
 
@@ -214,11 +155,7 @@ BinaryController::startBinary(
     return _binid;
 }
 
-bool
-isRunning(
-        const pid_t pid
-        )
-{
+bool isRunning(const pid_t pid) {
     LOG_TRACE_MSG(__FUNCTION__);
     bool retval = false;
     if (pid != 0) {
@@ -236,11 +173,7 @@ isRunning(
     return retval;
 }
 
-int
-BinaryController::stop(
-        int signal
-        )
-{
+int BinaryController::stop(int signal) {
     LOG_TRACE_MSG(__FUNCTION__);
     // This is how this works:
     // We use the signal passed to us as the initial signal... unless it is unspecified (zero).
@@ -287,9 +220,7 @@ BinaryController::stop(
             }
         }
 
-        ScopeExit cleanup([&] {
-            switchBackUID(my_euid, my_egid);
-        });
+        ScopeExit cleanup([&] { switchBackUID(my_euid, my_egid); });
 
         LOG_DEBUG_MSG("Running as " << geteuid() << " to kill " << pid << " with user " << _user);
 

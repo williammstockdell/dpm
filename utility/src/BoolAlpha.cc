@@ -28,34 +28,18 @@
 namespace bgq {
 namespace utility {
 
-BoolAlpha::BoolAlpha(
-        bool value
-        ) :
-    _value( value )
-{
+BoolAlpha::BoolAlpha(bool value) : _value(value) {}
 
-}
-
-std::ostream&
-operator<<(
-        std::ostream& stream,
-        const BoolAlpha& b
-        )
-{
+std::ostream& operator<<(std::ostream& stream, const BoolAlpha& b) {
     stream << std::boolalpha << b._value;
     return stream;
 }
 
-std::istream&
-operator>>(
-        std::istream& stream,
-        BoolAlpha& b
-        )
-{
+std::istream& operator>>(std::istream& stream, BoolAlpha& b) {
     stream >> std::boolalpha >> b._value;
 
     return stream;
 }
 
-} // utility
-} // bgq
+} // namespace utility
+} // namespace bgq

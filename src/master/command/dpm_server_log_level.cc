@@ -28,15 +28,15 @@
 
 #include <utility/include/Log.h>
 
+LOG_DECLARE_FILE("master");
 
-LOG_DECLARE_FILE( "master" );
-
-void help()
-{
-    std::cerr << std::endl << "Displays the logging configuration for the Blue Gene bgmaster server."
-              << " Optionally sets the logging configuration." << std::endl << std::endl;
+void help() {
+    std::cerr << std::endl
+              << "Displays the logging configuration for the Blue Gene bgmaster server."
+              << " Optionally sets the logging configuration." << std::endl
+              << std::endl;
     std::cerr << "Administrative authority required." << std::endl << std::endl;
-    std::cerr << "Options:"  << std::endl;
+    std::cerr << "Options:" << std::endl;
     std::cerr << "  --host|-H arg                         Server to connect to" << std::endl;
     std::cerr << "  --help|-h                             This help text" << std::endl;
     std::cerr << "  --properties|-p arg                   Blue Gene configuration file" << std::endl;
@@ -44,26 +44,17 @@ void help()
     std::cerr << std::endl;
 }
 
-void usage()
-{
-    std::cerr << "bgmaster_server_log_level [logger=level [... logger=level]]" << std::endl;
-}
+void usage() { std::cerr << "bgmaster_server_log_level [logger=level [... logger=level]]" << std::endl; }
 
-int
-doLoglevel(
-        const BGMasterClient& client,
-        std::vector<std::string>& input
-        )
-{
+int doLoglevel(const BGMasterClient& client, std::vector<std::string>& input) {
     try {
-        typedef std::map<BGMasterClient::LogName,BGMasterClient::LogLevel> Output;
+        typedef std::map<BGMasterClient::LogName, BGMasterClient::LogLevel> Output;
         Output output;
         client.log_level(input, output);
-        for(const Output::value_type& i : output) {
-            if (i.first.empty()) continue;
-            std::cout << std::setw(40) << std::left
-                << i.first << std::right
-                << i.second << std::endl;
+        for (const Output::value_type& i : output) {
+            if (i.first.empty())
+                continue;
+            std::cout << std::setw(40) << std::left << i.first << std::right << i.second << std::endl;
         }
     } catch (const exceptions::BGMasterError& e) {
         std::cerr << e.what() << std::endl;
@@ -73,9 +64,7 @@ doLoglevel(
     return EXIT_SUCCESS;
 }
 
-int
-main(int argc, const char** argv)
-{
+int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
     validargs.push_back("**"); // Unlimited number of positional arguments
@@ -90,7 +79,7 @@ main(int argc, const char** argv)
     }
     std::vector<std::string> loggers;
     for (Args::const_iterator it = largs.begin(); it != largs.end(); ++it) {
-        loggers.push_back( *it );
+        loggers.push_back(*it);
     }
 
     return doLoglevel(client, loggers);

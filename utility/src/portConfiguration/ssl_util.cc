@@ -31,49 +31,39 @@
 #include <sstream>
 #include <stdexcept>
 
-
-using std::string;
 using std::ostringstream;
 using std::runtime_error;
+using std::string;
 
-
-LOG_DECLARE_FILE( "utility" );
-
+LOG_DECLARE_FILE("utility");
 
 namespace bgq {
 namespace utility {
 
+string getSslErrorString() {
+    BIO* bio(BIO_new(BIO_s_mem()));
+    ERR_print_errors(bio);
 
-string getSslErrorString()
-{
-    BIO *bio(BIO_new( BIO_s_mem() ));
-    ERR_print_errors( bio );
+    char* buf;
+    long data_len(BIO_get_mem_data(bio, &buf));
 
-    char *buf;
-    long data_len(BIO_get_mem_data( bio, &buf ));
+    string err_str(buf, static_cast<size_t>(data_len));
 
-    string err_str( buf, static_cast<size_t>(data_len) );
-
-    BIO_free( bio );
+    BIO_free(bio);
 
     return err_str;
 }
 
-
-void throwSslError(
-        const std::string& ssl_function_name,
-        const std::string& calling_function_name,
-        unsigned calling_function_line
-    )
-{
+void throwSslError(const std::string& ssl_function_name, const std::string& calling_function_name, unsigned calling_function_line) {
     ostringstream msg;
 
-    msg << ssl_function_name << " failed at " << calling_function_name << ":" << calling_function_line << "."
-            " The SSL error messages follow:\n" << getSslErrorString();
+    msg << ssl_function_name << " failed at " << calling_function_name << ":" << calling_function_line
+        << "."
+           " The SSL error messages follow:\n"
+        << getSslErrorString();
 
-    throw runtime_error( msg.str() );
+    throw runtime_error(msg.str());
 }
 
-
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq

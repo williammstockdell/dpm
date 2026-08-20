@@ -27,37 +27,32 @@
 
 namespace perf = bgq::utility::performance;
 
-int
-main()
-{
+int main() {
     // initialize API
-    bgq::utility::Properties::ConstPtr properties(
-            bgq::utility::Properties::create()
-            );
-    bgq::utility::initializeLogging( *properties );
-    perf::init( properties );
+    bgq::utility::Properties::ConstPtr properties(bgq::utility::Properties::create());
+    bgq::utility::initializeLogging(*properties);
+    perf::init(properties);
 
     // create statistics set
-    std::string name( "my_name" );
-    PERFORMANCE_LIST_INIT( name );
+    std::string name("my_name");
+    PERFORMANCE_LIST_INIT(name);
     typedef perf::PersistentStatisticList Container;
     typedef Container::Timer Timer;
 
     // time some long running operation
     {
-        Timer timer( name, "some_metric", "123", perf::Mode::Value::Basic );
+        Timer timer(name, "some_metric", "123", perf::Mode::Value::Basic);
 
         // perform some long running operation
         sleep(1);
-        
+
         // timer goes out of scope
     }
 
     // get statistics
     Container::Ptr stats;
-    perf::GlobalStatistics::instance().get( name, stats );
+    perf::GlobalStatistics::instance().get(name, stats);
     stats->output();
 
     return 0;
 }
-

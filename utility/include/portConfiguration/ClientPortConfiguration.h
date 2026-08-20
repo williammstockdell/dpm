@@ -24,7 +24,6 @@
 #ifndef BGQ_UTILITY_CLIENT_PORT_CONFIGURATION_H_
 #define BGQ_UTILITY_CLIENT_PORT_CONFIGURATION_H_
 
-
 /*! \file
  *
  *  \brief Class for port configuration for clients.
@@ -32,16 +31,13 @@
 
 #include "PortConfiguration.h"
 
-#include <string>
 #include <stdint.h>
-
+#include <string>
 
 namespace bgq {
 namespace utility {
 
-
 class SslConfiguration;
-
 
 /*! \brief Port configuration for clients.
  *
@@ -111,47 +107,33 @@ The port_type_description will be used in the help text:
 
  *
  */
-class ClientPortConfiguration : public PortConfiguration
-{
-public:
-
-
+class ClientPortConfiguration : public PortConfiguration {
+  public:
     struct ConnectionType {
         enum Value {
-            Command, //!< Command connection, uses command certificate.
+            Command,       //!< Command connection, uses command certificate.
             Administrative //!< Administrative connection, uses administrative certificate.
         };
     };
 
-
     static const std::string DefaultHostname; //!< The default host name if no ports are given.
-    static const std::string OptionName; //!< The name of the command-line option.
-    static const std::string PropertyName; //!< The name of the property in the properties file.
-
+    static const std::string OptionName;      //!< The name of the command-line option.
+    static const std::string PropertyName;    //!< The name of the property in the properties file.
 
     //! \brief Constructor to specify port.
-    ClientPortConfiguration(
-            uint32_t default_tcp_port,
-            ConnectionType::Value connection_type = ConnectionType::Command
-        );
-
+    ClientPortConfiguration(uint32_t default_tcp_port, ConnectionType::Value connection_type = ConnectionType::Command);
 
     //! \brief Constructor to specify service name.
-    ClientPortConfiguration(
-            const std::string& default_service_name,
-            ConnectionType::Value connection_type = ConnectionType::Command
-        );
+    ClientPortConfiguration(const std::string& default_service_name, ConnectionType::Value connection_type = ConnectionType::Command);
 
     //! \brief Constructor to specify port type.
-    ClientPortConfiguration(
-            const std::string& default_service_name, //!< The service name that will be used if none is provided.
-            const std::string& port_type_name, //!< The port name, will be prepended to options
-            const std::string& port_type_description, //!< The port description, will be embedded in the option description help text.
-            ConnectionType::Value connection_type = ConnectionType::Command //!< [in]
-        );
+    ClientPortConfiguration(const std::string& default_service_name,                        //!< The service name that will be used if none is provided.
+                            const std::string& port_type_name,                              //!< The port name, will be prepended to options
+                            const std::string& port_type_description,                       //!< The port description, will be embedded in the option description help text.
+                            ConnectionType::Value connection_type = ConnectionType::Command //!< [in]
+    );
 
-
-    ConnectionType::Value getConnectionType() const  { return _connection_type; }
+    ConnectionType::Value getConnectionType() const { return _connection_type; }
 
     /*! \brief Create SSL configuration based on PortConfiguration.
      *
@@ -162,25 +144,20 @@ public:
      */
     SslConfiguration createSslConfiguration() const;
 
-
-protected:
-
+  protected:
     //! \brief The property name is '[<i>name</i>_]host'.
     std::string _getPropertyName() const;
 
     //! \brief The default is "localhost".
     Pairs _getDefault() const;
 
-
-private:
-
+  private:
     std::string _name, _description;
 
     ConnectionType::Value _connection_type;
-
 };
 
-} // namespace bgq::utility
+} // namespace utility
 } // namespace bgq
 
 #endif

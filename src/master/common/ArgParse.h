@@ -24,22 +24,20 @@
 #ifndef MASTER_ARG_PARSE_H_
 #define MASTER_ARG_PARSE_H_
 
-
 #include <utility/include/Properties.h>
 
 #include <utility/include/portConfiguration/PortConfiguration.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 enum bin_type { CLIENT, SERVER, AGENT };
 
 //! \brief Small class for grabbing properties and parsing arguments
 //! for BGmaster commands
-class Args
-{
+class Args {
     //! \brief host/port pairs to connect
     bgq::utility::PortConfiguration::Pairs _portpairs;
 
@@ -50,46 +48,37 @@ class Args
     void setupLoggerDefaults() const;
     bgq::utility::Properties::Ptr _props;
 
-public:
+  public:
     /*!
      * \brief ctor
      *
      * - A single "*" entry in valargs indicates the option is positional.
      * - A single "**" entry in valargs indicates unlimited positional options.
      */
-    Args(
-            const int argc,                          //!< [in] standard c-style argument count
-            const char** argv,                       //!< [in] standard c-style argument vector
-            void (*usage)(),                         //!< [in] function pointer to usage function
-            void (*help)(),                          //!< [in] function pointer to help function
-            std::vector<std::string>& valargs,       //!< [in] options to be followed with parameters
-            const std::vector<std::string>& singles, //!< [in] arguments that don't take a parameter
-            bin_type utype = CLIENT
-        );
+    Args(const int argc,                          //!< [in] standard c-style argument count
+         const char** argv,                       //!< [in] standard c-style argument vector
+         void (*usage)(),                         //!< [in] function pointer to usage function
+         void (*help)(),                          //!< [in] function pointer to help function
+         std::vector<std::string>& valargs,       //!< [in] options to be followed with parameters
+         const std::vector<std::string>& singles, //!< [in] arguments that don't take a parameter
+         bin_type utype = CLIENT);
 
     const bgq::utility::Properties::ConstPtr get_const_props() const { return _props; }
     const bgq::utility::Properties::Ptr& get_props() const { return _props; }
     const bgq::utility::PortConfiguration::Pairs& get_portpairs() const { return _portpairs; }
 
-    bool find_arg(const std::string& arg) const {
-        return std::find(_otherargs.begin(), _otherargs.end(), arg) != _otherargs.end();
-    }
+    bool find_arg(const std::string& arg) const { return std::find(_otherargs.begin(), _otherargs.end(), arg) != _otherargs.end(); }
 
     // Vector ops and iterators to get the "free form"
     // arguments out.
     typedef std::vector<std::string>::iterator iterator;
     typedef std::vector<std::string>::const_iterator const_iterator;
 
-    size_t size() const {
-        return _otherargs.size(); }
-    iterator begin() {
-        return _otherargs.begin(); }
-    iterator end() {
-        return _otherargs.end(); }
-    const_iterator begin() const {
-        return _otherargs.begin(); }
-    const_iterator end() const {
-        return _otherargs.end(); }
+    size_t size() const { return _otherargs.size(); }
+    iterator begin() { return _otherargs.begin(); }
+    iterator end() { return _otherargs.end(); }
+    const_iterator begin() const { return _otherargs.begin(); }
+    const_iterator end() const { return _otherargs.end(); }
     std::string operator[](const std::string& value) const;
 };
 

@@ -21,7 +21,6 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-
 #include "common.hpp"
 
 #include "portConfiguration/ClientPortConfiguration.h"
@@ -34,11 +33,9 @@
 #include <iostream>
 #include <string>
 
-
 #define BOOST_TEST_MAIN
 #define BOOST_TEST_MODULE Connector
 #include <boost/test/unit_test.hpp>
-
 
 using bgq::utility::ClientPortConfiguration;
 using bgq::utility::Connector;
@@ -48,8 +45,7 @@ using boost::lexical_cast;
 
 using std::string;
 
-
-BOOST_GLOBAL_FIXTURE( InitializeLoggingFixture );
+BOOST_GLOBAL_FIXTURE(InitializeLoggingFixture);
 
 #if 0
 BOOST_AUTO_TEST_CASE( test_connect )
@@ -156,9 +152,6 @@ BOOST_AUTO_TEST_CASE( test_async_connect )
 
 #else
 
-BOOST_AUTO_TEST_CASE( test1 )
-{
-    BOOST_CHECK( true );
-}
+BOOST_AUTO_TEST_CASE(test1) { BOOST_CHECK(true); }
 
 #endif

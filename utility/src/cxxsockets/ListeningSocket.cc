@@ -23,32 +23,28 @@
 
 #include "cxxsockets/ListeningSocket.h"
 
-#include "cxxsockets/exception.h"
 #include "cxxsockets/FileLocker.h"
 #include "cxxsockets/SockAddr.h"
 #include "cxxsockets/TCPSocket.h"
+#include "cxxsockets/exception.h"
 
 #include "Log.h"
 
 #include <netinet/tcp.h>
 
-LOG_DECLARE_FILE( "utility.cxxsockets" );
+LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
-ListeningSocket::ListeningSocket(
-        const SockAddr& addr,
-        int backlog
-        )
-{
+ListeningSocket::ListeningSocket(const SockAddr& addr, int backlog) {
     FileLocker locker;
     LockFile(locker);
 
-    #ifdef SOCK_CLOEXEC
+#ifdef SOCK_CLOEXEC
     _fileDescriptor = socket(addr.family(), SOCK_STREAM | SOCK_CLOEXEC, 0);
-    #else
+#else
     _fileDescriptor = socket(addr.family(), SOCK_STREAM, 0);
-    #endif
+#endif
 
     if (_fileDescriptor < 0) {
         std::ostringstream errmsg;
@@ -66,17 +62,15 @@ ListeningSocket::ListeningSocket(
     }
 }
 
-int
-ListeningSocket::Accept()
-{
+int ListeningSocket::Accept() {
     SockAddr addr;
     socklen_t addrlen = sizeof(sockaddr_storage);
 
-    #ifdef SOCK_CLOEXEC
+#ifdef SOCK_CLOEXEC
     const int newFd = accept4(_fileDescriptor, (sockaddr*)(&addr), &addrlen, SOCK_CLOEXEC);
-    #else
+#else
     const int newFd = accept(_fileDescriptor, (sockaddr*)(&addr), &addrlen);
-    #endif
+#endif
 
     if (newFd < 0) {
         std::ostringstream msg;
@@ -91,7 +85,7 @@ ListeningSocket::Accept()
 
     const int flag = 1;
     LOG_TRACE_MSG("Disabling nagle algorithm.");
-    const int ret = setsockopt( newFd, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(flag) );
+    const int ret = setsockopt(newFd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
     if (ret < 0) {
         std::ostringstream msg;
         msg << "Disabling nagle algorithm (TCP_NODELAY) failed.";
@@ -121,23 +115,17 @@ ListeningSocket::Accept()
         // Should we rethrow the exception here?
     }
 
-    LOG_TRACE_MSG("Accepted socket descriptor " << newFd << " "
-                 << my_host << ":" << my_sport
-                 << "::" << peer_addr << ":" << peer_port);
+    LOG_TRACE_MSG("Accepted socket descriptor " << newFd << " " << my_host << ":" << my_sport << "::" << peer_addr << ":" << peer_port);
 
     return newFd;
 }
 
-void
-ListeningSocket::AcceptNew(
-        const TCPSocketPtr& sock
-        )
-{
-    assert( sock );
+void ListeningSocket::AcceptNew(const TCPSocketPtr& sock) {
+    assert(sock);
     FileLocker locker;
     LockFile(locker);
     const int fd = Accept();
     sock->replaceFd(fd);
 }
 
-}
+} // namespace CxxSockets
