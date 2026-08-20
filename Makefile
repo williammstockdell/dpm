@@ -28,11 +28,15 @@ TARGETS  = $(TARGETS_ALL)
 TARGETS += $(TARGETS_CLEAN)
 TARGETS += $(TARGETS_DISTCLEAN)
 
-.PHONY: default all clean install distclean $(TARGETS)
+.PHONY: default all clean install distclean test $(TARGETS)
 
 default: all
 
 all: $(TARGETS_ALL)
+
+test: all
+	$(MAKE) --directory test
+
 install:
 	$(MAKE) --directory utility install
 	$(MAKE) --directory src install

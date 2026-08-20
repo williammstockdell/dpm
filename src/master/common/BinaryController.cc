@@ -48,8 +48,10 @@ switchBackUID(
         )
 {
     LOG_TRACE_MSG(__FUNCTION__);
+
     // Done. Go back to our user, but do it through root.
     int rc = seteuid(0); // Go back to root while we do this.
+
     if (rc != 0) {
         char errorText[256];
         LOG_ERROR_MSG("Cannot change uid back to 'root'. Current uid is " << geteuid() << ". " << std::string(strerror_r(errno, errorText, 256)));

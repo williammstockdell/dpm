@@ -74,6 +74,7 @@ public:
 
     //! \brief Condition variable to notify threads of changes in status.
     std::condition_variable _status_notifier;
+
     //! \brief Lock for the status condition variable.
     std::mutex _status_lock;
 
