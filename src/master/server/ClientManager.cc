@@ -23,7 +23,15 @@
 
 #include "ClientManager.h"
 
+#include <log4cxx/logger.h>
+#include <utility/include/Log.h>
+#include <algorithm>
+#include <memory>
+#include <ostream>
+#include <string>
+
 #include "ClientController.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

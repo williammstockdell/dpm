@@ -24,16 +24,17 @@
 #ifndef ALIAS_H
 #define ALIAS_H
 
+#include <utility/include/cxxsockets/Host.h>
 #include <chrono>
 #include <list>
 #include <optional>
 #include <string>
+#include <mutex>
 
 #include "Policy.h"
 #include "common/Ids.h"
 #include "types.h"
-
-#include <utility/include/cxxsockets/Host.h>
+#include "common/types.h"
 
 //! \brief Alias class.  Represents the association between a name,
 //! an executable, its policies, and its active instances.

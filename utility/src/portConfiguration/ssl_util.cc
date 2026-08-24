@@ -23,13 +23,14 @@
 
 #include "ssl_util.h"
 
-#include "Log.h"
-
 #include <openssl/err.h>
-#include <openssl/ssl.h>
-
+#include <openssl/bio.h>
+#include <openssl/types.h>
+#include <stddef.h>
 #include <sstream>
 #include <stdexcept>
+
+#include "Log.h"
 
 using std::ostringstream;
 using std::runtime_error;

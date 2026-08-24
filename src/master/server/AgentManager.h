@@ -24,14 +24,17 @@
 #ifndef MASTER_AGENT_MANAGER_H_
 #define MASTER_AGENT_MANAGER_H_
 
-#include "common/Ids.h"
-#include "types.h"
-#include <mutex>
-
 #include <utility/include/cxxsockets/Host.h>
-
+#include <mutex>
 #include <string>
 #include <vector>
+
+#include "common/Ids.h"
+#include "types.h"
+
+namespace CxxSockets {
+class Host;
+}  // namespace CxxSockets
 
 class AgentManager {
   public:

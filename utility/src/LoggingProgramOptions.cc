@@ -22,12 +22,18 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include <LoggingProgramOptions.h>
-
 #include <Log.h>
-
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/level.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/spi/loggerrepository.h>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <map>
+#include <memory>
+#include <utility>
+#include <vector>
 
 using log4cxx::Level;
 using log4cxx::LevelPtr;

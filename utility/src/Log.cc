@@ -23,18 +23,27 @@
 
 #include "Log.h"
 
-#include "LoggingProgramOptions.h"
-#include "Properties.h"
-
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/consoleappender.h>
 #include <log4cxx/patternlayout.h>
 #include <log4cxx/propertyconfigurator.h>
-
 #include <log4cxx/helpers/properties.h>
-
+#include <log4cxx/file.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/layout.h>
+#include <log4cxx/level.h>
+#include <log4cxx/logger.h>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "LoggingProgramOptions.h"
+#include "Properties.h"
 
 using std::ostringstream;
 using std::string;

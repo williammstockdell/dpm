@@ -24,12 +24,12 @@
 #ifndef MASTER_AGENT_BASE_H_
 #define MASTER_AGENT_BASE_H_
 
+#include <utility/include/cxxsockets/Host.h>
+#include <vector>
+#include <string>
+
 #include "Ids.h"
 #include "types.h"
-
-#include <utility/include/cxxsockets/Host.h>
-
-#include <vector>
 
 //! \brief Base class providing agent definition
 //! Both master and agent use this.

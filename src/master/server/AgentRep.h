@@ -24,16 +24,25 @@
 #ifndef MASTER_AGENT_REP_H_
 #define MASTER_AGENT_REP_H_
 
+#include <pthread.h>
+#include <stddef.h>
 #include <iosfwd>
 #include <mutex>
 #include <string>
 #include <thread>
+#include <memory>
 
 #include "common/AgentBase.h"
 #include "common/AgentProtocol.h"
 #include "common/ClientProtocol.h"
 #include "common/Ids.h"
 #include "types.h"
+#include "common/types.h"
+#include "protocol/BGMasterAgentProtocolSpec.h"
+
+namespace BGMasterClientProtocolSpec {
+class StopReply;
+}  // namespace BGMasterClientProtocolSpec
 
 //! \brief Representation of a bgagent internal to bgmaster_server
 //! Also available to the client api.

@@ -25,13 +25,20 @@
 
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
-
 #include <utility/include/portConfiguration/ClientPortConfiguration.h>
-
-#include <iostream>
-
 #include <stdlib.h>
 #include <string.h>
+#include <Properties.h>
+#include <log4cxx/level.h>
+#include <log4cxx/logger.h>
+#include <portConfiguration/PortConfiguration.h>
+#include <strings.h>
+#include <iostream>
+#include <exception>
+#include <limits>
+#include <memory>
+#include <stdexcept>
+#include <utility>
 
 LOG_DECLARE_FILE("master");
 

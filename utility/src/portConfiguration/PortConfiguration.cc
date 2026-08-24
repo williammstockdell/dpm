@@ -23,12 +23,17 @@
 
 #include "portConfiguration/PortConfiguration.h"
 
-#include "portConfiguration/SslConfiguration.h"
-
-#include "Log.h"
-
+#include <Properties.h>
+#include <log4cxx/logger.h>
+#include <stdint.h>
 #include <stdexcept>
 #include <string>
+#include <cstddef>
+#include <exception>
+#include <memory>
+#include <vector>
+
+#include "Log.h"
 
 using std::string;
 

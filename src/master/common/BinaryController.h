@@ -24,17 +24,19 @@
 #ifndef MASTER_BINARY_CONTROLLER_H_
 #define MASTER_BINARY_CONTROLLER_H_
 
-#include "Ids.h"
-#include "types.h"
-
+#include <pthread.h>
+#include <utility/include/cxxsockets/Host.h>
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
 #include <map>
 #include <mutex>
-#include <pthread.h>
 #include <string>
-#include <utility/include/cxxsockets/Host.h>
+#include <memory>
+#include <utility>
+
+#include "Ids.h"
+#include "types.h"
 
 //! \brief Controls a managed executable, base class
 class BinaryController {

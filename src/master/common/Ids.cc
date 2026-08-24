@@ -23,13 +23,13 @@
 
 #include "Ids.h"
 
-#include "../lib/exceptions.h"
-
 #include <utility/include/cxxsockets/exception.h>
-
-#include <sstream>
-
 #include <stdlib.h>
+#include <cxxsockets/Host.h>
+#include <sstream>
+#include <compare>
+
+#include "../lib/exceptions.h"
 
 Id::Id() {
     // Nothing to do

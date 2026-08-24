@@ -22,12 +22,16 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include "cxxsockets/Host.h"
+
+#include <log4cxx/logger.h>
+#include <sys/socket.h>
+#include <sstream>
+#include <cstddef>
+#include <string>
+
 #include "cxxsockets/SockAddr.h"
 #include "cxxsockets/exception.h"
-
 #include "Log.h"
-
-#include <sstream>
 
 LOG_DECLARE_FILE("utility.cxxsockets");
 

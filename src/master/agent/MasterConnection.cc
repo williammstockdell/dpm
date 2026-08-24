@@ -21,9 +21,22 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <csignal>
 #include <poll.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <utility/include/Log.h>
+#include <boost/assert.hpp>
+#include <csignal>
 #include <thread>
+#include <chrono>
+#include <exception>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "Agent.h"
 #include "MasterConnection.h"

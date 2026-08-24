@@ -25,9 +25,8 @@
 #define MASTER_ARG_PARSE_H_
 
 #include <utility/include/Properties.h>
-
 #include <utility/include/portConfiguration/PortConfiguration.h>
-
+#include <stddef.h>
 #include <algorithm>
 #include <map>
 #include <string>

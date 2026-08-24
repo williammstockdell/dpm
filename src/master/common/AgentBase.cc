@@ -23,10 +23,14 @@
 
 #include "AgentBase.h"
 
-#include "BinaryController.h"
-
-#include <algorithm>
 #include <utility/include/Log.h>
+#include <log4cxx/logger.h>
+#include <algorithm>
+#include <memory>
+
+#include "BinaryController.h"
+#include "common/Ids.h"
+#include "common/types.h"
 
 LOG_DECLARE_FILE("master");
 

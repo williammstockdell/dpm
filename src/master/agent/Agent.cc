@@ -28,12 +28,35 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
 #include <utility/include/ExitStatus.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <signal.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <utility/include/Log.h>
+#include <utility/include/UserId.h>
+#include <utility/include/cxxsockets/ListeningSocket.h>
+#include <utility/include/cxxsockets/SecureTCPSocket.h>
+#include <utility/include/cxxsockets/SockAddr.h>
+#include <utility/include/cxxsockets/TCPSocket.h>
+#include <utility/include/cxxsockets/exception.h>
+#include <utility/include/cxxsockets/types.h>
+#include <utility/include/portConfiguration/ServerPortConfiguration.h>
+#include <exception>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <thread>
+#include <utility>
+#include <vector>
 
 #include "MasterConnection.h"
 #include "common/BinaryController.h"
 #include "lib/exceptions.h"
+#include "common/AgentProtocol.h"
+#include "common/Ids.h"
 
 std::string ghn() {
 

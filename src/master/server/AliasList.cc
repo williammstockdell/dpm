@@ -23,9 +23,12 @@
 
 #include "AliasList.h"
 
-#include "Alias.h"
-
 #include <utility/include/Log.h>
+#include <log4cxx/logger.h>
+#include <memory>
+
+#include "Alias.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

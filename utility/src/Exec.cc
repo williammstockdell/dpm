@@ -23,23 +23,32 @@
 
 #include "Exec.h"
 
-#include "Log.h"
-#include "Properties.h"
-#include "UserId.h"
-#include <cerrno>
-#include <csignal>
 #include <fcntl.h>
-#include <filesystem>
 #include <grp.h>
-#include <iostream>
-#include <pwd.h>
-#include <sstream>
-#include <string>
 #include <sys/prctl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <log4cxx/logger.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <cerrno>
+#include <csignal>
+#include <filesystem>
+#include <sstream>
+#include <string>
+#include <cstring>
+#include <exception>
+#include <iterator>
+#include <list>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+#include "Log.h"
+#include "Properties.h"
+#include "UserId.h"
 
 LOG_DECLARE_FILE("utility");
 

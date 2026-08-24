@@ -23,15 +23,17 @@
 
 #include "portConfiguration/SslConfiguration.h"
 
-#include "ssl_util.h"
-
-#include "Log.h"
-
-#include <iostream>
+#include <unistd.h>
+#include <Properties.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
 #include <sstream>
 #include <stdexcept>
+#include <exception>
+#include <memory>
+#include <string>
 
-#include <unistd.h>
+#include "Log.h"
 
 using std::runtime_error;
 using std::string;

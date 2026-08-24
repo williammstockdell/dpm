@@ -23,21 +23,31 @@
 
 #include <pthread.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <utility/include/ScopeExit.h>
+#include <assert.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <utility/include/Log.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <utility/include/cxxsockets/exception.h>
+#include <iomanip>
+#include <map>
+#include <sstream>
+#include <vector>
 
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "Alias.h"
 #include "AliasList.h"
 #include "MasterController.h"
-#include "ras.h"
-
 #include "common/BinaryController.h"
-
 #include "../lib/exceptions.h"
+#include "common/AgentProtocol.h"
+#include "protocol/BGMasterClientProtocolSpec.h"
+#include "server/Policy.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

@@ -25,6 +25,7 @@
 #define BGAGENT_MASTER_CONNECTION_H
 
 #include <utility/include/portConfiguration/PortConfiguration.h>
+#include <memory>
 
 class Agent;
 

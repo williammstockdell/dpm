@@ -24,8 +24,20 @@
 #include "Protocol.h"
 
 #include <utility/include/cxxsockets/SockAddrList.h>
-
 #include <unistd.h>
+#include <Log.h>
+#include <Properties.h>
+#include <cxxsockets/SecureTCPSocket.h>
+#include <cxxsockets/SockAddr.h>
+#include <cxxsockets/exception.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <portConfiguration/ClientPortConfiguration.h>
+#include <xml/include/library/XML.h>
+#include <deque>
+#include <memory>
+#include <sstream>
 
 LOG_DECLARE_FILE("master");
 

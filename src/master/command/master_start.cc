@@ -21,16 +21,19 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include "common/ArgParse.h"
-
-#include "lib/BGMasterClient.h"
-#include "lib/exceptions.h"
-
 #include <utility/include/Exec.h>
 #include <utility/include/Log.h>
-
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <stdlib.h>
+#include <utility/include/Properties.h>
+
+#include "common/ArgParse.h"
+#include "lib/BGMasterClient.h"
+#include "lib/exceptions.h"
+#include "common/Ids.h"
 
 LOG_DECLARE_FILE("master");
 
@@ -58,6 +61,11 @@ void doStart(BGMasterClient& client, const Args& args, const std::string& target
     }
 
 #include <sstream>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
     std::istringstream stream(commandstring);
 

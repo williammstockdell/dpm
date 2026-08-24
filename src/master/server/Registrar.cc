@@ -22,20 +22,43 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include "Registrar.h"
+
+#include <utility/include/cxxsockets/ListenerSet.h>
+#include <utility/include/cxxsockets/SockAddrList.h>
+#include <pthread.h>
+#include <signal.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <utility/include/Log.h>
+#include <utility/include/UserId.h>
+#include <utility/include/cxxsockets/SecureTCPSocket.h>
+#include <utility/include/cxxsockets/SockAddr.h>
+#include <utility/include/cxxsockets/TCPSocket.h>
+#include <utility/include/cxxsockets/exception.h>
+#include <utility/include/portConfiguration/ServerPortConfiguration.h>
+#include <deque>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "ClientController.h"
 #include "ClientManager.h"
 #include "MasterController.h"
-#include "ras.h"
-
 #include "../lib/exceptions.h"
-
-#include <utility/include/cxxsockets/ListenerSet.h>
-#include <utility/include/cxxsockets/SockAddrList.h>
-
-#include <pthread.h>
-#include <signal.h>
+#include "common/AgentProtocol.h"
+#include "common/ClientProtocol.h"
+#include "common/Protocol.h"
+#include "common/types.h"
+#include "protocol/BGMasterAgentProtocolSpec.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

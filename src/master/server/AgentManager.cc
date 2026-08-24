@@ -22,14 +22,25 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include "AgentManager.h"
+
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <utility/include/Log.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <algorithm>
+#include <memory>
+#include <sstream>
+
 #include "AgentRep.h"
 #include "Alias.h"
 #include "AliasList.h"
 #include "MasterController.h"
-
 #include "common/BinaryController.h"
-
 #include "../lib/exceptions.h"
+#include "common/types.h"
+#include "protocol/BGMasterAgentProtocolSpec.h"
+#include "server/Policy.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

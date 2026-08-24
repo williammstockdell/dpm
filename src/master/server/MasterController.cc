@@ -21,16 +21,30 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <barrier>
 #include <poll.h>
-#include <ranges>
 #include <signal.h>
 #include <stdlib.h>
-#include <string_view>
 #include <unistd.h>
-
 #include <utility/include/TimeStuff.h>
-#include <utility/include/version.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <string.h>
+#include <sys/types.h>
+#include <utility/include/Log.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <utility/include/cxxsockets/exception.h>
+#include <barrier>
+#include <ranges>
+#include <algorithm>
+#include <exception>
+#include <iterator>
+#include <limits>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include "AgentManager.h"
 #include "AgentRep.h"
@@ -40,9 +54,15 @@
 #include "LockFile.h"
 #include "MasterController.h"
 #include "Registrar.h"
-#include "ras.h"
-
 #include "../lib/exceptions.h"
+#include "common/ClientProtocol.h"
+#include "common/Ids.h"
+#include "protocol/BGMasterAgentProtocolSpec.h"
+#include "protocol/BGMasterClientProtocolSpec.h"
+#include "server/Behavior.h"
+#include "server/LockingRingBuffer.h"
+#include "server/Policy.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

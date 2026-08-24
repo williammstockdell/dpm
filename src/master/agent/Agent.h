@@ -24,18 +24,18 @@
 #ifndef MASTER_AGENT_H_
 #define MASTER_AGENT_H_
 
+#include <utility/include/Properties.h>
+#include <utility/include/cxxsockets/ListeningSocket.h>
+#include <utility/include/portConfiguration/PortConfiguration.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <list>
+#include <string>
+#include <mutex>
+
 #include "common/AgentBase.h"
 #include "common/AgentProtocol.h"
 #include "common/types.h"
-
-#include <utility/include/Properties.h>
-
-#include <utility/include/cxxsockets/ListeningSocket.h>
-
-#include <utility/include/portConfiguration/PortConfiguration.h>
-
-#include <list>
-#include <string>
+#include "protocol/BGMasterAgentProtocolSpec.h"
 
 //! \brief Class for the concrete implementation.
 //! The base class provides the definition common

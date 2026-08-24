@@ -27,12 +27,14 @@
 #include <utility/include/Properties.h>
 #include <utility/include/cxxsockets/SecureTCPSocket.h>
 #include <utility/include/cxxsockets/SockAddr.h>
-
 #include <xml/include/library/XML.h>
-
+#include <utility/include/cxxsockets/types.h>
 #include <mutex>
-
 #include <string>
+
+namespace XML {
+class Serializable;
+}  // namespace XML
 
 //! \brief Base protocol object for BGMaster.  It encapsulates secure communications
 //!        and object serialization/deserialization.

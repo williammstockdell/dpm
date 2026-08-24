@@ -24,16 +24,18 @@
 #ifndef MASTER_BGMASTER_CLIENT_API_H_
 #define MASTER_BGMASTER_CLIENT_API_H_
 
-#include "../common/Ids.h"
-#include "../common/types.h"
-
 #include <utility/include/Properties.h>
-
 #include <utility/include/portConfiguration/PortConfiguration.h>
-
 #include <map>
 #include <string>
 #include <vector>
+#include <format>
+#include <memory>
+
+#include "../common/Ids.h"
+#include "../common/types.h"
+
+class BinaryController;
 
 //! \brief client API for BGMaster.
 class BGMasterClient {

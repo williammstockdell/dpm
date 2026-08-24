@@ -24,24 +24,31 @@
 #ifndef MASTER_MASTER_CONTROLLER_H_
 #define MASTER_MASTER_CONTROLLER_H_
 
-#include "Behavior.h"
-#include "LockingRingBuffer.h"
-#include "Policy.h"
-#include "types.h"
-
 #include <utility/include/Properties.h>
-
 #include <utility/include/cxxsockets/Host.h>
-
+#include <sys/types.h>
 #include <barrier>
 #include <thread>
-
 #include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <format>
+#include <mutex>
 
-#include <sys/types.h>
+#include "Behavior.h"
+#include "LockingRingBuffer.h"
+#include "Policy.h"
+#include "types.h"
+#include "common/types.h"
+
+class AgentManager;
+class AliasList;
+class Behavior;
+class ClientManager;
+class LockingStringRingBuffer;
+class Registrar;
 
 // * Member variables: Leading underscore, all lower case.  _my_variable.
 // * Types: Start with cap, cap for each word.  MyClass

@@ -24,16 +24,17 @@
 #ifndef MASTER_CLIENT_CONTROLLER_H_
 #define MASTER_CLIENT_CONTROLLER_H_
 
+#include <utility/include/cxxsockets/SecureTCPSocket.h>
+#include <pthread.h>
+#include <utility/include/UserId.h>
+#include <memory>
+#include <thread>
+#include <string>
+
 #include "common/ClientProtocol.h"
 #include "common/Ids.h"
 #include "common/types.h"
-
-#include <utility/include/cxxsockets/SecureTCPSocket.h>
-
-#include <memory>
-#include <thread>
-
-#include <string>
+#include "protocol/BGMasterClientProtocolSpec.h"
 
 //! \brief One ClientController for each client connected to BGMaster.
 //!

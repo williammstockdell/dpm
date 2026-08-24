@@ -23,12 +23,22 @@
 
 #include "ListAgents.h"
 
-#include "BGMasterClient.h"
-
-#include "common/BinaryController.h"
-
 #include <utility/include/Log.h>
 #include <utility/include/TimeStuff.h>
+#include <log4cxx/logger.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "BGMasterClient.h"
+#include "common/BinaryController.h"
+#include "common/Ids.h"
+#include "common/types.h"
 
 LOG_DECLARE_FILE("master");
 

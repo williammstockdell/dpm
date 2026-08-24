@@ -23,14 +23,23 @@
 
 #include "cxxsockets/ListeningSocket.h"
 
+#include <netinet/tcp.h>
+#include <assert.h>
+#include <cxxsockets/types.h>
+#include <errno.h>
+#include <log4cxx/logger.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <memory>
+#include <sstream>
+#include <string>
+
 #include "cxxsockets/FileLocker.h"
 #include "cxxsockets/SockAddr.h"
 #include "cxxsockets/TCPSocket.h"
 #include "cxxsockets/exception.h"
-
 #include "Log.h"
-
-#include <netinet/tcp.h>
 
 LOG_DECLARE_FILE("utility.cxxsockets");
 

@@ -22,19 +22,23 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include <Properties.h>
-
 #include <Log.h>
 #include <Trim.h>
-#include <cassert>
+#include <string.h>
+#include <log4cxx/logger.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <cerrno>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <shared_mutex>
 #include <stdexcept>
-#include <string.h>
 #include <string>
-#include <unistd.h>
+#include <exception>
+#include <map>
+#include <mutex>
+#include <utility>
+#include <vector>
 
 using std::string;
 
@@ -44,7 +48,6 @@ namespace bgq {
 namespace utility {
 
 #include <algorithm>
-#include <cctype>
 
 //---------------------------------------------------------------------
 // class Properties

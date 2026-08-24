@@ -23,15 +23,21 @@
 
 #include "cxxsockets/SockAddr.h"
 
-#include "cxxsockets/exception.h"
-
-#include "Log.h"
-
-#include <cerrno>
-#include <cstring>
-
 #include <arpa/inet.h>
 #include <sys/un.h>
+#include <log4cxx/logger.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <sys/socket.h>
+#include <cerrno>
+#include <cstring>
+#include <sstream>
+#include <string>
+
+#include "cxxsockets/exception.h"
+#include "Log.h"
 
 namespace CxxSockets {
 

@@ -24,11 +24,11 @@
 #ifndef MASTER_CLIENT_MANAGER_H_
 #define MASTER_CLIENT_MANAGER_H_
 
-#include "types.h"
-
 #include <mutex>
 #include <thread>
 #include <vector>
+
+#include "types.h"
 
 //! \brief ClientManager class maintains a list of all of the BGMaster clients
 class ClientManager {

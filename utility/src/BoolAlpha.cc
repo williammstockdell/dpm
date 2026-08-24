@@ -21,9 +21,7 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 #include <utility/include/BoolAlpha.h>
-
 #include <iostream>
-#include <stdexcept>
 
 namespace bgq {
 namespace utility {

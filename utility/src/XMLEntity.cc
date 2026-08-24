@@ -23,23 +23,24 @@
 /*********************************************************************/
 
 #include "XMLEntity.h"
-#include "Log.h"
-
-#include <boost/scoped_array.hpp>
 
 #include <expat.h>
-
-#include <cassert>
-#include <cerrno>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <log4cxx/logger.h>
+#include <stdlib.h>
+#include <cassert>
+#include <cerrno>
+#include <cstring>
+#include <sstream>
 #include <vector>
+#include <string>
+
+#include "Log.h"
+
+struct XML_ParserStruct;
 
 LOG_DECLARE_FILE("utility");
 

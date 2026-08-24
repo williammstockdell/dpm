@@ -21,13 +21,16 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <fcntl.h>
 #include <unistd.h>
+#include <pthreadmutex.h>
+#include <string.h>
+#include <memory>
+#include <sstream>
+#include <string>
 
 #include "cxxsockets/File.h"
 #include "cxxsockets/FileLocker.h"
 #include "cxxsockets/exception.h"
-
 #include "Log.h"
 
 LOG_DECLARE_FILE("utility.cxxsockets");

@@ -22,18 +22,27 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 #include "Alias.h"
+
+#include <utility/include/ScopeExit.h>
+#include <utility/include/TimeStuff.h>
+#include <unistd.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/mdc.h>
+#include <utility/include/Log.h>
+#include <compare>
+#include <map>
+#include <memory>
+#include <sstream>
+
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "MasterController.h"
-#include "ras.h"
-
 #include "common/BinaryController.h"
-#include <utility/include/ScopeExit.h>
-#include <utility/include/TimeStuff.h>
-
 #include "../lib/exceptions.h"
-
-#include <unistd.h>
+#include "server/Behavior.h"
+#include "server/Policy.h"
+#include "server/types.h"
 
 LOG_DECLARE_FILE("master");
 

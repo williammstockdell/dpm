@@ -24,12 +24,13 @@
 #ifndef MASTER_ALIAS_LIST_H_
 #define MASTER_ALIAS_LIST_H_
 
-#include "types.h"
+#include <stddef.h>
 #include <mutex>
 #include <thread>
-
 #include <string>
 #include <vector>
+
+#include "types.h"
 
 //! \brief Locking wrapper for alias vector
 class AliasList {

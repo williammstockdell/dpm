@@ -23,6 +23,8 @@
 
 #include "Behavior.h"
 
+#include <utility>
+
 CxxSockets::Host Behavior::findFailoverTarget(const CxxSockets::Host& failed_host) {
     std::map<CxxSockets::Host, CxxSockets::Host>::iterator twoit = _pairs.find(failed_host);
     if (twoit != _pairs.end()) {

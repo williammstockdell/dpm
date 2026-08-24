@@ -21,24 +21,36 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <csignal>
 #include <fcntl.h>
 #include <openssl/conf.h>
 #include <openssl/engine.h>
-
-#include <filesystem>
 #include <utility/include/BoolAlpha.h>
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/ScopeExit.h>
-#include <utility/include/version.h>
+#include <bits/local_lim.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <utility/include/Properties.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <csignal>
+#include <exception>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "LockFile.h"
 #include "MasterController.h"
-#include "ras.h"
-
 #include "lib/exceptions.h"
-
 #include "../common/ArgParse.h"
 
 LOG_DECLARE_FILE("master");
@@ -216,6 +228,7 @@ int main(int argc, const char** argv) {
     }
 
     std::cout << "BAILING" << std::endl;
+
     // Stop threads
     MasterController::stopThreads(true, SIGTERM);
 

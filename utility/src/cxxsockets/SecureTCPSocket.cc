@@ -21,14 +21,42 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <mutex>
 #include <openssl/err.h>
+#include <Log.h>
+#include <UserId.h>
+#include <cxxsockets/TCPSocket.h>
+#include <cxxsockets/exception.h>
+#include <cxxsockets/types.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <openssl/bio.h>
+#include <openssl/obj_mac.h>
+#include <openssl/prov_ssl.h>
+#include <openssl/ssl.h>
+#include <openssl/types.h>
+#include <openssl/x509.h>
+#include <portConfiguration/ClientPortConfiguration.h>
+#include <portConfiguration/ServerPortConfiguration.h>
+#include <pthreadmutex.h>
+#include <stdint.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <mutex>
+#include <exception>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "cxxsockets/SecureTCPSocket.h"
-
 #include "cxxsockets/FileLocker.h"
-
 #include "portConfiguration/SslConfiguration.h"
+
+namespace CxxSockets {
+class SockAddr;
+}  // namespace CxxSockets
 
 LOG_DECLARE_FILE("utility.cxxsockets");
 

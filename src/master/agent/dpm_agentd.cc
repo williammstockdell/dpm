@@ -21,14 +21,31 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
-#include <csignal>
 #include <fcntl.h>
-#include <filesystem>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <utility/include/BoolAlpha.h>
 #include <utility/include/LoggingProgramOptions.h>
-#include <utility/include/version.h>
+#include <errno.h>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <utility/include/Log.h>
+#include <utility/include/Properties.h>
+#include <utility/include/cxxsockets/Host.h>
+#include <utility/include/portConfiguration/ClientPortConfiguration.h>
+#include <csignal>
+#include <filesystem>
+#include <cstdlib>
+#include <exception>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "../common/ArgParse.h"
 #include "Agent.h"

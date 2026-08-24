@@ -23,8 +23,16 @@
 
 #include "cxxsockets/SockAddrList.h"
 
-#include "cxxsockets/exception.h"
+#include <cxxsockets/SockAddr.h>
+#include <log4cxx/logger.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <deque>
+#include <memory>
+#include <sstream>
+#include <string>
 
+#include "cxxsockets/exception.h"
 #include "Log.h"
 
 namespace CxxSockets {

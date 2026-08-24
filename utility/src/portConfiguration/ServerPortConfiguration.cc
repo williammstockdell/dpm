@@ -23,11 +23,15 @@
 
 #include "portConfiguration/ServerPortConfiguration.h"
 
-#include "portConfiguration/SslConfiguration.h"
-
-#include "Log.h"
-
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <portConfiguration/PortConfiguration.h>
+#include <stdint.h>
 #include <sstream>
+#include <string>
+
+#include "portConfiguration/SslConfiguration.h"
+#include "Log.h"
 
 using std::ostringstream;
 using std::string;
