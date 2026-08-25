@@ -45,8 +45,65 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <arpa/inet.h>
+#include <cstdint>
+#include <limits>
+#include <stdexcept>
 
 LOG_DECLARE_FILE("utility");
+
+namespace {
+
+    constexpr uint32_t UserIdWireVersion = 1;
+
+    void appendUint32(std::string& out, const uint32_t value) {
+        const uint32_t networkValue = htonl(value);
+        const char* bytes = reinterpret_cast<const char*>(&networkValue);
+
+        out.append(bytes, sizeof(networkValue));
+    }
+
+    uint32_t readUint32(const std::vector<char>& buf, size_t& offset) {
+        if (offset > buf.size() ||
+            buf.size() - offset < sizeof(uint32_t)) {
+            throw std::runtime_error("Truncated UserId serialization");
+        }
+
+        uint32_t networkValue;
+        memcpy(&networkValue, buf.data() + offset, sizeof(networkValue));
+
+        offset += sizeof(networkValue);
+
+        return ntohl(networkValue);
+    }
+
+    void appendString(std::string& out, const std::string& value) {
+        if (value.size() > std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error("UserId string too large to serialize");
+        }
+
+        appendUint32(out, static_cast<uint32_t>(value.size()));
+        out.append(value);
+    }
+
+    std::string readString(const std::vector<char>& buf, size_t& offset) {
+        const uint32_t length = readUint32(buf, offset);
+
+        if (offset > buf.size() ||
+            buf.size() - offset < length) {
+            throw std::runtime_error("Truncated UserId string");
+        }
+
+        std::string result(
+                           buf.data() + offset,
+                           buf.data() + offset + length);
+
+        offset += length;
+
+        return result;
+    }
+
+} // anonymous namespace
 
 namespace bgq {
 namespace utility {
@@ -126,14 +183,44 @@ UserId::UserId(const std::string& user, const bool allowRemoteUser) : _name(user
 }
 
 UserId::UserId(const std::vector<char>& buf) {
-    const std::string buf_str(buf.begin(), buf.end());
-    std::istringstream is(buf_str);
+
     try {
-        boost::archive::text_iarchive ar(is);
-        ar&* this;
+        size_t offset = 0;
+
+        const uint32_t version = readUint32(buf, offset);
+        if (version != UserIdWireVersion) {
+            throw std::runtime_error(
+                "Unsupported UserId serialization version");
+        }
+
+        _name = readString(buf, offset);
+
+        _uid = static_cast<uid_t>(
+            readUint32(buf, offset));
+
+        const uint32_t groupCount =
+            readUint32(buf, offset);
+
+        for (uint32_t i = 0; i < groupCount; ++i) {
+            const gid_t gid = static_cast<gid_t>(
+                readUint32(buf, offset));
+
+            std::string groupName =
+                readString(buf, offset);
+
+            _groups.emplace_back(
+                gid,
+                std::move(groupName));
+        }
+
+        if (offset != buf.size()) {
+            throw std::runtime_error(
+                "Unexpected trailing data in UserId serialization");
+        }
     } catch (const std::exception& e) {
-        LOG_ERROR_MSG("could not deserialize buffer: " << e.what());
-        LOG_ERROR_MSG("buffer: " << buf_str);
+
+        LOG_ERROR_MSG("Could not deserialize UserId buffer: " << e.what());
+
         throw;
     }
 }
@@ -225,10 +312,47 @@ void UserId::setGroupList(const gid_t gid) {
 }
 
 std::string UserId::serialize() {
-    std::ostringstream os;
-    boost::archive::text_oarchive ar(os);
-    ar&* this;
-    return os.str();
+
+    std::string out;
+
+    appendUint32(out, UserIdWireVersion);
+    appendString(out, _name);
+
+    if (static_cast<uintmax_t>(_uid) >
+        std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error(
+            "UserId uid is too large to serialize");
+    }
+
+    appendUint32(
+        out,
+        static_cast<uint32_t>(_uid));
+
+    if (_groups.size() >
+        std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error(
+            "Too many groups to serialize");
+    }
+
+    appendUint32(
+        out,
+        static_cast<uint32_t>(_groups.size()));
+
+    for (const Group& group : _groups) {
+        if (static_cast<uintmax_t>(group.first) >
+            std::numeric_limits<uint32_t>::max()) {
+            throw std::runtime_error(
+                "UserId gid is too large to serialize");
+        }
+
+        appendUint32(
+            out,
+            static_cast<uint32_t>(group.first));
+
+        appendString(out, group.second);
+    }
+
+    return out;
 }
 
 } // namespace utility

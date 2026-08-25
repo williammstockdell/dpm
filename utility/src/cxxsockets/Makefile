@@ -42,7 +42,6 @@ endif
 SHARED_LDFLAGS   = $(LDFLAGS)
 SHARED_LDFLAGS  += -L ../ -lbgutility
 SHARED_LDFLAGS  += -lssl
-SHARED_LDFLAGS  += -lboost_system-mt
 SHARED_LDFLAGS  += -shared
 SHARED_LDFLAGS  += -Wl,-soname,$(lib_vers)
 SHARED_LDFLAGS  += -Wl,-rpath,$(BGQ_LIB_INSTALL_DIR)

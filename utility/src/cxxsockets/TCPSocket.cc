@@ -211,21 +211,21 @@ void TCPSocket::setProbe(const bool onoff, const int firstprobe, const int probe
 bool TCPSocket::toggleNoDelay() {
     if (_nonagle) {
         // nagle is off, turn it on
-        uint8_t flag = 0;
+        int flag = 0;
 
-        const int ret = setsockopt(_fileDescriptor, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+        const int ret = setsockopt(_fileDescriptor, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
         if (ret < 0) {
             std::ostringstream msg;
-            msg << "Disabling nagle algorithm (TCP_NODELAY) failed.";
+            msg << "TCPSocket::toggleNoDelay, Disabling nagle algorithm (TCP_NODELAY) failed.";
             LOG_DEBUG_MSG(msg.str());
             throw HardError(errno, msg.str());
         }
         _nonagle = false;
     } else {
         // nagle is on, turn it off
-        uint8_t flag = 1;
+        int flag = 1;
 
-        const int ret = setsockopt(_fileDescriptor, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+        const int ret = setsockopt(_fileDescriptor, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
         if (ret < 0) {
             std::ostringstream msg;
             msg << "Enabling nagle algorithm (TCP_NODELAY) failed.";

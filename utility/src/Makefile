@@ -77,7 +77,6 @@ endif
 LDFLAGS += -pthread
 LDFLAGS += -Wl,-soname,$(lib_vers)
 LDFLAGS += -llog4cxx
-LDFLAGS += -lboost_serialization
 LDFLAGS += -lssl
 LDFLAGS += -Wl,--enable-new-dtags # sets DT_RUNPATH
 

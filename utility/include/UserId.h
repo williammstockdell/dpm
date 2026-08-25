@@ -30,13 +30,11 @@
 
 #include <sys/types.h>
 
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/serialization/list.hpp>
-#include <boost/serialization/utility.hpp>
-
 #include <list>
 #include <string>
 #include <vector>
+#include <memory>
+#include <unistd.h>
 
 namespace bgq {
 namespace utility {
@@ -79,7 +77,6 @@ class UserId {
      *
      * Deserialize UserId from a string created by UserId::serialize
      *
-     * \throws boost::archive::archive_error
      */
     explicit UserId(const std::vector<char>& buf);
 
@@ -142,15 +139,6 @@ class UserId {
     std::string serialize();
 
   private:
-    friend class boost::serialization::access;
-    template <class Archive>
-    void serialize(Archive& ar,       //!< [in] archive
-                   const unsigned int //!< [in] version number
-    ) {
-        ar & _name;
-        ar & _uid;
-        ar & _groups;
-    }
 
     /*!
      * \brief

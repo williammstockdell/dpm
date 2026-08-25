@@ -92,12 +92,12 @@ int ListeningSocket::Accept() {
         }
     }
 
-    const uint8_t flag = 1;
+    const int flag = 1;
     LOG_TRACE_MSG("Disabling nagle algorithm.");
-    const int ret = setsockopt(newFd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+    const int ret = setsockopt(newFd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
     if (ret < 0) {
         std::ostringstream msg;
-        msg << "Disabling nagle algorithm (TCP_NODELAY) failed.";
+        msg << "ListeningSocket::Accept, Disabling nagle algorithm (TCP_NODELAY) failed.";
         LOG_DEBUG_MSG(msg.str());
         throw HardError(errno, msg.str());
     }
