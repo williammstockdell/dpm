@@ -229,7 +229,7 @@ class TCPSendFunctor {
 
 class TCPReceiveFunctor {
   public:
-    int operator()(int fileDescriptor, const void* msg, size_t length);
+    int operator()(int fileDescriptor, void* msg, size_t length);
 };
 
 } // namespace CxxSockets

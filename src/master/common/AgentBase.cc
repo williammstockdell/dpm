@@ -48,6 +48,8 @@ bool AgentBase::find_binary(const BinaryId& id, BinaryControllerPtr& p) const {
 
 bool AgentBase::runningAlias(const std::string& alias_name) const {
     LOG_TRACE_MSG(__FUNCTION__);
+
+    // cppcheck-suppress useStlAlgorithm
     for (const BinaryControllerPtr& bptr : _binaries) {
         if (bptr->get_alias_name() == alias_name)
             return true;

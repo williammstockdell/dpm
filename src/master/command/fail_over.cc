@@ -36,7 +36,7 @@ LOG_DECLARE_FILE("master");
 
 void doFailover(BGMasterClient& client, const std::string& target, const std::string& trigger) {
     std::vector<BinaryId> bids;
-    bids.push_back(target);
+    bids.push_back(BinaryId{target});
     try {
         client.fail_over(bids, trigger);
     } catch (const exceptions::BGMasterError& e) {

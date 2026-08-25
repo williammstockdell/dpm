@@ -41,7 +41,7 @@ class Id {
   public:
     //! \brief Copy constructor
     Id(const Id& id);
-    Id(const std::string& id_string);
+    explicit Id(const std::string& id_string);
 
     //! \brief conversion operator
     operator std::string() const { return _id; }
@@ -72,7 +72,7 @@ class Id {
 class BGAgentId : public Id {
   public:
     BGAgentId() : Id("") {}
-    BGAgentId(const std::string& id_string);
+    explicit BGAgentId(const std::string& id_string);
     BGAgentId(const BGAgentId& id);
     BGAgentId(const int port, const std::string& host);
     BGAgentId(const std::string& port, const std::string& host);
@@ -86,7 +86,7 @@ class BGAgentId : public Id {
 class BinaryId : public Id {
   public:
     BinaryId() : Id("") {}
-    BinaryId(const std::string& id_string);
+    explicit BinaryId(const std::string& id_string);
     BinaryId(const BinaryId& id);
     BinaryId(const int pid, const std::string& host);
     BinaryId(const std::string& pid, const std::string& host);
@@ -103,7 +103,7 @@ class BinaryId : public Id {
 class ClientId : public Id {
   public:
     ClientId() {}
-    ClientId(const std::string& id_string);
+    explicit ClientId(const std::string& id_string);
     ClientId(const ClientId& id);
     ClientId(const int port, const std::string& host);
     ClientId(const std::string& port, const std::string& host);

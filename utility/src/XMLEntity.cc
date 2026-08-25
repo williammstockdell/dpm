@@ -47,7 +47,7 @@ LOG_DECLARE_FILE("utility");
 XMLEntity* XMLEntity::readXML(const char* filename) {
     XML_Parser parser = XML_ParserCreate(NULL);
     XMLEntity* o = new XMLEntity(parser);
-    XML_SetUserData(parser, (void*)o);
+    XML_SetUserData(parser, o);
     XML_SetElementHandler(parser, XMLEntity::_startXML, XMLEntity::_endXML);
     XML_SetCharacterDataHandler(parser, XMLEntity::_startCDATA);
 
@@ -80,7 +80,7 @@ XMLEntity* XMLEntity::readXML(const char* filename) {
 XMLEntity* XMLEntity::readXML(std::istream& is) {
     XML_Parser parser = XML_ParserCreate(NULL);
     XMLEntity* o = new XMLEntity(parser);
-    XML_SetUserData(parser, (void*)o);
+    XML_SetUserData(parser, o);
     XML_SetElementHandler(parser, XMLEntity::_startXML, XMLEntity::_endXML);
 
     /* ------- Parse the XML file --------- */
@@ -207,7 +207,7 @@ std::vector<const XMLEntity*> XMLEntity::subentities() const {
     }
     for (unsigned i = 0; i < _entities.size(); i++) {
         // cout << "Capacity is " << (int) result.capacity() << endl;
-        result.push_back((const XMLEntity*)&_entities[i]);
+        result.push_back(&_entities[i]);
     }
     return result;
 }
@@ -245,24 +245,24 @@ XMLEntity::XMLEntity(const char* name, const char** attributes, unsigned lineno,
 XMLEntity::~XMLEntity() {
     if (_parent == NULL && _parser) {
         // Toplevel...free the parser.
-        XML_ParserFree((XML_ParserStruct*)_parser);
+        XML_ParserFree(static_cast<XML_ParserStruct*>(_parser));
     }
 }
 
 void XMLEntity::_startXML(void* ud, const char* name, const char** atts) {
-    XMLEntity* root = (XMLEntity*)ud;
+    XMLEntity* root = static_cast<XMLEntity*>(ud);
     assert(root != (XMLEntity*)NULL);
     root->_entities.push_back(XMLEntity(name, atts, static_cast<unsigned>(XML_GetCurrentLineNumber((XML_Parser)root->_parser)), root));
-    XML_SetUserData((XML_Parser)root->parser(), (void*)&(root->_entities.back()));
+    XML_SetUserData((XML_Parser)root->parser(), &(root->_entities.back()));
 }
 
 void XMLEntity::_endXML(void* ud, const char*) {
-    XMLEntity* root = (XMLEntity*)ud;
+    XMLEntity* root = static_cast<XMLEntity*>(ud);
     assert(root != (XMLEntity*)NULL);
     XML_SetUserData((XML_Parser)root->parser(), root->parent());
 }
 
 void XMLEntity::_startCDATA(void* ud, const char* s, int len) {
-    XMLEntity* root = (XMLEntity*)ud;
+    XMLEntity* root = static_cast<XMLEntity*>(ud);
     root->_cdata.append(std::string(s, static_cast<std::string::size_type>(len)));
 }

@@ -55,7 +55,7 @@ namespace XML {
 
 class Exception {
 public:
-    Exception (const char *text): _comment(text) { }
+    explicit Exception (const char *text): _comment(text) { }
     friend std::ostream & operator<<(std::ostream &os, const Exception &e) {
         os << e._comment;
         return os;
@@ -85,8 +85,6 @@ public:
 
     virtual Serializable *addSubEntity (const char *name, const char **attrs) {
         throw Exception("XML: object does not allow subentities\n");
-
-        return this;
     }
 
     virtual unsigned setAttributes (const char **attrs) {
@@ -136,12 +134,12 @@ inline std::ostream &operator<<(std::ostream& o, const Serializable& s)
 
 class Parser {
 public:
-    Parser(bool multiline);
+    explicit Parser(bool multiline);
     virtual ~Parser();
 
     int getLine();
     int getCol();
-    void parse(std::istream &is, Serializable *root);
+    void parse(std::istream &s, Serializable *root);
 private:
     static void _startXML(void *ud, const XML_Char *name, const XML_Char **atts);
     static void _endXML  (void *ud, const XML_Char *name);
@@ -197,26 +195,26 @@ inline bool Serializable::read(std::istream &is, bool multiline) {
   void write_uchar  (std::ostream &os, const char *className, const char *attrName, unsigned char attrValue);
   void write_float  (std::ostream &os, const char *className, const char *attrName, long double attrValue);
   void write_ucharh (std::ostream &os, const char *className, const char *attrName, unsigned char attrValue);
-  void write_bool   (std::ostream &os, const char *className, const char *attrName, bool attrValue);
+  void write_bool   (std::ostream &os, const char *class_name, const char *attr_name, bool attr_value);
 
-  std::string        read_text    (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  char *             get_attrValue(const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  void               read_cstring (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional,
+  std::string        read_text    (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  char *             get_attrValue(const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  void               read_cstring (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional,
 				   char *buf, unsigned buflen);
-  std::string        read_binary  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  void               read_binary  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional,
+  std::string        read_binary  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  void               read_binary  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional,
 				   char *buf, unsigned buflen);
-  unsigned           read_uint32  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned long long read_uint64  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned           read_uint32h (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned short     read_uint16h (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned char      read_uint8h  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  int                read_int32   (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned long long read_uint64h (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned char      read_uchar   (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  long double	     read_float   (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  unsigned char      read_ucharh  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
-  bool               read_bool    (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* index, bool isOptional);
+  unsigned           read_uint32  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned long long read_uint64  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned           read_uint32h (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned short     read_uint16h (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned char      read_uint8h  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  int                read_int32   (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned long long read_uint64h (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned char      read_uchar   (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  long double	     read_float   (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  unsigned char      read_ucharh  (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
+  bool               read_bool    (const char *className, const char *attrName, const char *attr0, const char *attr1, unsigned* i /*index*/, bool isOptional);
 
 }; /* namespace */
 

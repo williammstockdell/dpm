@@ -81,13 +81,13 @@ AgentRep::AgentRep(AgentProtocolPtr prot, const BGMasterAgentProtocolSpec::JoinR
         LOG_INFO_MSG("Found running binary id " << wb._binary_id << " for alias " << alias->get_name());
 
         BinaryLocation unused;
-        if (MasterController::get_agent_manager().findBinary(wb._binary_id, unused)) {
+        if (MasterController::get_agent_manager().findBinary(BinaryId{wb._binary_id}, unused)) {
             LOG_DEBUG_MSG("alias accounting already current");
             continue;
         }
-        alias->add_binary(wb._binary_id);
+        alias->add_binary(BinaryId{wb._binary_id});
 
-        const BinaryControllerPtr binary(new BinaryController(wb._binary_id, wb._name, wb._alias, alias->get_user(), 0, BinaryController::RUNNING));
+        const BinaryControllerPtr binary(new BinaryController(BinaryId{wb._binary_id}, wb._name, wb._alias, alias->get_user(), 0, BinaryController::RUNNING));
         this->addController(binary);
         LOG_DEBUG_MSG("Updated alias and agent's binary list for " << alias->get_name());
     }

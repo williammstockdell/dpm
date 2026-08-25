@@ -128,8 +128,8 @@ class BinaryController {
 
     // \brief setter/getter for stop flag.
     // FIXME:  This is a bit strange.  Why not just set _stop_requested to stop?
-    bool stopping(bool stop = false) {
-        if (stop == true)
+    bool stopping(bool do_stop = false) {
+        if (do_stop == true)
             _stop_requested = true;
         return _stop_requested;
     }

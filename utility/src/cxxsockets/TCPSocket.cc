@@ -287,9 +287,9 @@ int TCPSendFunctor::operator()(const int fileDescriptor, const void* msg, const 
     return static_cast<int>(bytes);
 }
 
-int TCPReceiveFunctor::operator()(const int fileDescriptor, const void* msg, const size_t length) {
+int TCPReceiveFunctor::operator()(const int fileDescriptor, void* msg, const size_t length) {
     const int flags = MSG_WAITALL;
-    const ssize_t bytes_received = recv(fileDescriptor, (void*)msg, length, flags);
+    const ssize_t bytes_received = recv(fileDescriptor, msg, length, flags);
     return static_cast<int>(bytes_received);
 }
 

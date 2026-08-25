@@ -118,8 +118,8 @@ BinaryId::BinaryId(const std::string& id_string) { _id = id_string; }
 
 BinaryId::BinaryId(const BinaryId& id) : Id() { _id = id._id; }
 
-BinaryId& BinaryId::operator=(const BinaryId& id) {
-    _id = id._id;
+BinaryId& BinaryId::operator=(const BinaryId& binid) {
+    _id = binid._id;
     return *this;
 }
 

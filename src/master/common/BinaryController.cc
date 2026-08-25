@@ -76,9 +76,9 @@ void switchBackUID(uid_t my_euid, gid_t my_egid) {
     LOG_DEBUG_MSG("Current uid: " << geteuid() << " Current gid: " << getegid());
 }
 
-BinaryController::BinaryController() : _status(UNINITIALIZED), _exit_status(0), _binary_bin_path(""), _alias_name(""), _stop_requested(false) {
-    _start_time = std::chrono::system_clock::now();
-    _user = "";
+BinaryController::BinaryController() : _status(UNINITIALIZED), _exit_status(0), _binary_bin_path(""), _alias_name(""), _stop_requested(false),
+                                       _start_time(std::chrono::system_clock::now()), _user("")
+{
 }
 
 BinaryController::BinaryController(const BinaryId& id, const std::string& bin_path, const std::string& alias, const std::string& user, int exit_status, Status stat, const std::string& start_time)
@@ -104,10 +104,9 @@ BinaryController::BinaryController(const std::string& path, const std::string& a
 }
 
 BinaryController::BinaryController(const std::string& id, const std::string& bin_path, const std::string& alias, const std::string& user, int exit_status, int stat, const std::string& start_time)
-    : _binary_bin_path(bin_path), _alias_name(alias), _user(user) {
+    : _binary_bin_path(bin_path), _alias_name(alias), _binid{id}, _user(user) {
     _exit_status = exit_status;
     _status = (Status)stat;
-    _binid = id;
     _stop_requested = false;
     _start_time = time_from_string(start_time);
 }

@@ -69,11 +69,11 @@ void encode64_new(ostream& os, const string& buf) {
   while (bufcount <= bufsize) {
     unsigned char in[3];
     unsigned outcount;
-    char c;
+
     in[0] = in[1] = in[2] = 0;
 
     for (outcount = 0; outcount < 3; outcount++){
-      c = buf[bufcount++];
+      char c = buf[bufcount++];
 
       if (bufcount > bufsize) {
 	break;
@@ -213,13 +213,13 @@ void encode64(ostream &os, const char *source, unsigned ssize, bool newlines) {
   unsigned done = 0;
 
   while (!done) {
-    unsigned char igroup[3], ogroup[4];
+    unsigned char igroup[3];
     unsigned n;
-    int c;
+
     igroup[0] = igroup[1] = igroup[2] = 0;
 
     for (n = 0; n < 3; n++){
-      c = source[scount++];
+      int c = source[scount++];
 
       if (scount > ssize) {
 	done = 1;
@@ -229,6 +229,7 @@ void encode64(ostream &os, const char *source, unsigned ssize, bool newlines) {
     }
 
     if (n > 0) {
+      unsigned char ogroup[4];
       ogroup[0] = etable[igroup[0]>>2];
       ogroup[1] = etable[((igroup[0]&3)<<4) | (igroup[1]>>4)];
       ogroup[2] = etable[((igroup[1]&0xF)<<2) | (igroup[2]>>6)];

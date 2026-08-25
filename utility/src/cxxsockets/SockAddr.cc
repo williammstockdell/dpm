@@ -48,12 +48,12 @@ bool SockAddr::Addrinf(struct addrinfo*& addrinf, const unsigned short family, c
     memset(&hints, 0, sizeof(addrinfo));
 
     hints.ai_family = family;
-    char* node;
+    const char* node;
     if (nodename.empty()) {
         node = NULL;
         hints.ai_flags = AI_PASSIVE;
     } else {
-        node = (char*)(nodename.c_str());
+        node = (nodename.c_str());
     }
 
     // Note:  This is TCP only.

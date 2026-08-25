@@ -333,18 +333,18 @@ void SecureTCPSocket::SetupCredentials(const bgq::utility::SslConfiguration& ssl
         throw HardError(0, errstr.str());
     }
 
-    char* certpath = 0;
-    char* certfile = 0;
+    const char* certpath = nullptr;
+    const char* certfile = nullptr;
 
     if (sslconfig.getCaCertificatesPath() != 0) {
         // Add verify path getCaCertificatesPath
         LOG_TRACE_MSG("Using CA path=" << sslconfig.getCaCertificatesPath());
-        certpath = (char*)(sslconfig.getCaCertificatesPath()->c_str());
+        certpath = sslconfig.getCaCertificatesPath()->c_str();
     }
 
     if (sslconfig.getCaCertificateFilename() != 0) {
         LOG_TRACE_MSG("Using CA filename " << *(sslconfig.getCaCertificateFilename()));
-        certfile = (char*)(sslconfig.getCaCertificateFilename()->c_str());
+        certfile = sslconfig.getCaCertificateFilename()->c_str();
     }
 
     rc = SSL_CTX_load_verify_locations(_ctx, certfile, certpath);

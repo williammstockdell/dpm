@@ -329,7 +329,7 @@ void BGMasterClient::get_agents(std::map<BGAgentId, std::vector<BinaryController
     typedef BGMasterClientProtocolSpec::AgentlistReply::Agent ReplyAgent;
     for (std::vector<ReplyAgent>::const_iterator agent_it = agentrep._agent.begin(); agent_it != agentrep._agent.end(); ++agent_it) {
         // Get the id
-        const BGAgentId id = agent_it->_agent_id;
+        const BGAgentId id{agent_it->_agent_id};
         const ReplyAgent agent = *agent_it;
         // Now build the vector of binaries
         typedef BGMasterClientProtocolSpec::AgentlistReply::Agent::Binary ReplyBinary;
@@ -462,7 +462,7 @@ BinaryId BGMasterClient::alias_wait(const std::string& alias, unsigned timeout) 
         throw exceptions::BGMasterError(exceptions::INFO, waitrep._rt);
     }
 
-    return waitrep._binary_id;
+    return BinaryId{waitrep._binary_id};
 }
 
 void BGMasterClient::event_monitor() const {

@@ -83,20 +83,20 @@ SslConfiguration::SslConfiguration(Use::Value use, Certificate::Value certificat
 
     try {
         _ca_certificates_path.reset(new string(properties_ptr->getValue(CASectionName, "certificates_dir")));
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Ignore this error.
     }
 
     try {
         _ca_certificate_filename.reset(new string(properties_ptr->getValue(CASectionName, "certificate")));
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Ignore this error.
     }
 
     try {
         std::istringstream is(properties_ptr->getValue(CASectionName, "use_default_paths"));
         is >> std::boolalpha >> _use_default_paths;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         // Ignore error
         _use_default_paths = false;
     }

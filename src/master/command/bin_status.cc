@@ -46,7 +46,7 @@ void doStatus(const BGMasterClient& client, const std::string& target) {
     if (!target.empty()) {
         bins_specified = true;
         BinaryControllerPtr p(new BinaryController);
-        mm[target] = p;
+        mm[BinaryId{target}] = p;
     }
     client.status(mm);
     if (mm.empty() && bins_specified) {

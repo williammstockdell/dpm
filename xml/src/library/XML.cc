@@ -53,7 +53,7 @@ Parser::Parser(
     _parser(XML_ParserCreate(0)),
     _rootInitialized(false)
 {
-    XML_SetUserData(_parser, (void *) this);
+    XML_SetUserData(_parser, this);
     XML_SetElementHandler(_parser, _startXML, _endXML);
 }
 
@@ -118,8 +118,14 @@ Parser::parse(
             //	    continue;
         }
 
+        // FIXME: Retry/stream-read logic is poorly understood.
+        // The current retry counter/reset/continue behavior is inconsistent.
+        // Do not change without tests covering partial/incomplete XML input.
+        // WMS 8/2026
+
         // If we reset the retry to 0 here, then we never time out
         // and can hang.  Don't know why this was ever here?  WMS
+        // cppcheck-suppress redundantAssignment
         retry = 0;
         // now be sure that we read enough, but not too many bytes
         bytes_toread = bytes_available > XML_BUFFER_SIZE-bytes_read ?
@@ -149,7 +155,7 @@ Parser::parse(
                     XML_GetCurrentColumnNumber(_parser));
             throw Exception(buf);
         }
-
+    // cppcheck-suppress knownConditionTrueFalse
     } while (_xmlstack.size() > 0 ); // until we have gone through all the hierarchy, or reached the end
 
     //  cerr << "XML- stack size=" << _xmlstack.size() << endl;
@@ -174,7 +180,7 @@ Parser::_startXML(
     cerr << ")" << endl;
 #endif
 
-    Parser *parser = (Parser *)ud;
+    Parser *parser = static_cast<Parser*>(ud);
     assert (parser != NULL);
 
     if (!parser->_rootInitialized) {
@@ -198,7 +204,7 @@ Parser::_endXML(
 {
     //  cerr << "XML-endXML " << endl;
 
-    Parser *parser = (Parser *)ud;
+    Parser *parser = static_cast<Parser *>(ud);
     assert (parser != NULL && parser->_xmlstack.size() > 0);
     parser->_xmlstack.pop();
 }
@@ -541,7 +547,7 @@ XML::read_binary(
         const char *attrName,
         const char *attr0,
         const char *attr1,
-        unsigned* i,
+        const unsigned* i,
         bool isOptional
         )
 {
@@ -711,7 +717,6 @@ XML::read_uint16h(
             return (unsigned short) temp;
         } else {
             XMLLIB_THROW("XML %s: attribute %s too big for short (%x) ", className, attrName, temp);
-            return 0;
         }
     } else {
         return 0;
@@ -739,7 +744,6 @@ XML::read_uint8h(
             return (unsigned char) temp;
         } else {
             XMLLIB_THROW("XML %s: attribute %s too big for char (%x) ", className, attrName, temp);
-            return 0;
         }
     } else {
         return 0;
@@ -886,7 +890,7 @@ XML::read_bool(
         }
     }
 
-    return (bool) false;
+    return false;
 }
 
 void
