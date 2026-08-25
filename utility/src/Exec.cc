@@ -400,8 +400,8 @@ pid_t Exec::fexec(int& pipefd, const std::string& path_and_args, std::string& er
         int zero = 0;
         LOG_DEBUG_MSG("waiting for " << pid);
         if (waitpid(pid, &zero, zero) < 0) {
-            char buf[256];
-            LOG_ERROR_MSG("waitpid failed " << strerror_r(errno, buf, sizeof(buf)));
+            char err_buf[256];
+            LOG_ERROR_MSG("waitpid failed " << strerror_r(errno, err_buf, sizeof(err_buf)));
         }
         pid = -1;
     } else {

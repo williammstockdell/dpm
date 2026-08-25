@@ -36,6 +36,10 @@ using namespace XML;
 //#define XML_BUFFER_SIZE 16384
 #define XML_RETRY 20
 
+#ifdef XML_UNICODE
+#error "DPM XML serialization requires Expat's narrow-character API"
+#endif
+
 /* ********************************************************************** */
 /*              Parser constructor, destructor                            */
 /* ********************************************************************** */
@@ -179,7 +183,7 @@ Parser::_startXML(
     } else {
         Serializable *curr = parser->_xmlstack.top();
         assert (curr != NULL);
-        Serializable * newobject = curr->addSubEntity((const char *)name, (const char **)atts);
+        Serializable * newobject = curr->addSubEntity(name, atts);
         assert (newobject != NULL);
         parser->_xmlstack.push(newobject);
     }

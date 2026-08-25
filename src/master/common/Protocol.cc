@@ -172,6 +172,7 @@ void Protocol::initializeRequester(const bgq::utility::Properties::ConstPtr& pro
 void Protocol::initializeResponder(CxxSockets::SecureTCPSocketPtr sock) {
     LOG_TRACE_MSG(__FUNCTION__);
     _responder = sock;
+
     // Keepalive.  Going to fire 'em off pretty quick because LNs may go away without warning.
     // 1) Five seconds from the last data packet, we send our first probe.
     // 2) Send a probe every second.

@@ -89,15 +89,6 @@ LevelPtr LoggingProgramOptions::parseVerboseArgument(const string& str) {
     }
 
     throw(std::invalid_argument(string() + "invalid verbose option '" + str + "'"));
-
-    LevelPtr ret(Level::toLevel(str));
-
-    // To figure out if the level string wasn't recognized,
-    if (ret != Level::toLevel(str, Level::getOff())) {
-        throw(std::invalid_argument(string() + "invalid verbose option '" + str + "'"));
-    }
-
-    return ret;
 }
 
 LoggingProgramOptions::LoggingProgramOptions(const std::string& default_logger_name) : _default_logger_name(default_logger_name) {
