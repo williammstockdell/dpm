@@ -69,20 +69,29 @@ bool SockAddr::Addrinf(struct addrinfo*& addrinf, const unsigned short family, c
         throw HardError(errno, msg.str());
     }
 
-    char buff[128];
-    inet_ntop(family, &((struct sockaddr_in*)(addrinf->ai_addr))->sin_addr.s_addr, buff, 128);
     if (!addrinf) {
         std::ostringstream msg;
         msg << "Unable to resolve address: " << strerror(errno);
         LOG_DEBUG_MSG(msg.str());
         throw HardError(errno, msg.str());
     }
+
+    char buff[128];
+
+    if (addrinf->ai_family == AF_INET) {
+        const auto* addr = reinterpret_cast<const sockaddr_in*>(addrinf->ai_addr);
+        inet_ntop(AF_INET, &addr->sin_addr, buff, sizeof(buff));
+    } else if (addrinf->ai_family == AF_INET6) {
+        const auto* addr = reinterpret_cast<const sockaddr_in6*>(addrinf->ai_addr);
+        inet_ntop(AF_INET6, &addr->sin6_addr, buff, sizeof(buff));
+    }
+
     return true;
 }
 
 std::string SockAddr::getServiceName() {
     char svc_buf[NI_MAXSERV];
-    const int rc = getnameinfo((sockaddr*)(this), sizeof(sockaddr_storage), NULL, 0, svc_buf, NI_MAXSERV, 0);
+    const int rc = getnameinfo(reinterpret_cast<sockaddr*>(this), sizeof(sockaddr_storage), NULL, 0, svc_buf, NI_MAXSERV, 0);
     if (rc != 0) {
         std::ostringstream msg;
         msg << "Problem getting service name: " << gai_strerror(rc);
@@ -95,7 +104,7 @@ std::string SockAddr::getServiceName() {
 
 int SockAddr::getServicePort() const {
     char svc_buf[NI_MAXSERV];
-    const int rc = getnameinfo((sockaddr*)(this), sizeof(sockaddr_storage), NULL, 0, svc_buf, NI_MAXSERV, NI_NUMERICSERV);
+    const int rc = getnameinfo(reinterpret_cast<const sockaddr*>(this), sizeof(sockaddr_storage), NULL, 0, svc_buf, NI_MAXSERV, NI_NUMERICSERV);
     if (rc != 0) {
         std::ostringstream msg;
         msg << "Problem getting service port: " << gai_strerror(rc);
@@ -108,7 +117,7 @@ int SockAddr::getServicePort() const {
 
 std::string SockAddr::getHostName() const {
     char host_buf[NI_MAXHOST];
-    const int rc = getnameinfo((sockaddr*)(this), sizeof(sockaddr_storage), host_buf, sizeof(host_buf), 0, 0, 0);
+    const int rc = getnameinfo(reinterpret_cast<const sockaddr*>(this), sizeof(sockaddr_storage), host_buf, sizeof(host_buf), 0, 0, 0);
     if (rc != 0) {
         std::ostringstream msg;
         msg << "Problem getting host name: " << gai_strerror(rc);
@@ -128,7 +137,7 @@ std::string SockAddr::getHostAddr() const {
         size = sizeof(sockaddr_in6);
     }
 
-    const int error = getnameinfo((sockaddr*)(this), size, host_buf, sizeof(host_buf), 0, 0, NI_NUMERICHOST);
+    const int error = getnameinfo(reinterpret_cast<const sockaddr*>(this), size, host_buf, sizeof(host_buf), 0, 0, NI_NUMERICHOST);
     if (error != 0) {
         std::ostringstream msg;
         msg << "Unable to find host address: " << gai_strerror(error);
@@ -150,7 +159,7 @@ SockAddr::SockAddr(sockaddr* sa) {
     } else if (sa->sa_family == AF_INET6) {
         size = sizeof(sockaddr_in6);
     } else if (sa->sa_family == AF_LOCAL) {
-        size = static_cast<socklen_t>(SUN_LEN((sockaddr_un*)sa));
+        size = static_cast<socklen_t>(SUN_LEN(reinterpret_cast<const sockaddr_un*>(sa)));
     } else {
         std::ostringstream msg;
         msg << "Invalid address family: " << sa->sa_family;
@@ -162,14 +171,16 @@ SockAddr::SockAddr(sockaddr* sa) {
 }
 
 SockAddr::SockAddr(const unsigned short family, const std::string& nodename, const std::string& service) {
+
     bzero(this, sizeof(sockaddr_storage));
     struct addrinfo* addrinf = 0;
     Addrinf(addrinf, family, nodename, service);
-    if (addrinf) {
-        SockAddr sa(addrinf->ai_addr);
-        if (family == AF_INET6_ONLY) {
-            sa.setFamily(AF_INET6_ONLY);
-        }
+
+    if (!addrinf) {
+    throw HardError(EFAULT, "getaddrinfo returned success with no address");
+}
+    if (family == AF_INET6_ONLY) {
+        setFamily(AF_INET6_ONLY);
     }
 
     // Copy the addrinfo struct's sockaddr back in to us.

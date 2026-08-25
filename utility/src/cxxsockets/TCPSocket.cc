@@ -122,7 +122,7 @@ void TCPSocket::releaseFd() { _fileDescriptor = -1; }
 
 void TCPSocket::performConnect(const SockAddr& remote) {
 
-    const int rc = connect(_fileDescriptor, (sockaddr*)(&remote), sizeof(struct sockaddr_storage));
+    const int rc = connect(_fileDescriptor, reinterpret_cast<const sockaddr*>(&remote), sizeof(struct sockaddr_storage));
 
     if (rc == -1) {
         const int error = errno;
@@ -211,7 +211,7 @@ void TCPSocket::setProbe(const bool onoff, const int firstprobe, const int probe
 bool TCPSocket::toggleNoDelay() {
     if (_nonagle) {
         // nagle is off, turn it on
-        int flag = 0;
+        uint8_t flag = 0;
 
         const int ret = setsockopt(_fileDescriptor, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
         if (ret < 0) {
@@ -223,7 +223,7 @@ bool TCPSocket::toggleNoDelay() {
         _nonagle = false;
     } else {
         // nagle is on, turn it off
-        int flag = 1;
+        uint8_t flag = 1;
 
         const int ret = setsockopt(_fileDescriptor, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
         if (ret < 0) {

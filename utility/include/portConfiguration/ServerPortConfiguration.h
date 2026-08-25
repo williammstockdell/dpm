@@ -163,7 +163,8 @@ class ServerPortConfiguration : public PortConfiguration {
     std::string _getPropertyName() const;
 
     //! \brief The default is '127.0.0.1:<i>default_service_name</i>,[::1]:<i>default_service_name</i>'
-    Pairs _getDefault() const;
+    // cppcheck-suppress duplInheritedMember
+    Pairs _getDefault() const override;
 
   private:
     std::string _name, _description;

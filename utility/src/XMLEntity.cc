@@ -105,8 +105,8 @@ XMLEntity* XMLEntity::readXML(std::istream& is) {
         // Parse the XML
         if (!XML_Parse((XML_Parser)parser, buf.c_str(), static_cast<int>(len), done)) {
             char errbuffer[256];
-            sprintf(errbuffer, "Syntax error: %s at line %d column %d", XML_ErrorString(XML_GetErrorCode(parser)), (unsigned)XML_GetCurrentLineNumber(parser),
-                    (unsigned)XML_GetCurrentColumnNumber(parser));
+            sprintf(errbuffer, "Syntax error: %s at line %d column %d", XML_ErrorString(XML_GetErrorCode(parser)), (int)XML_GetCurrentLineNumber(parser),
+                    (int)XML_GetCurrentColumnNumber(parser));
             throw XMLException(errbuffer, o);
         }
     } while (is.good() && !done);

@@ -149,7 +149,8 @@ class ClientPortConfiguration : public PortConfiguration {
     std::string _getPropertyName() const;
 
     //! \brief The default is "localhost".
-    Pairs _getDefault() const;
+    // cppcheck-suppress duplInheritedMember
+    Pairs _getDefault() const override;
 
   private:
     std::string _name, _description;

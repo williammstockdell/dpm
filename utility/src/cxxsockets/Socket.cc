@@ -79,7 +79,7 @@ void Socket::pBind(const SockAddr& addr) {
     } else if (addr.family() == AF_INET6) {
         size = sizeof(sockaddr_in6);
     } else if (addr.family() == AF_LOCAL) {
-        size = static_cast<socklen_t>(SUN_LEN((sockaddr_un*)&addr));
+        size = static_cast<socklen_t>(SUN_LEN(reinterpret_cast<const sockaddr_un*>(&addr)));
     } else {
         std::ostringstream msg;
         msg << "Invalid address family: " << addr.family();
@@ -87,7 +87,7 @@ void Socket::pBind(const SockAddr& addr) {
         throw SoftError(EINVAL, msg.str());
     }
 
-    if (bind(_fileDescriptor, (sockaddr*)(&addr), size) == -1) {
+    if (bind(_fileDescriptor, reinterpret_cast<const sockaddr*>(&addr), size) == -1) {
         std::ostringstream msg;
         msg << "Unable to bind to host " << addr.getHostName() << " and port " << addr.getServicePort() << ". Error is: " << strerror(errno);
         LOG_DEBUG_MSG(msg.str());
@@ -97,7 +97,7 @@ void Socket::pBind(const SockAddr& addr) {
 
 void Socket::internal_getSockName(SockAddr& sa) const {
     socklen_t size = sizeof(sockaddr_storage);
-    if (getsockname(_fileDescriptor, (sockaddr*)(&sa), &size) < 0) {
+    if (getsockname(_fileDescriptor, reinterpret_cast<sockaddr*>(&sa), &size) < 0) {
         std::ostringstream msg;
         msg << "Problem getting socket name: " << strerror(errno);
         LOG_DEBUG_MSG(msg.str());
@@ -113,7 +113,7 @@ void Socket::getSockName(SockAddr& sa) const {
 
 void Socket::internal_getPeerName(SockAddr& sa) const {
     socklen_t size = sizeof(sockaddr_storage);
-    if (getpeername(_fileDescriptor, (sockaddr*)(&sa), &size) < 0) {
+    if (getpeername(_fileDescriptor, reinterpret_cast<sockaddr*>(&sa), &size) < 0) {
         std::ostringstream msg;
         msg << "Problem getting peer name: " << strerror(errno);
         LOG_DEBUG_MSG(msg.str());

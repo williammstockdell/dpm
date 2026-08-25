@@ -31,7 +31,7 @@ TARGETS += $(TARGETS_DISTCLEAN)
 .PHONY: default all clean install distclean test $(TARGETS)
 
 check:
-	NO_COLOR=1 cppcheck --enable=warning,style,performance,portability --std=c++20 --language=c++ --inline-suppr --inconclusive --force --error-exitcode=1 -Iutility/include -Isrc utility src .
+	NO_COLOR=1 cppcheck --project=compile_commands.json -isrc/master/protocol -itest/catch2 --enable=warning,style,performance,portability --inline-suppr --inconclusive --force --error-exitcode=1
 
 default: all
 

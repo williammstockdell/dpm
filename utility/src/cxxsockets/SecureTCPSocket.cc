@@ -153,6 +153,7 @@ SecureTCPSocket::SecureTCPSocket(const int family, const int fd) : TCPSocket(fam
     std::call_once(init_once_flag, &init_ssl);
     _ctx = 0;
     _ssl = 0;
+    _utype = Normal;
 }
 
 SecureTCPSocket::~SecureTCPSocket() {
@@ -298,6 +299,7 @@ void SecureTCPSocket::ClientHandshake(const bgq::utility::ClientPortConfiguratio
 
     std::ostringstream oss;
     oss.width(4);
+    // cppcheck-suppress ignoredReturnValue
     oss.fill('0');
     oss << user_id_str_len;
 

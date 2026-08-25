@@ -76,9 +76,9 @@ int ListeningSocket::Accept() {
     socklen_t addrlen = sizeof(sockaddr_storage);
 
 #ifdef SOCK_CLOEXEC
-    const int newFd = accept4(_fileDescriptor, (sockaddr*)(&addr), &addrlen, SOCK_CLOEXEC);
+    const int newFd = accept4(_fileDescriptor, reinterpret_cast<sockaddr*>(&addr), &addrlen, SOCK_CLOEXEC);
 #else
-    const int newFd = accept(_fileDescriptor, (sockaddr*)(&addr), &addrlen);
+    const int newFd = accept(_fileDescriptor, reinterpret_cast<sockaddr*>(&addr), &addrlen);
 #endif
 
     if (newFd < 0) {
@@ -92,7 +92,7 @@ int ListeningSocket::Accept() {
         }
     }
 
-    const int flag = 1;
+    const uint8_t flag = 1;
     LOG_TRACE_MSG("Disabling nagle algorithm.");
     const int ret = setsockopt(newFd, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
     if (ret < 0) {
@@ -110,7 +110,7 @@ int ListeningSocket::Accept() {
 
     socklen_t sasz = sizeof(sockaddr_storage);
 
-    if (getsockname(newFd, (sockaddr*)(&my_addr), &sasz) < 0) {
+    if (getsockname(newFd, reinterpret_cast<sockaddr*>(&my_addr), &sasz) < 0) {
         LOG_WARN_MSG("Cannot get sock name: " << strerror(errno));
     }
 
