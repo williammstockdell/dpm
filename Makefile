@@ -30,8 +30,12 @@ TARGETS += $(TARGETS_DISTCLEAN)
 
 .PHONY: default all clean install distclean test $(TARGETS)
 
+check:
+	NO_COLOR=1 cppcheck --enable=warning,style,performance,portability --std=c++20 --language=c++ --inline-suppr --inconclusive --force --error-exitcode=1 -Iutility/include -Isrc utility src .
+
 default: all
 
+# Add check to this list when cppcheck is cleared up
 all: $(TARGETS_ALL)
 
 test: all
