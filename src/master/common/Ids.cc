@@ -131,7 +131,7 @@ BinaryId::BinaryId(const int pid, const std::string& host) {
 
 BinaryId::BinaryId(const std::string& pid, const std::string& host) { _id = host + ":" + pid; }
 
-int BinaryId::get_pid() {
+int BinaryId::get_pid() const {
     size_t newindex = 0;
     newindex = _id.find_last_of(':');
     std::string pidstr = _id.substr(newindex + 1, _id.length());

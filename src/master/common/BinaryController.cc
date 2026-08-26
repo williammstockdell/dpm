@@ -91,25 +91,21 @@ BinaryController::BinaryController(const BinaryId& id, const std::string& bin_pa
     _stop_requested = false;
 }
 
-BinaryController::BinaryController(const std::string& path, const std::string& arguments, const std::string& logfile, const std::string& alias, const CxxSockets::Host& host, const std::string& user) {
-    _binary_bin_path = path + (arguments.empty() ? "" : " " + arguments);
-    _logfile = logfile;
-    _alias_name = alias;
-    _host = host;
-    _start_time = std::chrono::system_clock::now();
-    _stop_requested = false;
-    _user = user;
-    _status = UNINITIALIZED;
-    _exit_status = 0;
+BinaryController::BinaryController(const std::string& path, const std::string& arguments, const std::string& logfile, const std::string& alias, const CxxSockets::Host& host, const std::string& user) :
+    _status(UNINITIALIZED),
+    _exit_status(0),
+    _binary_bin_path(path + (arguments.empty() ? "" : " " + arguments)),
+    _alias_name(alias),
+    _logfile(logfile),
+    _host(host),
+    _stop_requested(false),
+    _start_time(std::chrono::system_clock::now()),
+    _user(user)
+{
 }
 
 BinaryController::BinaryController(const std::string& id, const std::string& bin_path, const std::string& alias, const std::string& user, int exit_status, int stat, const std::string& start_time)
-    : _binary_bin_path(bin_path), _alias_name(alias), _binid{id}, _user(user) {
-    _exit_status = exit_status;
-    _status = (Status)stat;
-    _stop_requested = false;
-    _start_time = time_from_string(start_time);
-}
+    :  _status((Status)stat), _exit_status (exit_status), _binary_bin_path(bin_path), _alias_name(alias), _binid{id}, _stop_requested(false), _start_time(time_from_string(start_time)), _user(user) {}
 
 BinaryId BinaryController::startBinary(const std::string& user_list, const std::string& properties) {
     LOG_TRACE_MSG(__FUNCTION__);

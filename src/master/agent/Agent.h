@@ -54,10 +54,10 @@ class Agent : public AgentBase {
 
   public:
     //! \brief Constructor.
-    Agent(const bgq::utility::Properties::ConstPtr& props);
+    explicit Agent(const bgq::utility::Properties::ConstPtr& props);
 
     //! \brief initiate the registration process
-    void start(const bgq::utility::PortConfiguration::Pairs& pairs, //!< [in]
+    void start(const bgq::utility::PortConfiguration::Pairs& ports, //!< [in]
                const int signal_read_fd);
 
     //! \brief Set list of users this agent can be.

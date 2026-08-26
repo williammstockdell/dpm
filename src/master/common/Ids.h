@@ -93,7 +93,7 @@ class BinaryId : public Id {
     BinaryId& operator=(const BinaryId& binid);
 
     //! \brief Return the process ID of the binary
-    int get_pid();
+    int get_pid() const;
 };
 
 //! \brief Representation of the universal identifier for a client

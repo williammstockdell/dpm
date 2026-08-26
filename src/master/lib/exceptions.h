@@ -45,44 +45,44 @@ enum Severity { OK = 0, INFO, WARN, FATAL };
 class BGMasterError : public std::runtime_error {
   public:
     Severity errcode;
-    BGMasterError(Severity err = INFO, const std::string& what = std::string()) : std::runtime_error(what), errcode(err) {}
+    explicit BGMasterError(Severity err = INFO, const std::string& what = std::string()) : std::runtime_error(what), errcode(err) {}
 };
 
 //! \brief Fatal exception
 class APIUserError : public BGMasterError {
   public:
-    APIUserError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
+    explicit APIUserError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
 };
 
 //! \brief API has a non-fatal return code
 class APICommandError : public BGMasterError {
   public:
-    APICommandError(Severity err = INFO, const std::string& what = std::string()) : BGMasterError(err, what) {}
+    explicit APICommandError(Severity err = INFO, const std::string& what = std::string()) : BGMasterError(err, what) {}
 };
 
 //! \brief Error exception for communications
 class CommunicationError : public BGMasterError {
   public:
-    CommunicationError(Severity err = INFO, const std::string& what = std::string()) : BGMasterError(err, what) {}
+    explicit CommunicationError(Severity err = INFO, const std::string& what = std::string()) : BGMasterError(err, what) {}
 };
 
 //! \brief exception for file I/O errors
 class FileError : public BGMasterError {
   public:
-    FileError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
+    explicit FileError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
 };
 
 //! \brief config file error
 class ConfigError : public BGMasterError {
   public:
-    ConfigError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
+    explicit ConfigError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
 };
 
 //! \brief Internal error
 //! Internal error message reporting.  Should not return to clients.
 class InternalError : public BGMasterError {
   public:
-    InternalError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
+    explicit InternalError(Severity err = WARN, const std::string& what = std::string()) : BGMasterError(err, what) {}
 };
 
 } // namespace exceptions

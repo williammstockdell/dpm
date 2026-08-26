@@ -398,8 +398,8 @@ void Agent::processStartRequest(const BGMasterAgentProtocolSpec::StartRequest& s
             return;
         }
 
-        const BGMasterAgentProtocolSpec::FailedRequest::BinaryStatus binstat(bid.str(), exit_status);
-        const BGMasterAgentProtocolSpec::FailedRequest failreq(binstat);
+        const BGMasterAgentProtocolSpec::FailedRequest::BinaryStatus f_binstat(bid.str(), exit_status);
+        const BGMasterAgentProtocolSpec::FailedRequest failreq(f_binstat);
         BGMasterAgentProtocolSpec::FailedReply failrep;
         failrep._rc = exceptions::OK;
 
@@ -413,15 +413,15 @@ void Agent::processStartRequest(const BGMasterAgentProtocolSpec::StartRequest& s
         } catch (const CxxSockets::Error& err) {
             // Server aborted with an incomplete transmission
             LOG_WARN_MSG("Connection to dpm_server ended while sending ending request for alias " << bin->get_alias_name() << " in method " << __FUNCTION__);
-            const MsgBasePtr bp(new BGMasterAgentProtocolSpec::FailedRequest(binstat));
+            const MsgBasePtr bp(new BGMasterAgentProtocolSpec::FailedRequest(f_binstat));
             std::scoped_lock lock(_buffered_messages_mutex);
             _buffered_messages.push_back(bp);
         }
     } else {
         if (child_pid > 0 && !dont_report) {
             // Only send a complete message if we haven't already sent a start failure.
-            const BGMasterAgentProtocolSpec::CompleteRequest::BinaryStatus binstat(bid.str(), "COMPLETED");
-            const BGMasterAgentProtocolSpec::CompleteRequest exereq(binstat, exit_status);
+            const BGMasterAgentProtocolSpec::CompleteRequest::BinaryStatus c_binstat(bid.str(), "COMPLETED");
+            const BGMasterAgentProtocolSpec::CompleteRequest exereq(c_binstat, exit_status);
             BGMasterAgentProtocolSpec::CompleteReply exerep;
             exerep._rc = exceptions::OK;
 
@@ -435,7 +435,7 @@ void Agent::processStartRequest(const BGMasterAgentProtocolSpec::StartRequest& s
             } catch (const CxxSockets::Error& err) {
                 // Server aborted with an incomplete transmission
                 LOG_WARN_MSG("Connection to dpm_server ended while sending complete request for alias in method " << __FUNCTION__);
-                const MsgBasePtr bp(new BGMasterAgentProtocolSpec::CompleteRequest(binstat, exit_status));
+                const MsgBasePtr bp(new BGMasterAgentProtocolSpec::CompleteRequest(c_binstat, exit_status));
                 std::scoped_lock lock(_buffered_messages_mutex);
                 _buffered_messages.push_back(bp);
             }

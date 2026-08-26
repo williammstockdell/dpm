@@ -116,8 +116,8 @@ class BGMasterClient {
     void end_master(bool master_only, int signal = 15) const;
 
     //! \brief Get status of specified binaries (or all if empty).
-    //! \param ids Map.  Associated statuses will be filled out for supplied binary ids.
-    void status(std::map<BinaryId, std::shared_ptr<BinaryController>, Id::Comp>& ids) const;
+    //! \param stats Map.  Associated statuses will be filled out for supplied binary ids.
+    void status(std::map<BinaryId, std::shared_ptr<BinaryController>, Id::Comp>& stats) const;
 
     //! \brief Get the status of bgmaster_server
     //! \param start_time is when bgmaster_server started.
@@ -155,7 +155,7 @@ class BGMasterClient {
 
     //! \brief Change/display bgmaster_server logging levels.
     void log_level(const std::vector<std::string>& input, //!< [in] loggers to change
-                   std::map<LogName, LogLevel>& loglevels //!< [out] current logging levels
+                   std::map<LogName, LogLevel>& output //!< [out] current logging levels
     ) const;
 };
 
