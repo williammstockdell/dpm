@@ -54,7 +54,7 @@ void doStat(const BGMasterClient& client, bool fancy) {
         if (!idles.empty()) {
             std::cout << "Aliases not currently running" << std::endl;
             std::cout << "-----------------------------" << std::endl;
-            for (std::string& al : idles) {
+            for (const std::string& al : idles) {
                 if (al != "bgmaster_server") {
                     std::cout << al << std::endl;
                 }

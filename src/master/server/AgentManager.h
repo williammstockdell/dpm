@@ -74,10 +74,10 @@ class AgentManager {
     bool findBinary(const std::string& alias, std::vector<BinaryLocation>& loc);
 
     //! \brief Agents are ending
-    bool get_ending_agents() { return _ending_agents; }
+    bool get_ending_agents() const { return _ending_agents; }
 
     //! \brief get a COPY of the agent vector.
-    std::vector<AgentRepPtr> get_agent_list() const { return _agents; }
+    const std::vector<AgentRepPtr>& get_agent_list() const { return _agents; }
 
   private:
     //! \brief vector of BGAgents

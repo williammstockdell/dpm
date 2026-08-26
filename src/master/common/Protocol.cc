@@ -191,19 +191,19 @@ void Protocol::setRequester(CxxSockets::SecureTCPSocketPtr sock) {
 }
 
 void Protocol::sendReply(const std::string& requestName, const XML::Serializable& replyObject) {
-    if (!_responder)
-        return;
-    LOG_DEBUG_MSG("Sending " << requestName << " reply.");
-    // First send the class name
-    const CxxSockets::Message replyClassName(requestName);
-    if (_responder) {
-        _responder->Send(replyClassName);
-    } else {
+
+    if (!_responder) {
         std::ostringstream msg;
         msg << "Responder not yet initialized.";
         LOG_ERROR_MSG(msg.str());
         throw CxxSockets::SoftError(EAGAIN, msg.str());
     }
+
+    LOG_DEBUG_MSG("Sending " << requestName << " reply.");
+
+    // First send the class name
+    const CxxSockets::Message replyClassName(requestName);
+    _responder->Send(replyClassName);
 
     // Then send the message
     CxxSockets::Message replyMessage;

@@ -166,7 +166,6 @@ int main(int argc, const char** argv) {
     }
 
     bgq::utility::BoolAlpha debug;
-    std::string logdir;
     std::string workingdir = largs["--workingdir"];
     std::string users = largs["--users"];
 
@@ -181,19 +180,20 @@ int main(int argc, const char** argv) {
     Agent agent(props);
 
     if (!debug._value) {
+
         // Now find the logdir
-        if (logdir.empty()) {
-            try {
+        std::string logdir;
 
-                logdir = largs["--logdir"];
+        try {
 
-                if (logdir.empty())
-                    logdir = props->getValue("master.agent", "logdir");
+            logdir = largs["--logdir"];
 
-            } catch (const std::invalid_argument& e) {
-                LOG_ERROR_MSG("No logging directory specified or missing section. " << e.what());
-                exit(EXIT_FAILURE);
-            }
+            if (logdir.empty())
+                logdir = props->getValue("master.agent", "logdir");
+
+        } catch (const std::invalid_argument& e) {
+            LOG_ERROR_MSG("No logging directory specified or missing section. " << e.what());
+            exit(EXIT_FAILURE);
         }
 
         // Create log file and symlink

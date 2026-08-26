@@ -161,7 +161,14 @@ int main(int argc, const char** argv) {
 
     if (!debug._value) {
         if (master_instances == "1") {
-            lock_file = new LockFile("dpm_master_server");
+
+            try {
+                lock_file = new LockFile("dpm_master_server");
+            } catch (const std::exception& e) {
+                std::cerr << "Unable to create dpm_server lock file: " << e.what() << std::endl;
+                return EXIT_FAILURE;
+            }
+
             if (lock_file->_fileExists) {
                 LOG_FATAL_MSG("Lock file for dpm_master_server found. End dpm_master_server process " << lock_file->_pid << " and remove " << lock_file->_fname);
                 exit(EXIT_FAILURE);
@@ -184,7 +191,11 @@ int main(int argc, const char** argv) {
     }
 
     if (lock_file) {
-        lock_file->setpid();
+        try {
+            lock_file->setpid();
+        } catch (const std::exception& e) {
+            std::cerr << "Cannot set process ID in server lock file: " << e.what() << std::endl;
+        }
     }
 
     // Create pipe for signal handler

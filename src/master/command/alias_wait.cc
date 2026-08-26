@@ -35,7 +35,7 @@
 
 LOG_DECLARE_FILE("master");
 
-void doAliasWait(BGMasterClient& client, std::string& target, std::string& timeout) {
+void doAliasWait(BGMasterClient& client, std::string& target, const std::string& timeout) {
     BinaryId id;
     int to = 0;
     if (timeout.length() != 0) {

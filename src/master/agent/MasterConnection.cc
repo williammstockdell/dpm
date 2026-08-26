@@ -57,6 +57,7 @@ void MasterConnection::makeConnection() {
             unsigned attempts = 0;
 
             // Connect and join loop
+            // cppcheck-suppress knownConditionTrueFalse
             while (!_ending && attempts < MaxAttempts) {
                 if (attempts == 0) {
                     LOG_INFO_MSG("Attempting to connect on " << port.first << ":" << port.second);

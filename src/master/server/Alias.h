@@ -118,7 +118,7 @@ class Alias {
     }
 
     //! \brief If the passed host is in our list return true
-    bool find_host(const CxxSockets::Host& host) {
+    bool find_host(const CxxSockets::Host& host) const {
         std::lock_guard lock_guard(_mutex);
         return find_host_internal(host);
     }
@@ -135,8 +135,8 @@ class Alias {
     AgentRepPtr runPolicy(const BGAgentId& agent_id, bool restart);
 
     //! \brief If the passed host is in our list return true
-    bool find_host_internal(const CxxSockets::Host& host) {
-        for (CxxSockets::Host h : _hosts) {
+    bool find_host_internal(const CxxSockets::Host& host) const {
+        for (const CxxSockets::Host& h : _hosts) {
             if (h == host)
                 return true;
         }

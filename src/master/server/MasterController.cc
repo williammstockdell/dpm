@@ -119,8 +119,6 @@ void MasterController::stopThreads(const bool end_binaries, const int signal) {
 
     // Stop the client registrar.
     _client_registrar.cancel();
-    std::map<std::string, std::string> details;
-    details["PID"] = std::to_string(getpid());
 }
 
 void MasterController::handleErrorMessage(const std::string& msg) {
@@ -842,8 +840,6 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
                 msg << "Attempt to start binary for alias " << al->get_name() << " failed, check RAS.";
                 failed_aliases[al->get_name()] = msg.str();
                 handleErrorMessage(msg.str());
-                std::map<std::string, std::string> details;
-                details["ALIAS"] = al->get_name();
             }
         } else {
             // Didn't start it, so put it back in the list.
@@ -865,8 +861,8 @@ void MasterController::startup(const int signal_fd) {
     LOG_INFO_MSG("dpm_master_server [" << getpid() << "] " << _version_string << " starting...");
     ;
     LOG_INFO_MSG("Using " << _props->getFilename() << " for properties.");
+
     _master_db = false;
-    std::string db_val = "true";
     _start_time = std::chrono::system_clock::now();
 
     try {
@@ -897,10 +893,6 @@ void MasterController::startup(const int signal_fd) {
     _client_registrar.run(false);
     LOG_INFO_MSG("Client Registrar run");
 
-    // Update database with ras message
-    std::map<std::string, std::string> details;
-    details["PID"] = std::to_string(getpid());
-
     std::ostringstream startmsg;
     startmsg << "dpm_master_server startup completed";
     addHistoryMessage(startmsg.str());
@@ -925,11 +917,11 @@ void MasterController::startup(const int signal_fd) {
             // Read siginfo from pipe
             siginfo_t siginfo;
             while (1) {
-                const ssize_t rc = read(signal_fd, &siginfo, sizeof(siginfo));
-                if (rc > 0) {
+                const ssize_t lrc = read(signal_fd, &siginfo, sizeof(siginfo));
+                if (lrc > 0) {
                     break;
                 }
-                if (rc == -1 && errno == EINTR) {
+                if (lrc == -1 && errno == EINTR) {
                     continue;
                 } else {
                     char errorText[256];
@@ -941,10 +933,6 @@ void MasterController::startup(const int signal_fd) {
                 LOG_DEBUG_MSG("Received signal " << siginfo.si_signo << " from " << siginfo.si_pid);
             } else {
                 LOG_FATAL_MSG("dpm_master_server ending due to signal " << siginfo.si_signo << " from " << siginfo.si_pid << ".");
-                // Send RAS
-                std::map<std::string, std::string> details;
-                details["PID"] = std::to_string(getpid());
-                details["SIGNAL"] = std::to_string(siginfo.si_signo);
 
                 if (lock_file) {
                     delete lock_file;
@@ -955,7 +943,7 @@ void MasterController::startup(const int signal_fd) {
                 // run global destructors
                 _exit(128 + siginfo.si_signo);
             }
-        } else if (!rc) {
+        } else {
             // Check if either registrar has failed. If so, restart it.
             bool reregister = false;
             if (_agent_registrar.get_failed()) {

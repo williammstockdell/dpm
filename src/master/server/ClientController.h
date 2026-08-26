@@ -60,11 +60,12 @@ class ClientController : public std::enable_shared_from_this<ClientController> {
     //! \brief process a start request
     void doStartRequest(const BGMasterClientProtocolSpec::StartRequest& startreq);
     //! \brief process an agent list request
-    void doAgentRequest(const BGMasterClientProtocolSpec::AgentlistRequest& agentreq);
+    // Don't actually do anything with the request itself so don't take a parameter.
+    void doAgentRequest();
     //! \brief process a wait request
     void doWaitRequest(const BGMasterClientProtocolSpec::WaitRequest& waitreq);
     //! \brief process a client list request
-    void doClientsRequest(const BGMasterClientProtocolSpec::ClientsRequest& clientreq);
+    void doClientsRequest();
     //! \brief process a stop request
     void doStopRequest(const BGMasterClientProtocolSpec::StopRequest& stopreq);
     //! \brief process a status request
@@ -76,24 +77,24 @@ class ClientController : public std::enable_shared_from_this<ClientController> {
     //! \brief process a request to execute a failover
     void doFailRequest(const BGMasterClientProtocolSpec::FailoverRequest& failreq);
     //! \brief process a server status request
-    void doMasterStatRequest(const BGMasterClientProtocolSpec::MasterstatRequest& statreq);
+    void doMasterStatRequest();
     //! \brief wait for an alias to start
     void doAliasWaitRequest(const BGMasterClientProtocolSpec::Alias_waitRequest& waitreq);
     //! \brief get the errors from the ring buffer
-    void doErrorsRequest(const BGMasterClientProtocolSpec::Get_errorsRequest& error_req);
+    void doErrorsRequest();
     //! \brief get the history from the ring buffer
-    void doHistoryRequest(const BGMasterClientProtocolSpec::Get_historyRequest& history_req);
+    void doHistoryRequest();
     //! \brief Start an event/error monitor
-    void doMonitorRequest(const BGMasterClientProtocolSpec::MonitorRequest& monreq);
+    void doMonitorRequest();
     //! \brief End an event/error monitor
-    void doEndmonitorRequest(const BGMasterClientProtocolSpec::EndmonitorRequest& endmonreq);
+    void doEndmonitorRequest();
     //! \brief Change/get log levels
     void doLoglevelRequest(const BGMasterClientProtocolSpec::LoglevelRequest& loglevreq);
     //! \brief Get list of idle aliases
-    void doGetidleRequest(const BGMasterClientProtocolSpec::GetidleRequest& idlereq);
+    void doGetidleRequest();
 
   public:
-    ClientController(const ClientProtocolPtr& prot, const std::string& ipaddr, const int port, const CxxSockets::UserType _utype);
+    ClientController(const ClientProtocolPtr& prot, const std::string& ipaddr, const int port, const CxxSockets::UserType utype);
 
     ~ClientController();
 

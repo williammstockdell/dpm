@@ -72,12 +72,12 @@ class AgentRep : public AgentBase, public std::enable_shared_from_this<AgentRep>
 
     BinaryId startBin_nl(const BGMasterAgentProtocolSpec::StartRequest& startreq, BGMasterAgentProtocolSpec::StartReply& startrep);
 
-    void stopBin_nl(const BinaryId& bid, const BinaryLocation& binloc, const int signal, BGMasterAgentProtocolSpec::StopReply& stoprep, bool failover);
+    void stopBin_nl(const BinaryId& bid, const BinaryLocation& location, const int signal, BGMasterAgentProtocolSpec::StopReply& stoprep, bool failover);
 
     void agentAbend(const std::ostringstream& msg);
 
   public:
-    AgentRep(AgentProtocolPtr p, const BGMasterAgentProtocolSpec::JoinRequest& joinreq, BGMasterAgentProtocolSpec::JoinReply& joinrep);
+    AgentRep(AgentProtocolPtr prot, const BGMasterAgentProtocolSpec::JoinRequest& joinreq, BGMasterAgentProtocolSpec::JoinReply& joinrep);
 
     ~AgentRep();
 
@@ -95,7 +95,7 @@ class AgentRep : public AgentBase, public std::enable_shared_from_this<AgentRep>
 
     BinaryId startBin(const BGMasterAgentProtocolSpec::StartRequest& startreq, BGMasterAgentProtocolSpec::StartReply& startrep);
 
-    void stopBin(const BinaryId& bid, const BinaryLocation& binloc, int signal, BGMasterAgentProtocolSpec::StopReply& stoprep, bool failover);
+    void stopBin(const BinaryId& bid, const BinaryLocation& location, int signal, BGMasterAgentProtocolSpec::StopReply& stoprep, bool failover);
 
     //! \brief Stop all binaries running on this agent.  Locking.
     void stopAllBins(BGMasterClientProtocolSpec::StopReply& stoprep, int signal);

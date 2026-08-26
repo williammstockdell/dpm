@@ -32,7 +32,7 @@
 
 LOG_DECLARE_FILE("master");
 
-bool AliasList::find_alias(const std::string& al, AliasPtr& alias) {
+bool AliasList::find_alias(const std::string& al, AliasPtr& alias) const {
     LOG_TRACE_MSG(__FUNCTION__);
     for (const AliasPtr& curr_alias : _alias_list) {
         if (curr_alias->get_name() == al) {

@@ -38,7 +38,7 @@ class LockFile {
     char _pid[64];
     bool _fileExists;
 
-    LockFile(const char* server_name) : _fname(std::string("/tmp/") + server_name + "-lock"), _fileExists(false) {
+    explicit LockFile(const char* server_name) : _fname(std::string("/tmp/") + server_name + "-lock"), _fileExists(false) {
         struct stat lstat;
         if (!stat(_fname.c_str(), &lstat)) {
             _fileExists = true;

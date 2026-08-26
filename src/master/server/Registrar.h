@@ -38,7 +38,7 @@ class Registrar {
     Registrar();
     ~Registrar();
     void run(bool agent);
-    bool get_failed() { return _failed; }
+    bool get_failed() const { return _failed; }
     void cancel();
 
   private:

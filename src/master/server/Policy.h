@@ -40,8 +40,8 @@ class Policy {
     //! \brief Acceptable triggers.
     enum Trigger { INVALID_TRIGGER, KILL_REQUESTED, BINARY_ABEND, AGENT_ABEND };
 
-    Policy(unsigned short max_count = 1) : _occurrences(max_count) {}
-    Policy(Trigger& t, Behavior& b, unsigned short max_count = 1) : _occurrences(max_count) { _action_policies[t] = b; }
+    explicit Policy(unsigned short max_count = 1) : _occurrences(max_count) {}
+    Policy(Trigger& t, const Behavior& b, unsigned short max_count = 1) : _occurrences(max_count) { _action_policies[t] = b; }
 
     //! \brief Change the number of allowable instances.
     void changeInstances(unsigned short instances) { _occurrences = instances; }

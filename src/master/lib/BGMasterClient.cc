@@ -189,7 +189,7 @@ void BGMasterClient::stop(const std::vector<BinaryId>& ids, const std::vector<st
     BGMasterClientProtocolSpec::StopRequest stopreq(signal);
     stopreq._aliases = aliases;
 
-    std::vector<BinaryId> idvec = ids;
+    const std::vector<BinaryId>& idvec = ids;
     for (std::vector<BinaryId>::const_iterator it = idvec.begin(); it != idvec.end(); ++it) {
         stopreq._binary_ids.push_back(it->str());
     }
@@ -405,7 +405,7 @@ void BGMasterClient::fail_over(std::vector<BinaryId>& bins, const std::string& t
     bins.clear();
     // Now go through the fail replies and put all of the failed failovers in the vector
     typedef BGMasterClientProtocolSpec::FailoverReply::BinaryStatus BinStat;
-    for (BinStat& bs : failrep._statuses) {
+    for (const BinStat& bs : failrep._statuses) {
         const BinaryId bid(bs._binary_id);
         bins.push_back(bid);
     }
@@ -513,7 +513,7 @@ void BGMasterClient::event_monitor() const {
         }
     }
 
-    for (std::string& curr_msg : sorted_msgs | std::views::reverse) {
+    for (const std::string& curr_msg : sorted_msgs | std::views::reverse) {
         std::cout << curr_msg << std::endl;
     }
 

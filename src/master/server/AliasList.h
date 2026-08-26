@@ -39,15 +39,15 @@ class AliasList {
 
   public:
     //! \brief Find the alias associated with the passed string
-    bool find_alias(const std::string& al, AliasPtr& alias);
+    bool find_alias(const std::string& al, AliasPtr& alias) const;
 
     // Get a copy of the list for local usage.  Don't try to
     // update it, it's a copy!
-    std::vector<AliasPtr> get_list_copy() { return _alias_list; }
+    const std::vector<AliasPtr>& get_list_copy() const { return _alias_list; }
 
     typedef std::vector<AliasPtr>::iterator iterator;
     typedef std::vector<AliasPtr>::const_iterator const_iterator;
-    size_t size() {
+    size_t size() const {
         std::lock_guard scoped_lock(_mutex);
         return _alias_list.size();
     }

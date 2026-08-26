@@ -254,9 +254,6 @@ void Registrar::listenForNew(const bgq::utility::PortConfiguration::Pairs& portp
         MasterController::set_master_terminating();
         _failed = true;
         MasterController::waitStartBarrier();
-        std::map<std::string, std::string> details;
-        details["PID"] = std::to_string(getpid());
-        details["ERROR"] = msg.str();
 
         return;
     }

@@ -161,22 +161,17 @@ void AgentRep::stopBin_nl(const BinaryId& bid, const BinaryLocation& location, c
                     alptr = al;
                 }
             }
-            std::map<std::string, std::string> details;
+
             std::string alias_name;
-            details["BIN"] = bid.str();
+
             if (alptr) {
                 alias_name = alptr->get_name();
             }
-            details["ALIAS"] = alias_name;
+
             int rsignal = stoprep._status._exit_status;
-            if (!rsignal) {
-                details["SIGNAL"] = std::to_string(0);
-            } else {
-                details["SIGNAL"] = std::to_string(rsignal);
-            }
 
             std::ostringstream stopmsg;
-            stopmsg << "Binary id " << bid.str() << " alias " << alias_name << " stopped on " << _agent_id.str();
+            stopmsg << "Binary id " << bid.str() << " alias " << alias_name << " stopped on " << _agent_id.str() << " with signal " << rsignal;
             LOG_INFO_MSG(stopmsg.str());
             MasterController::addHistoryMessage(stopmsg.str());
         }
@@ -207,8 +202,6 @@ BinaryId AgentRep::startBin(const BGMasterAgentProtocolSpec::StartRequest& start
 void AgentRep::agentAbend(const std::ostringstream& msg) {
     LOG_TRACE_MSG(__FUNCTION__);
     LOG_ERROR_MSG(msg.str());
-    std::map<std::string, std::string> details;
-    details["AGENT_ID"] = get_agent_id();
 
     MasterController::handleErrorMessage(msg.str());
     _ending = true;
@@ -271,19 +264,15 @@ BinaryId AgentRep::startBin_nl(const BGMasterAgentProtocolSpec::StartRequest& st
         const BinaryControllerPtr bincont(new BinaryController(bid, al->get_path(), startreq._alias, al->get_user(), 0, BinaryController::RUNNING));
         addController(bincont);
 
-        // Update database with ras message
-        std::map<std::string, std::string> details;
-        details["BIN"] = bid.str();
-        details["ALIAS"] = startreq._alias;
-
         std::ostringstream startmsg;
         startmsg << "Started alias " << al->get_name() << " with binary id " << bid.str() << " on agent " << _agent_id.str() << ".";
         MasterController::addHistoryMessage(startmsg.str());
         al->add_binary(bid);
         LOG_INFO_MSG(startmsg.str());
     } else {
+
         const int estat = startrep._status._exit_status;
-        int signo = 0;
+
         std::ostringstream msg;
         msg << "Binary " << startreq._alias << ": " << startrep._status._binary_id << " exited.";
         if (WIFEXITED(estat)) {
@@ -292,7 +281,7 @@ BinaryId AgentRep::startBin_nl(const BGMasterAgentProtocolSpec::StartRequest& st
         }
 
         if (WIFSIGNALED(estat)) {
-            signo = WTERMSIG(estat);
+            int signo = WTERMSIG(estat);
             msg << " Signal: " << signo << ".";
             if (WCOREDUMP(estat)) {
                 msg << " Core dumped on " << _host.fqhn() << ".";
@@ -304,13 +293,6 @@ BinaryId AgentRep::startBin_nl(const BGMasterAgentProtocolSpec::StartRequest& st
             msg << " Error text is " << startrep._rt << ".";
         }
 
-        // Something went wrong, update RAS.
-        std::map<std::string, std::string> details;
-        details["ALIAS"] = startreq._alias;
-        details["BIN"] = startrep._status._binary_id;
-        details["SIGNAL"] = std::to_string(signo);
-        details["ESTAT"] = std::to_string(estat);
-        details["EMSG"] = startrep._rt;
         MasterController::handleErrorMessage(msg.str());
     }
     return bid;
@@ -494,13 +476,6 @@ void AgentRep::doCompleteRequest(const BGMasterAgentProtocolSpec::CompleteReques
         MasterController::handleErrorMessage(error.str());
     }
 
-    // Update database with RAS message
-    std::map<std::string, std::string> details;
-    details["BIN"] = reqbid.str();
-    details["ALIAS"] = bptr->get_alias_name();
-    std::string signal = "0";
-    details["SIGNAL"] = signal;
-
     std::ostringstream startmsg;
     startmsg << "Binary id " << reqbid.str() << " for alias " << bptr->get_alias_name() << " stopped on " << _agent_id.str();
     MasterController::addHistoryMessage(startmsg.str());
@@ -558,14 +533,6 @@ void AgentRep::doFailedRequest(const BGMasterAgentProtocolSpec::FailedRequest& f
             }
             LOG_INFO_MSG(msg.str());
         }
-
-        // Update database with RAS message
-        std::map<std::string, std::string> details;
-        details["ALIAS"] = binptr->get_alias_name();
-        details["BIN"] = reqbid.str();
-        details["SIGNAL"] = std::to_string(signo);
-        details["ESTAT"] = std::to_string(estat);
-        details["EMSG"] = msg.str();
 
         MasterController::handleErrorMessage(msg.str());
     } else {
@@ -731,8 +698,8 @@ void AgentRep::cancel(const bool binaries, const int signal) {
     } else {
         // Mark all bins UNINITIALIZED to free all waiters.
         std::scoped_lock scoped_lock(_agent_mutex);
-        const Binaries binaries = this->get_binaries();
-        for (Binaries::const_iterator i = binaries.begin(); i != binaries.end(); ++i) {
+        const Binaries binaries_l = this->get_binaries();
+        for (Binaries::const_iterator i = binaries_l.begin(); i != binaries_l.end(); ++i) {
             BinaryControllerPtr rit = *i;
             LOG_DEBUG_MSG("Setting alias " << rit->get_alias_name() << " to UNINITIALIZED");
             rit->set_status(BinaryController::UNINITIALIZED);
@@ -751,7 +718,7 @@ void AgentRep::cancel(const bool binaries, const int signal) {
     }
 }
 
-void AgentRep::stopAllBins(BGMasterClientProtocolSpec::StopReply& reply, const int signal) {
+void AgentRep::stopAllBins(BGMasterClientProtocolSpec::StopReply& stoprep, const int signal) {
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
 
@@ -776,10 +743,10 @@ void AgentRep::stopAllBins(BGMasterClientProtocolSpec::StopReply& reply, const i
             // Now collect the response and add it to the reply
             const BGMasterClientProtocolSpec::StopReply::BinaryStatus binstat_to_return(stop_from_agent._status._binary_id, stop_from_agent._status._exit_status);
 
-            reply._statuses.push_back(binstat_to_return);
+            stoprep._statuses.push_back(binstat_to_return);
             if (stop_from_agent._rc != exceptions::OK) {
-                reply._rc = stop_from_agent._rc;
-                reply._rt = stop_from_agent._rt;
+                stoprep._rc = stop_from_agent._rc;
+                stoprep._rt = stop_from_agent._rt;
             }
         }
     }

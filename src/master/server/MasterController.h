@@ -72,9 +72,9 @@ class MasterController {
     static Registrar _agent_registrar;
     static Registrar _client_registrar;
 
-    MasterController(const bgq::utility::Properties::Ptr& properties);
+    explicit MasterController(const bgq::utility::Properties::Ptr& properties);
 
-    void startup(int signal_fd);
+    static void startup(int signal_fd);
 
     static bool get_master_terminating() { return _master_terminating; }
     static void set_master_terminating() { _master_terminating = true; }
@@ -99,7 +99,7 @@ class MasterController {
 
     static bool isStartServers() { return _start_servers; }
 
-    static void startServers(std::map<std::string, std::string>& failed_aliases, AgentRepPtr agent);
+    static void startServers(std::map<std::string, std::string>& failed_aliases, AgentRepPtr agentrep);
 
     static void waitStartBarrier() { _start_barrier.arrive_and_wait(); }
 

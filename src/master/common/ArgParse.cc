@@ -45,7 +45,7 @@ LOG_DECLARE_FILE("master");
 typedef std::map<std::string, log4cxx::LevelPtr> Loggers;
 Loggers loggers = {{"dpm.master", log4cxx::Level::getFatal()}, {"dpm.utility", log4cxx::Level::getFatal()}, {"dpm.utility.cxxsockets", log4cxx::Level::getFatal()}};
 
-void Args::setupLoggerDefaults() const {
+void Args::setupLoggerDefaults() {
     for (Loggers::const_iterator i = loggers.begin(); i != loggers.end(); ++i) {
         const std::string& logger = i->first;
         const log4cxx::LevelPtr& level = i->second;
@@ -55,7 +55,7 @@ void Args::setupLoggerDefaults() const {
     }
 }
 
-bool Args::setupLogger(const std::string& verbarg) const {
+bool Args::setupLogger(const std::string& verbarg) {
     // parse --verbose arguments
     // they are in the form --verbose logger=level or --verbose level
     const std::string::size_type split_pos(verbarg.find('='));
@@ -111,6 +111,7 @@ void APusage(void (*usage)(), const bool silent = false) {
     std::cerr << "Try the --help or -h option for more information." << std::endl;
 }
 
+// cppcheck-suppress funcArgNamesDifferentUnnamed
 Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), std::vector<std::string>& valargs, const std::vector<std::string>& singles, bin_type utype) {
     valargs.push_back("--verbose");
     valargs.push_back("-v");

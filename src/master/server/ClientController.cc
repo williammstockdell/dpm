@@ -83,9 +83,6 @@ void ClientController::doStartRequest(const BGMasterClientProtocolSpec::StartReq
         clientrep._rc = exceptions::FATAL;
         clientrep._rt = "Authorization failure. Client did not present Administrator certificate.";
         MasterController::handleErrorMessage(clientrep._rt);
-        std::map<std::string, std::string> details;
-        details["USER"] = "unknown";
-        details["COMMAND"] = "master_start";
 
     } else {
         if (startreq._alias.empty()) {
@@ -156,8 +153,8 @@ void ClientController::doStartRequest(const BGMasterClientProtocolSpec::StartReq
                 std::ostringstream msg;
                 msg << "Policy error for alias " << startreq._alias << ". " << e.what() << " Correct configuration and restart or refresh.";
                 MasterController::handleErrorMessage(msg.str());
-                const BinaryId id("0");
-                const BGMasterClientProtocolSpec::StartReply failrep(e.errcode, msg.str(), id);
+                const BinaryId id_l("0");
+                const BGMasterClientProtocolSpec::StartReply failrep(e.errcode, msg.str(), id_l);
                 try {
                     _prot->sendReply(failrep.getClassName(), failrep);
                 } catch (const CxxSockets::SoftError& err) {
@@ -189,8 +186,7 @@ void ClientController::doStartRequest(const BGMasterClientProtocolSpec::StartReq
     }
 }
 
-void ClientController::doAgentRequest(const BGMasterClientProtocolSpec::AgentlistRequest& /* agentreq */
-) {
+void ClientController::doAgentRequest() {
     LOG_TRACE_MSG(__FUNCTION__);
     // Got an agent request. Build up a reply which means going through all of the agents and all of their
     // binaries, and shoving it in the message. First, iterate through the agent manager:
@@ -224,8 +220,8 @@ void ClientController::doAgentRequest(const BGMasterClientProtocolSpec::Agentlis
     }
 }
 
-void ClientController::doClientsRequest(const BGMasterClientProtocolSpec::ClientsRequest& /* clientreq */
-) {
+void ClientController::doClientsRequest() {
+
     LOG_TRACE_MSG(__FUNCTION__);
     // Spin through the client controllers and add them to the reply
     BGMasterClientProtocolSpec::ClientsReply clientrep(exceptions::OK, "success");
@@ -309,12 +305,10 @@ void ClientController::doStopRequest(const BGMasterClientProtocolSpec::StopReque
     LOG_INFO_MSG("Stop request for " << stopreq._binary_ids.size() << " ids and " << stopreq._aliases.size() << " binary names with signal " << stopreq._signal);
     unsigned binsfound = 0;
     if (_utype != CxxSockets::Administrator) {
+
         reply_to_client._rc = exceptions::FATAL;
         reply_to_client._rt = "Authorization failure. Client did not present Administrator certificate.";
         MasterController::handleErrorMessage(reply_to_client._rt);
-        std::map<std::string, std::string> details;
-        details["USER"] = "unknown";
-        details["COMMAND"] = "master_stop";
 
     } else {
         // We can have a list of aliases or specific binary ids to stop. Do both.
@@ -323,7 +317,7 @@ void ClientController::doStopRequest(const BGMasterClientProtocolSpec::StopReque
 
             // Stop them all if nothing is passed
             ++binsfound; // Assume at least one is running.
-            std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
+            const std::vector<AgentRepPtr>& agents = MasterController::get_agent_manager().get_agent_list();
             for (const AgentRepPtr& rep : agents) {
                 if (rep) // The iterator may have gone stale.  Check the rep ptr.
                     rep->stopAllBins(reply_to_client, stopreq._signal);
@@ -441,7 +435,7 @@ void ClientController::doStatusRequest(const BGMasterClientProtocolSpec::StatusR
         }
     } else {
         // Need them ALL. Loop through agents.
-        const std::vector<AgentRepPtr> agents = MasterController::get_agent_manager().get_agent_list();
+        const std::vector<AgentRepPtr>& agents = MasterController::get_agent_manager().get_agent_list();
         for (const AgentRepPtr& rep : agents) {
             if (!rep) {
                 continue;
@@ -578,9 +572,6 @@ void ClientController::doFailRequest(const BGMasterClientProtocolSpec::FailoverR
         failrep._rc = exceptions::FATAL;
         failrep._rt = "Authorization failure. Client did not present Administrator certificate.";
         MasterController::handleErrorMessage(failrep._rt);
-        std::map<std::string, std::string> details;
-        details["USER"] = "unknown";
-        details["COMMAND"] = "fail_over";
 
     } else {
         for (const std::string& strbid : failreq._binary_ids) {
@@ -630,8 +621,7 @@ void ClientController::doFailRequest(const BGMasterClientProtocolSpec::FailoverR
     }
 }
 
-void ClientController::doMasterStatRequest(const BGMasterClientProtocolSpec::MasterstatRequest& /* statreq */
-) {
+void ClientController::doMasterStatRequest() {
     LOG_TRACE_MSG(__FUNCTION__);
     const BGMasterClientProtocolSpec::MasterstatReply statrep(exceptions::OK, std::string(), getpid(), time_to_string(MasterController::get_start_time()), MasterController::_version_string,
                                                               MasterController::getProps()->getFilename());
@@ -697,8 +687,7 @@ void ClientController::doAliasWaitRequest(const BGMasterClientProtocolSpec::Alia
     }
 }
 
-void ClientController::doErrorsRequest(const BGMasterClientProtocolSpec::Get_errorsRequest& /* error_req */
-) {
+void ClientController::doErrorsRequest() {
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::Get_errorsReply error_rep(exceptions::OK, "success");
     MasterController::getErrorMessages(error_rep._errors);
@@ -712,8 +701,8 @@ void ClientController::doErrorsRequest(const BGMasterClientProtocolSpec::Get_err
     }
 }
 
-void ClientController::doHistoryRequest(const BGMasterClientProtocolSpec::Get_historyRequest& /* history_req */
-) {
+void ClientController::doHistoryRequest() {
+
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::Get_historyReply history_rep(exceptions::OK, "success");
     MasterController::getHistoryMessages(history_rep._history);
@@ -727,8 +716,7 @@ void ClientController::doHistoryRequest(const BGMasterClientProtocolSpec::Get_hi
     }
 }
 
-void ClientController::doEndmonitorRequest(const BGMasterClientProtocolSpec::EndmonitorRequest& /* endmonreq */
-) {
+void ClientController::doEndmonitorRequest() {
     LOG_TRACE_MSG(__FUNCTION__);
 
     const BGMasterClientProtocolSpec::EndmonitorReply endmonrep;
@@ -789,10 +777,9 @@ void ClientController::doLoglevelRequest(const BGMasterClientProtocolSpec::Logle
     }
 }
 
-void ClientController::doGetidleRequest(const BGMasterClientProtocolSpec::GetidleRequest& /* idlereq */
-) {
+void ClientController::doGetidleRequest() {
     // Make a local copy because we don't really care about updates and we are going to destroy it when we're done.
-    const std::vector<AliasPtr> alist = MasterController::_aliases.get_list_copy();
+    const std::vector<AliasPtr>& alist = MasterController::_aliases.get_list_copy();
     BGMasterClientProtocolSpec::GetidleReply idlerep;
     for (const AliasPtr& al : alist) {
         if (!al->running()) {
@@ -811,8 +798,7 @@ void ClientController::doGetidleRequest(const BGMasterClientProtocolSpec::Getidl
     }
 }
 
-void ClientController::doMonitorRequest(const BGMasterClientProtocolSpec::MonitorRequest& /* monreq */
-) {
+void ClientController::doMonitorRequest() {
     // To do this, we first send a reply of all of the history and event messages in our buffer.
     LOG_TRACE_MSG(__FUNCTION__);
     BGMasterClientProtocolSpec::MonitorReply monrep(exceptions::OK, "success");
@@ -899,7 +885,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during agent list request.");
         }
-        doAgentRequest(agentreq);
+        doAgentRequest();
     } else if (request_name == "ClientsRequest") {
         BGMasterClientProtocolSpec::ClientsRequest clientreq;
         try {
@@ -910,7 +896,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during clients request.");
         }
-        doClientsRequest(clientreq);
+        doClientsRequest();
     } else if (request_name == "WaitRequest") {
         BGMasterClientProtocolSpec::WaitRequest waitreq;
         try {
@@ -976,7 +962,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during master status request.");
         }
-        doMasterStatRequest(statreq);
+        doMasterStatRequest();
     } else if (request_name == "Alias_waitRequest") {
         BGMasterClientProtocolSpec::Alias_waitRequest waitreq;
         try {
@@ -998,7 +984,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during get errors request.");
         }
-        doErrorsRequest(error_req);
+        doErrorsRequest();
     } else if (request_name == "Get_historyRequest") {
         BGMasterClientProtocolSpec::Get_historyRequest history_req;
         try {
@@ -1009,7 +995,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during get history request.");
         }
-        doHistoryRequest(history_req);
+        doHistoryRequest();
     } else if (request_name == "MonitorRequest") {
         BGMasterClientProtocolSpec::MonitorRequest monreq;
         try {
@@ -1020,7 +1006,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during monitor request.");
         }
-        doMonitorRequest(monreq);
+        doMonitorRequest();
     } else if (request_name == "EndmonitorRequest") {
         BGMasterClientProtocolSpec::EndmonitorRequest endmonreq;
         try {
@@ -1031,7 +1017,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during get monitor request.");
         }
-        doEndmonitorRequest(endmonreq);
+        doEndmonitorRequest();
     } else if (request_name == "LoglevelRequest") {
         BGMasterClientProtocolSpec::LoglevelRequest loglevreq;
         try {
@@ -1053,7 +1039,7 @@ void ClientController::processRequest() {
             // Client aborted with an incomplete transmission
             LOG_ERROR_MSG("Client connection ended during get idle request.");
         }
-        doGetidleRequest(idlereq);
+        doGetidleRequest();
     } else {
         LOG_WARN_MSG("Received invalid request " << request_name << ", ignoring.");
     }

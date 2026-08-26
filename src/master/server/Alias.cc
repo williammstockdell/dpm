@@ -293,8 +293,6 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
                         << " allowed.";
                     LOG_INFO_MSG(msg.str());
                     MasterController::handleErrorMessage(msg.str());
-                    std::map<std::string, std::string> details;
-                    details["ALIAS"] = get_name();
 
                     _retry_count = 0;
                     done = true;
@@ -304,11 +302,6 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
             }
             if (bvr.get_retries() > (_retry_count == 0 ? _retry_count : _retry_count - 1)) {
                 rep = runPolicy(target_agent, true);
-                // Update database with RAS message
-                std::map<std::string, std::string> details;
-                details["ALIAS"] = get_name();
-                details["SOURCE"] = agent.get_host().fqhn();
-                details["TARGET"] = target.fqhn();
 
                 done = true;
             } else {
@@ -316,8 +309,6 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
                 msg << "Retry count within retry window failed for alias " << get_name() << " with a count of " << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
                 LOG_INFO_MSG(msg.str());
                 MasterController::handleErrorMessage(msg.str());
-                std::map<std::string, std::string> details;
-                details["ALIAS"] = get_name();
 
                 _retry_count = 0;
                 done = true;
@@ -327,10 +318,8 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
 
     } else if (bvr.get_action() == Behavior::RESTART) {
         if (bvr.get_retries() > (_retry_count == 0 ? _retry_count : _retry_count - 1)) {
+
             LOG_INFO_MSG("Restarting alias " << get_name() << " on agent " << agent.get_host().fqhn() << " " << _retry_count << " of " << bvr.get_retries());
-            // Update database with RAS message
-            std::map<std::string, std::string> details;
-            details["ALIAS"] = get_name();
 
             rep = runPolicy(agent, true);
         } else {
@@ -338,8 +327,6 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
             msg << "Retry count within retry window failed for alias " << get_name() << " with a count of " << _retry_count - 1 << " and " << bvr.get_retries() << " allowed.";
             LOG_INFO_MSG(msg.str());
             MasterController::handleErrorMessage(msg.str());
-            std::map<std::string, std::string> details;
-            details["ALIAS"] = get_name();
 
             _retry_count = 0;
         }
