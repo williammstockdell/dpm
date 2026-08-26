@@ -462,6 +462,7 @@ void AgentRep::doCompleteRequest(const BGMasterAgentProtocolSpec::CompleteReques
 
         // Now find my alias and decrement
         for (const AliasPtr& al : MasterController::_aliases) {
+            // cppcheck-suppress useStlAlgorithm
             if (al->find_binary(reqbid)) {
                 al->remove_binary(reqbid);
                 break;

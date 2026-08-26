@@ -91,11 +91,8 @@ class Alias {
     //! \return true if found, false if not
     bool find_binary(const BinaryId& id) {
         std::lock_guard lock_guard(_mutex);
-        for (BinaryId idit : _binaries) {
-            if (id == idit)
-                return true;
-        }
-        return false;
+
+        return std::find(_binaries.begin(), _binaries.end(), id) != _binaries.end();
     }
 
     //! \brief See if this alias has any running binaries
@@ -136,6 +133,7 @@ class Alias {
 
     //! \brief If the passed host is in our list return true
     bool find_host_internal(const CxxSockets::Host& host) const {
+        // cppcheck-suppress useStlAlgorithm
         for (const CxxSockets::Host& h : _hosts) {
             if (h == host)
                 return true;

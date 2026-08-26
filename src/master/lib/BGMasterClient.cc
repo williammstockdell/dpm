@@ -39,6 +39,7 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 #include "BGMasterClient.h"
 #include "exceptions.h"
@@ -307,7 +308,9 @@ void BGMasterClient::idle_aliases(std::vector<std::string>& aliases) const {
     } catch (const CxxSockets::Error& err) {
         throw exceptions::CommunicationError(exceptions::WARN, "Connection to bgmaster_server failed.");
     }
+
     for (const std::string& al : idlerep._aliases) {
+        // cppcheck-suppress useStlAlgorithm
         aliases.push_back(al);
     }
 }
@@ -484,12 +487,16 @@ void BGMasterClient::event_monitor() const {
     // and then print them out.
     std::vector<std::string> all_messages;
     std::vector<std::string> sorted_msgs;
+
     // Note: The format of the messages is important. The "Event: " and "Error: " needs
     // to be there and be that length or the string parsification that happens later gets broken.
     for (BGMasterClientProtocolSpec::MonitorReply::EventMessage curr_msg : monrep._eventmessages) {
+        // cppcheck-suppress useStlAlgorithm
         all_messages.push_back("Event: " + curr_msg._eventmsg);
     }
+
     for (BGMasterClientProtocolSpec::MonitorReply::ErrorMessage curr_msg : monrep._errormessages) {
+        // cppcheck-suppress useStlAlgorithm
         all_messages.push_back("Error: " + curr_msg._errormsg);
     }
 

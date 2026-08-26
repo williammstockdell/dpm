@@ -237,6 +237,7 @@ void Registrar::listenForNew(const bgq::utility::PortConfiguration::Pairs& portp
             CxxSockets::SockAddrList salist(AF_UNSPEC, curr_pair.first, curr_pair.second);
             for (const CxxSockets::SockAddr& curr_sockaddr : salist) {
                 // Now copy every SockAddr in to the master list
+                // cppcheck-suppress useStlAlgorithm
                 masterlist.push_back(curr_sockaddr);
             }
         } catch (const CxxSockets::Error& e) {

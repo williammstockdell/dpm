@@ -742,6 +742,7 @@ void ClientController::doLoglevelRequest(const BGMasterClientProtocolSpec::Logle
     // If there are any changes in the request, apply them.
     bgq::utility::LoggingProgramOptions::Strings logstrings;
     for (const std::string& logger : loglevreq._loggers) {
+        // cppcheck-suppress useStlAlgorithm
         logstrings.push_back(logger);
     }
     // Set logging level

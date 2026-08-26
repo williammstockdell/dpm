@@ -58,9 +58,11 @@ bool AgentManager::addNew(AgentRepPtr agent) {
     std::lock_guard scoped_lock(_agent_manager_mutex);
     LOG_DEBUG_MSG("Adding agent " << agent->get_agent_id().str() << " from list.");
     unsigned agent_count = 0;
+
     for (const AgentRepPtr& ptr : _agents) {
         if (ptr->get_host().ip() == agent->get_host().ip()) {
             // We've got one
+            // cppcheck-suppress useStlAlgorithm
             ++agent_count;
         }
     }
@@ -153,6 +155,7 @@ BGAgentId AgentManager::findAgentId(const CxxSockets::Host& host) {
 
     // Find and return the =first= active agent on this host
     for (const AgentRepPtr& agent : _agents) {
+        // cppcheck-suppress useStlAlgorithm
         if (agent->get_host() == host) {
             p = agent->get_agent_id();
             break;
@@ -180,11 +183,14 @@ AgentRepPtr AgentManager::pickAgent() {
     // We'll start simple and use either the first one with zero
     // binaries or the one with the smallest number of binaries.
     std::vector<AgentRepPtr>::const_iterator smallest = _agents.begin();
+
     for (std::vector<AgentRepPtr>::const_iterator it = _agents.begin(); it != _agents.end(); ++it) {
         if ((*smallest)->binCount() > (*it)->binCount()) {
+            // cppcheck-suppress useStlAlgorithm
             smallest = it;
         }
     }
+
     AgentRepPtr p;
     if (!_agents.empty()) { // There has to be at least one!
         p = *smallest;
@@ -245,6 +251,7 @@ void AgentManager::cancel(const bool end_binaries, const int signal) {
     {
         std::lock_guard lock(_agent_manager_mutex);
         for (const AgentRepPtr& agent : _agents) {
+            // cppcheck-suppress useStlAlgorithm
             agents.push_back(agent);
         }
     }
