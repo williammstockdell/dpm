@@ -12,10 +12,27 @@ TEST_CASE("BinaryId can be constructed from its string representation") {
 }
 
 TEST_CASE("BinaryId equality is value based") {
-    const BinaryId a{"foo"};
-    const BinaryId b{"foo"};
-    const BinaryId c{"bar"};
+    const BinaryId a{"foo:12"};
+    const BinaryId b{"foo:12"};
+    const BinaryId c{"bar:56"};
 
     REQUIRE(a == b);
     REQUIRE(a != c);
+}
+
+TEST_CASE("Assignment assigns") {
+
+    const BinaryId a{"bogus_host:12345"};
+    const BinaryId b = a;
+    const BinaryId c{"bogus_host:32145"};
+
+    REQUIRE(a == b);
+    REQUIRE(a != c);
+}
+
+TEST_CASE("Validate constructor") {
+
+    REQUIRE_NOTHROW([&]() {BinaryId a("bogus_host:4567");}());
+    CHECK_THROWS([&]() {BinaryId b("123");}());
+    CHECK_THROWS([&]() {BinaryId c("bogus");}());
 }

@@ -29,6 +29,7 @@ CXXFLAGS := \
     -pthread \
     -I$(ROOT) \
     -I$(ROOT)/utility/include \
+    -I$(ROOT)/src/master \
     -I$(ROOT)/src \
     -Icatch2
 
@@ -49,7 +50,22 @@ IdsTest: IdsTest.o $(CATCH_OBJ) $(IDS_OBJ) $(CXXSOCKETS) $(BGUTILITY)
 		-lcrypto \
 		-pthread
 
-all: IdsTest
+ABS_OBJ := $(ROOT)/src/master/common/AgentBase.o
+ABS_OBJ += $(ROOT)/src/master/common/BinaryController.o
+
+AgentBaseTest: AgentBaseTests.o $(CATCH_OBJ) $(ABS_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
+	$(CXX) -o $@ \
+		AgentBaseTests.o \
+		$(CATCH_OBJ) \
+		$(ABS_OBJ) \
+		$(IDS_OBJ) \
+		$(CXXSOCKETS) \
+		$(BGUTILITY) \
+		-llog4cxx \
+		-lcrypto \
+		-pthread
+
+test: IdsTest AgentBaseTest
 
 clean:
 	$(RM) *.o *~

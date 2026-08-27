@@ -39,7 +39,7 @@ default: all
 all: $(TARGETS_ALL)
 
 test: all
-	$(MAKE) --directory test
+	$(MAKE) --directory test test
 
 install:
 	$(MAKE) --directory utility install

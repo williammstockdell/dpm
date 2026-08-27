@@ -83,7 +83,7 @@ public:
     Serializable () {}
     virtual ~Serializable() {}
 
-    virtual Serializable *addSubEntity (const char *name, const char **attrs) {
+    virtual Serializable *addSubEntity (const char *, const char **) {
         throw Exception("XML: object does not allow subentities\n");
     }
 

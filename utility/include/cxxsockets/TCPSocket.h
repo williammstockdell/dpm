@@ -71,7 +71,7 @@ class TCPSocket : public Socket {
         const log4cxx::LoggerPtr inlines_logger(log4cxx::Logger::getLogger("ibm.utility.cxxsockets.CxxSocketInlines"));
         // Dead simple protocol:  Send a four byte size followed by data.
         const std::string msg(message.str());
-        const int32_t size = msg.length();
+        const int32_t size = static_cast<int32_t>(msg.length());
         if (size == 0) {
             LOG4CXX_WARN(inlines_logger, "Zero length send attempted.");
             return 0;

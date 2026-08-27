@@ -257,10 +257,6 @@ std::string calcLoggername(const std::string& base, const std::string& file);
  * "ibm.bgsched.allocator.Allocator"
  */
 
-// #define LOG_DECLARE_FILE( base )                \
-//    static log4cxx::LoggerPtr log_logger_(\
-//        log4cxx::Logger::getLogger( "dpm" )\
-//      )
 
 #define LOG_DECLARE_FILE(base) static log4cxx::LoggerPtr log_logger_(log4cxx::Logger::getLogger(bgq::utility::calcLoggername((base), __FILE__)))
 
