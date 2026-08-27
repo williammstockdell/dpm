@@ -108,6 +108,7 @@ BinaryController::BinaryController(const std::string& id, const std::string& bin
     :  _status((Status)stat), _exit_status (exit_status), _binary_bin_path(bin_path), _alias_name(alias), _binid{id}, _stop_requested(false), _start_time(time_from_string(start_time)), _user(user) {}
 
 BinaryId BinaryController::startBinary(const std::string& user_list, const std::string& properties) {
+
     LOG_TRACE_MSG(__FUNCTION__);
 
     // Pull out the full path and see if it exists
@@ -174,7 +175,9 @@ bool isRunning(const pid_t pid) {
 }
 
 int BinaryController::stop(int signal) {
+
     LOG_TRACE_MSG(__FUNCTION__);
+
     // This is how this works:
     // We use the signal passed to us as the initial signal... unless it is unspecified (zero).
     // In that case, we default to SIGTERM. After we try our initial signal, we wait a bit and start sending

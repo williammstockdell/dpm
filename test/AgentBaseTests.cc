@@ -17,7 +17,7 @@ TEST_CASE("Add a binary and find it") {
 
     ab.addController(binary);
     CHECK(ab.find_binary(bid, binary));
-
+    CHECK(ab.runningAlias("sleeper"));
     ab.removeController(binary);
     CHECK(ab.find_binary(bid, binary) == false);
 }

@@ -39,9 +39,11 @@ IDS_OBJ := $(ROOT)/src/master/common/Ids.o
 
 BGUTILITY := $(ROOT)/utility/src/libbgutility.so
 
-IdsTest: IdsTest.o $(CATCH_OBJ) $(IDS_OBJ) $(CXXSOCKETS) $(BGUTILITY)
+
+IdsTest: IdsTest.o TestLogging.o $(CATCH_OBJ) $(IDS_OBJ) $(CXXSOCKETS) $(BGUTILITY)
 	$(CXX) -o $@ \
 		IdsTest.o \
+		TestLogging.o \
 		$(CATCH_OBJ) \
 		$(IDS_OBJ) \
 		$(CXXSOCKETS) \
@@ -53,9 +55,10 @@ IdsTest: IdsTest.o $(CATCH_OBJ) $(IDS_OBJ) $(CXXSOCKETS) $(BGUTILITY)
 ABS_OBJ := $(ROOT)/src/master/common/AgentBase.o
 ABS_OBJ += $(ROOT)/src/master/common/BinaryController.o
 
-AgentBaseTest: AgentBaseTests.o $(CATCH_OBJ) $(ABS_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
+AgentBaseTest: AgentBaseTests.o TestLogging.o $(CATCH_OBJ) $(ABS_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
 	$(CXX) -o $@ \
 		AgentBaseTests.o \
+		TestLogging.o \
 		$(CATCH_OBJ) \
 		$(ABS_OBJ) \
 		$(IDS_OBJ) \
@@ -65,7 +68,39 @@ AgentBaseTest: AgentBaseTests.o $(CATCH_OBJ) $(ABS_OBJ)  $(CXXSOCKETS) $(BGUTILI
 		-lcrypto \
 		-pthread
 
-test: IdsTest AgentBaseTest
+
+HostTest: HostTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
+	$(CXX) -o $@ \
+		HostTest.o \
+		TestLogging.o \
+		$(CATCH_OBJ) \
+		$(CXXSOCKETS) \
+		$(BGUTILITY) \
+		-llog4cxx \
+		-lcrypto \
+		-pthread
+
+NoDelayTest: NoDelayTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
+	$(CXX) -o $@ \
+		NoDelayTest.o \
+		TestLogging.o \
+		$(CATCH_OBJ) \
+		$(CXXSOCKETS) \
+		$(BGUTILITY) \
+		-lcrypto \
+		-llog4cxx
+
+UserErrorExceptionTest: UserErrorExceptionTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
+	$(CXX) -o $@ \
+		UserErrorExceptionTest.o \
+		TestLogging.o \
+		$(CATCH_OBJ) \
+		$(CXXSOCKETS) \
+		$(BGUTILITY) \
+		-lcrypto \
+		-llog4cxx
+
+test: IdsTest AgentBaseTest HostTest NoDelayTest UserErrorExceptionTest
 
 clean:
 	$(RM) *.o *~

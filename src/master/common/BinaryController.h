@@ -38,6 +38,12 @@
 #include "Ids.h"
 #include "types.h"
 
+// FIXME: Should probably split this to three classes, architecturally similar
+//        to the agent: a BinaryControllerBase with only the client/server
+//        common bits, and two inheriting classes.  First, a BinaryController
+//        that actually controls the binary in the agent and BinaryRep that
+//        serves as the representation of a binary in the server.
+
 //! \brief Controls a managed executable, base class
 class BinaryController {
 
