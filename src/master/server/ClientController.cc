@@ -46,6 +46,8 @@
 #include <utility>
 #include <vector>
 
+#include <utility/include/LogHelper.h>
+
 #include "AgentManager.h"
 #include "AgentRep.h"
 #include "Alias.h"
@@ -758,7 +760,7 @@ void ClientController::doLoglevelRequest(const BGMasterClientProtocolSpec::Logle
 
     const auto root = log4cxx::Logger::getRootLogger();
 
-    if (const auto repo = root->getLoggerRepository().lock()) {
+    if (const auto repo = getRepository(root->getLoggerRepository())) {
         for (const log4cxx::LoggerPtr& curr_loggerp : repo->getCurrentLoggers()) {
             if (!curr_loggerp || !curr_loggerp->getLevel()) {
                 continue;

@@ -28,7 +28,7 @@ EXECS = properties_validate
 CXXFLAGS += -O2
 CXXFLAGS += -Wall
 CXXFLAGS += -MD -MP
-CXXFLAGS += -iquote $(BGQ_BUILD_DIR)/hlcs/src/master
+CXXFLAGS += -iquote $(DPM_BUILD_DIR)/src/master
 CXXFLAGS += -isystem $(DPM_BUILD_DIR)
 
 LDFLAGS  += -llog4cxx

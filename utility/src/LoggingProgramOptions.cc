@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <utility/include/LogHelper.h>
 
 using log4cxx::Level;
 using log4cxx::LevelPtr;
@@ -44,6 +45,7 @@ using std::string;
 LOG_DECLARE_FILE("utility");
 
 static bool debug(false);
+
 
 namespace bgq {
 namespace utility {
@@ -114,7 +116,9 @@ void LoggingProgramOptions::notifier(const Strings& strs) {
     }
 }
 
+
 void LoggingProgramOptions::apply() const {
+
     // Go through the stored logging settings and apply to the current logging configuration.
 
     for (LoggingLevels::const_iterator i(_logging_levels.begin()); i != _logging_levels.end(); ++i) {
@@ -124,14 +128,16 @@ void LoggingProgramOptions::apply() const {
     // Log current logger settings.
     const auto root = log4cxx::Logger::getRootLogger();
 
-    if (const auto repo = root->getLoggerRepository().lock()) {
+    if (const auto repo = getRepository(root->getLoggerRepository())) {
         for (const log4cxx::LoggerPtr& curr_loggerp : repo->getCurrentLoggers()) {
             const log4cxx::LevelPtr level = curr_loggerp->getLevel();
 
-            LOG_DEBUG_MSG(curr_loggerp->getName() << "=" << (level ? level->toString() : "<inherited>"));
+            LOG_DEBUG_MSG(curr_loggerp->getName() << "="
+                          << (level ? level->toString() : "<inherited>"));
         }
     }
 }
+
 
 void LoggingProgramOptions::_parseVerboseString(const std::string& str, std::string& logger_name_out, log4cxx::LevelPtr& level_ptr_out) {
     if (str.empty()) {

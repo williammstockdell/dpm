@@ -26,15 +26,10 @@
 #include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include <assert.h>
 #include <log4cxx/helpers/messagebuffer.h>
 #include <log4cxx/logger.h>
 #include <sys/types.h>
-#include <boost/archive/detail/interface_iarchive.hpp>
-#include <boost/archive/detail/interface_oarchive.hpp>
-#include <boost/serialization/level_enum.hpp>
 #include <cerrno>
 #include <sstream>
 #include <stdexcept>

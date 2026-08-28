@@ -36,3 +36,4 @@ src/master/protocol/
 /src/master/server/bgmaster_server
 /html
 .cache
+test/integration/dpm_install/

@@ -27,6 +27,7 @@
 #include <xml/include/library/XML.h>
 
 #include <log4cxx/log4cxx.h>
+#include <log4cxx/mdc.h>
 
 #include <string>
 #include <string_view>

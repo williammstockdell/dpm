@@ -47,7 +47,7 @@ LDFLAGS += \
  -L $(DPM_BUILD_DIR)/utility/src/ -lbgutility \
  -Wl,-rpath,'$$ORIGIN/../lib'  \
  -L$(DPM_BUILD_DIR)/xml/src/library -lXML \
- -Wl,-rpath,$(DPM_BUILD_DIR)/xml/lib \
+ -Wl,-rpath,$(DPM_BUILD_DIR)/xml/src/library \
  -Wl,-soname,$(lib_soname)
 
 

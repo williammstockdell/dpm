@@ -50,18 +50,20 @@ endif
 
 # define installation directories
 tld=utility
-install_base_dir=$(BGQ_INSTALL_DIR)/$(tld)
+install_base_dir=$(DPM_INSTALL_DIR)/$(tld)
 include_install_dir=$(install_base_dir)/include
-etc_install_dir=$(BGQ_INSTALL_DIR)/etc
-BGQ_LIB_INSTALL_DIR=$(install_base_dir)/lib
-BGQ_BIN_INSTALL_DIR=$(install_base_dir)/bin
-BGQ_SBIN_INSTALL_DIR=$(install_base_dir)/sbin
+etc_install_dir=$(DPM_INSTALL_DIR)/etc
+DPM_LIB_INSTALL_DIR=$(install_base_dir)/lib
+DPM_BIN_INSTALL_DIR=$(install_base_dir)/bin
+DPM_SBIN_INSTALL_DIR=$(install_base_dir)/sbin
 
 # include flags
-CXXFLAGS    += -isystem $(BGQ_BUILD_DIR)/
-CXXFLAGS    += -isystem $(BGQ_INSTALL_DIR)/
-CXXFLAGS    += -isystem $(BGQ_INSTALL_DIR)/utility/include
-#CXXFLAGS    += -isystem $(BGQ_BUILD_DIR)/utility/include
+CXXFLAGS    += -isystem $(DPM_BUILD_DIR)/
+CXXFLAGS    += -isystem $(DPM_BUILD_DIR)/
+CXXFLAGS    += -isystem $(DPM_BUILD_DIR)/utility/include
+
+# standard flag
+CXXFLAGS    += -std=c++20
 
 # debugger flags
 ifneq ($(DEBUG_FLAGS),no)

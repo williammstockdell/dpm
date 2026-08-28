@@ -29,7 +29,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <utility/include/Log.h>
-#include <boost/assert.hpp>
 #include <csignal>
 #include <thread>
 #include <chrono>
@@ -37,6 +36,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <cassert>
 
 #include "Agent.h"
 #include "MasterConnection.h"
@@ -177,8 +177,8 @@ void MasterConnection::run(const int signal_read_fd) {
 
 MasterConnection::MasterConnection(const bgq::utility::PortConfiguration::Pairs& ports, Agent* const agent) : _ports(ports), _agent(agent) {
     LOG_TRACE_MSG(__FUNCTION__);
-    BOOST_ASSERT(_agent);
-    BOOST_ASSERT(!_ports.empty());
+    assert(_agent);
+    assert(!_ports.empty());
 }
 
 MasterConnection::~MasterConnection() { LOG_DEBUG_MSG("Terminating"); }
