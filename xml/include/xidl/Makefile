@@ -21,9 +21,9 @@
 #
 # end_generated_IBM_copyright_prolog
 
-INSTALL_DIR=$(DPM_INSTALL_DIR)/xml/xidl
+INSTALL_DIR=$(DPM_BUILD_DIR)/xml/xidl
 PYSCRIPTS = $(wildcard *.py)
-INSTALL_TARGETS = $(addprefix $(DPM_INSTALL_DIR)/xml/xidl/, $(PYSCRIPTS))
+INSTALL_TARGETS = $(addprefix $(DPM_BUILD_DIR)/xml/xidl/, $(PYSCRIPTS))
 
 $(INSTALL_DIR):
 	$(MKDIR) -p $(INSTALL_DIR)

@@ -39,12 +39,12 @@ install: docs
 
 
 uninstall:
-	rm -rf $(DPM_INSTALL_DIR)/hlcs/docs/overview
+	rm -rf $(DPM_BUILD_DIR)/hlcs/docs/overview
 
 
 docs: doxygen.out
 
 
 doxygen.out: Doxyfile
-	$(MKDIR) -p $(DPM_INSTALL_DIR)/hlcs/docs/overview
-	cd ../../ && cat src/docs/$^ | sed 's\:DPM_INSTALL_DIR:$(DPM_INSTALL_DIR):' | doxygen - > src/docs/doxygen.out 2>&1
+	$(MKDIR) -p $(DPM_BUILD_DIR)/hlcs/docs/overview
+	cd ../../ && cat src/docs/$^ | sed 's\:DPM_BUILD_DIR:$(DPM_BUILD_DIR):' | doxygen - > src/docs/doxygen.out 2>&1

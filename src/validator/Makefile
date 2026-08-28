@@ -29,20 +29,20 @@ CXXFLAGS += -O2
 CXXFLAGS += -Wall
 CXXFLAGS += -MD -MP
 CXXFLAGS += -iquote $(BGQ_BUILD_DIR)/hlcs/src/master
-CXXFLAGS += -isystem $(DPM_INSTALL_DIR)
+CXXFLAGS += -isystem $(DPM_BUILD_DIR)
 
 LDFLAGS  += -llog4cxx
 LDFLAGS  += -lcxxsockets
-LDFLAGS  += -L $(DPM_INSTALL_DIR)/utility/lib -lbgutility
-LDFLAGS  += -Wl,-rpath,$(DPM_INSTALL_DIR)/utility/lib
-LDFLAGS  += -L $(DPM_INSTALL_DIR)/xml/lib -lXML
-LDFLAGS  += -Wl,-rpath,$(DPM_INSTALL_DIR)/xml/lib
-LDFLAGS  += -L $(DPM_INSTALL_DIR)/ras/lib -lras
-LDFLAGS  += -Wl,-rpath,$(DPM_INSTALL_DIR)/ras/lib
-LDFLAGS  += -L $(DPM_INSTALL_DIR)/db/lib -lbgdb
-LDFLAGS  += -Wl,-rpath,$(DPM_INSTALL_DIR)/db/lib
-LDFLAGS  += -L $(DPM_INSTALL_DIR)/control/lib -lmcserver
-LDFLAGS  += -Wl,-rpath,$(DPM_INSTALL_DIR)/control/lib
+LDFLAGS  += -L $(DPM_BUILD_DIR)/utility/lib -lbgutility
+LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/utility/lib
+LDFLAGS  += -L $(DPM_BUILD_DIR)/xml/lib -lXML
+LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/xml/lib
+LDFLAGS  += -L $(DPM_BUILD_DIR)/ras/lib -lras
+LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/ras/lib
+LDFLAGS  += -L $(DPM_BUILD_DIR)/db/lib -lbgdb
+LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/db/lib
+LDFLAGS  += -L $(DPM_BUILD_DIR)/control/lib -lmcserver
+LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/control/lib
 
 BGM_OBJS =
 BGM_OBJS += ../master/common/AgentBase.o
@@ -89,7 +89,7 @@ properties_validate: properties_validate.o $(BGM_OBJS) $(MMCS_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 test: properties_validate
-	./$^ $(DPM_INSTALL_DIR)/utility/etc/bg.properties.ship.tpl
+	./$^ $(DPM_BUILD_DIR)/utility/etc/bg.properties.ship.tpl
 	@touch $@
 
 -include *.d

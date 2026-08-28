@@ -33,7 +33,7 @@ clean:
 
 distclean: clean
 
-INSTALL_DIR = $(DPM_INSTALL_DIR)/hlcs/docs/master
+INSTALL_DIR = $(DPM_BUILD_DIR)/hlcs/docs/master
 
 IMAGE = Alias_etc.png
 
@@ -46,7 +46,7 @@ $(INSTALL_DIR)/%: % | $(INSTALL_DIR)
 install: docs $(INSTALL_DIR)/$(IMAGE)
 
 uninstall:
-	rm -rf $(DPM_INSTALL_DIR)/hlcs/docs/master
+	rm -rf $(DPM_BUILD_DIR)/hlcs/docs/master
 
 doxygen_version := $(subst 1.7,1.6,$(findstring 1.6, $(shell doxygen --version))$(findstring 1.7, $(shell doxygen --version)))
 required_doxygen_version := 1.6
@@ -56,7 +56,7 @@ docs: doxygen.out
 doxygen.out: Doxyfile | $(INSTALL_DIR)
 ifeq ($(doxygen_version),$(required_doxygen_version))
 	@echo "generating documentation"
-	cd ../../../../ && cat src/master/docs/html/$^ | sed 's:DPM_INSTALL_DIR:$(DPM_INSTALL_DIR):' | doxygen - > src/master/docs/html/doxygen.out
+	cd ../../../../ && cat src/master/docs/html/$^ | sed 's:DPM_BUILD_DIR:$(DPM_BUILD_DIR):' | doxygen - > src/master/docs/html/doxygen.out
 else
 	@echo "Will not generate docs because doxygen version is" $(shell doxygen --version) "and required version is" $(required_doxygen_version)
 	@touch $@

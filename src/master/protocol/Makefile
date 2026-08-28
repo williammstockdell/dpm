@@ -25,10 +25,10 @@
 include ../../../Make.hlcs.rules
 
 # Location of the python scripts to build headers
-XMLSCRIPT_DIR=$(DPM_INSTALL_DIR)/xml/include/scripts
+XMLSCRIPT_DIR=$(DPM_BUILD_DIR)/xml/include/scripts
 
 CXXFLAGS += -Wall -Wno-format-y2k
-CXXFLAGS += -isystem $(DPM_INSTALL_DIR)
+CXXFLAGS += -isystem $(DPM_BUILD_DIR)
 CXXFLAGS += -O2
 CXXFLAGS += -fpic
 CXXFLAGS += -MD -MP

@@ -7,10 +7,10 @@ DIRS += src/docs
 
 PREFIX ?= $(CURDIR)
 
-BINDIR  = $(PREFIX)/bin
-SBINDIR = $(PREFIX)/sbin
-LIBDIR  = $(PREFIX)/lib
-ETCDIR  = $(PREFIX)/etc
+BINDIR  = $(DPM_INSTALL_DIR)/bin
+SBINDIR = $(DPM_INSTALL_DIR)/sbin
+LIBDIR  = $(DPM_INSTALL_DIR)/lib
+ETCDIR  = $(DPM_INSTALL_DIR)/etc
 
 export PREFIX
 export BINDIR

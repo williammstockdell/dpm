@@ -21,9 +21,9 @@
 #
 # end_generated_IBM_copyright_prolog
 
-INSTALL_DIR=$(DPM_INSTALL_DIR)/xml/scripts
+INSTALL_DIR=$(DPM_BUILD_DIR)/xml/scripts
 PYSCRIPTS = $(wildcard *.py)
-INSTALL_TARGETS = $(addprefix $(DPM_INSTALL_DIR)/xml/scripts/, $(PYSCRIPTS))
+INSTALL_TARGETS = $(addprefix $(DPM_BUILD_DIR)/xml/scripts/, $(PYSCRIPTS))
 
 .PHONY: default all install clean distclean
 

@@ -25,9 +25,9 @@ include ../../../Make.hlcs.rules
 
 
 CXXFLAGS += \
- -isystem $(DPM_INSTALL_DIR) \
- -isystem $(DPM_INSTALL_DIR)/utility/include \
- -isystem $(DPM_INSTALL_DIR) \
+ -isystem $(DPM_BUILD_DIR) \
+ -isystem $(DPM_BUILD_DIR)/utility/include \
+ -isystem $(DPM_BUILD_DIR) \
  -iquote .. \
  -W \
  -Wall \

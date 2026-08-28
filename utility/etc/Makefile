@@ -22,7 +22,7 @@
 # end_generated_IBM_copyright_prolog
 
 TOP_DIR=utility
-BGQ_BIN_INSTALL_DIR=$(DPM_INSTALL_DIR)/$(TOP_DIR)/etc
+BGQ_BIN_INSTALL_DIR=$(DPM_BUILD_DIR)/$(TOP_DIR)/etc
 
 
 .PHONY: default all clean distclean
@@ -40,8 +40,8 @@ dpm.properties: dpm.properties.template
 	sed -e "s/%%BGQDB_USER%%/$(BGQDB_USER)/" | \
 	sed -e "s/%%BGQDB_PWD%%/$(BGQDB_PWD)/" | \
 	sed -e "s/%%BGQDB_SCHEMA%%/$(BGQDB_SCHEMA)/" | \
-	sed -e "s,%%DPM_INSTALL_DIR%%,$(DPM_INSTALL_DIR)," | \
-	sed -e "s,%%CERTIFICATE_DIR%%,$(DPM_INSTALL_DIR)/etc/security," > $@
+	sed -e "s,%%DPM_BUILD_DIR%%,$(DPM_BUILD_DIR)," | \
+	sed -e "s,%%CERTIFICATE_DIR%%,$(DPM_BUILD_DIR)/etc/security," > $@
 
 
 %.tpl: %
