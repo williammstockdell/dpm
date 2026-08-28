@@ -71,11 +71,11 @@ docs.clean:
 doxygen.out:
 ifeq ($(doxygen_version),$(required_doxygen_version))
 	@echo "generating documentation"
-	$(MKDIR) -p $(BGQ_INSTALL_DIR)/utility/docs
-	$(CP) docs/verbose.html $(BGQ_INSTALL_DIR)/utility/docs
-	$(CP) docs/verbose.man $(BGQ_INSTALL_DIR)/utility/docs
-	cat docs/Doxyfile | sed 's:!OUTPUT_DIR!:$(BGQ_INSTALL_DIR)/utility/docs:' | doxygen - > $@
-	sed -e 's^@DRIVER@^$(BGQ_INSTALL_DIR)^' < docs/main_index.html > $(BGQ_INSTALL_DIR)/utility/docs/main_index.html
+	$(MKDIR) -p $(DPM_INSTALL_DIR)/utility/docs
+	$(CP) docs/verbose.html $(DPM_INSTALL_DIR)/utility/docs
+	$(CP) docs/verbose.man $(DPM_INSTALL_DIR)/utility/docs
+	cat docs/Doxyfile | sed 's:!OUTPUT_DIR!:$(DPM_INSTALL_DIR)/utility/docs:' | doxygen - > $@
+	sed -e 's^@DRIVER@^$(DPM_INSTALL_DIR)^' < docs/main_index.html > $(DPM_INSTALL_DIR)/utility/docs/main_index.html
 else
 	@echo "Will not generate docs because doxygen version is" $(shell doxygen --version) "and required version is" $(required_doxygen_version)
 	@touch $@

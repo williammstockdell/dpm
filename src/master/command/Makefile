@@ -24,7 +24,7 @@
 include ../../../Make.hlcs.rules
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR) \
+ -isystem $(DPM_INSTALL_DIR) \
  -iquote .. \
  -Wall \
  -Wextra \
@@ -37,10 +37,10 @@ CXXFLAGS += \
 
 LDFLAGS += \
  -L../lib -lbgmasterclient \
- -L $(BGQ_INSTALL_DIR)/utility/src/cxxsockets -lcxxsockets \
- -L $(BGQ_INSTALL_DIR)/utility/src/ -lbgutility \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/lib \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
+ -L $(DPM_INSTALL_DIR)/utility/src/cxxsockets -lcxxsockets \
+ -L $(DPM_INSTALL_DIR)/utility/src/ -lbgutility \
+ -Wl,-rpath,$(DPM_INSTALL_DIR)/lib \
+ -Wl,-rpath,$(DPM_INSTALL_DIR)/utility/lib \
  -llog4cxx \
  -lssl \
  -lcrypto

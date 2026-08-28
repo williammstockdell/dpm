@@ -31,7 +31,7 @@ lib := $(lib_soname).0.0
 
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR)/ \
+ -isystem $(DPM_INSTALL_DIR)/ \
  -iquote .. \
  -Wall \
  -Wextra \
@@ -42,12 +42,12 @@ CXXFLAGS += \
  -fPIC
 
 LDFLAGS += \
- -L $(BGQ_INSTALL_DIR)/utility/src/cxxsockets -lcxxsockets \
- -L $(BGQ_INSTALL_DIR)/utility/src/ -lbgutility \
- -L $(BGQ_INSTALL_DIR)/utility/src/ -lbgutility \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
- -L$(BGQ_INSTALL_DIR)/xml/src/library -lXML \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
+ -L $(DPM_INSTALL_DIR)/utility/src/cxxsockets -lcxxsockets \
+ -L $(DPM_INSTALL_DIR)/utility/src/ -lbgutility \
+ -L $(DPM_INSTALL_DIR)/utility/src/ -lbgutility \
+ -Wl,-rpath,$(DPM_INSTALL_DIR)/utility/lib \
+ -L$(DPM_INSTALL_DIR)/xml/src/library -lXML \
+ -Wl,-rpath,$(DPM_INSTALL_DIR)/xml/lib \
  -Wl,-soname,$(lib_soname)
 
 

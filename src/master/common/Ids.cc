@@ -21,6 +21,13 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+/* ================================================================ */
+/* Modifications & Modernization:                                   */
+/* Copyright (c) 2026 Will Stockdell.                               */
+/* This file has been modified from the original Blue Gene/Q source.*/
+/* Licensed under the Eclipse Public License v 1.0.                 */
+/* ================================================================ */
+
 #include "Ids.h"
 
 #include <utility/include/cxxsockets/exception.h>

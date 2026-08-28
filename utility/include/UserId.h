@@ -20,6 +20,7 @@
 /* ================================================================ */
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
+
 /*!
  * \file utility/include/UserId.h
  * \brief \link bgq::utility::UserId UserId\endlink definition.

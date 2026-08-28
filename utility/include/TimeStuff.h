@@ -1,3 +1,17 @@
+/* ================================================================ */
+/*                                                                  */
+/* Licensed Materials - Property of Will Stockdell                  */
+/*                                                                  */
+/* DPM -- Distributed Process Manager                               */
+/*                                                                  */
+/* (C) Copyright Will Stockdell 2026                                */
+/*                                                                  */
+/* This software is available to you under the                      */
+/* Eclipse Public License (EPL) version 1.0                         */
+/*                                                                  */
+/* ================================================================ */
+
+
 #ifndef TIME_STUFF_H
 #define TIME_STUFF_H
 

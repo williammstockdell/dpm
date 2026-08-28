@@ -25,9 +25,9 @@ include ../../../Make.hlcs.rules
 
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR) \
- -isystem $(BGQ_INSTALL_DIR)/utility/include \
- -isystem $(BGQ_INSTALL_DIR) \
+ -isystem $(DPM_INSTALL_DIR) \
+ -isystem $(DPM_INSTALL_DIR)/utility/include \
+ -isystem $(DPM_INSTALL_DIR) \
  -iquote .. \
  -W \
  -Wall \

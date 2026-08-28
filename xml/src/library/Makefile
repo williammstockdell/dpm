@@ -23,7 +23,7 @@
 
 
 MODULE_DIR=xml
-MODULE_INSTALL_DIR=$(BGQ_INSTALL_DIR)/$(MODULE_DIR)
+MODULE_INSTALL_DIR=$(DPM_INSTALL_DIR)/$(MODULE_DIR)
 MODULE_LIB_DIR=$(MODULE_INSTALL_DIR)/lib
 
 OS := $(shell uname)
@@ -33,7 +33,7 @@ OS_ARCH = $(shell uname -m)
 IDLC            = ../../include/scripts/generateCode.py
 XML_DEFS_DIR    = ../defs
 XML_DEFS        = $(wildcard $(XML_DEFS_DIR)/*.xml)
-XMLLIB_INST_INC = $(BGQ_INSTALL_DIR)/xml/include/c_api
+XMLLIB_INST_INC = $(DPM_INSTALL_DIR)/xml/include/c_api
 
 KEEP            = XML.cc base64.cc
 C_API_CC        = $(addsuffix .cc, $(basename $(notdir $(XML_DEFS))))
@@ -57,7 +57,7 @@ else
 SOLIB_OBJS = $(OBJS)
 endif
 
-INC_PATH=-I$(BGQ_INSTALL_DIR)
+INC_PATH=-I$(DPM_INSTALL_DIR)
 
 
 ifeq ($(OS),AIX)
@@ -69,7 +69,7 @@ ifeq ($(OS),AIX)
 else
   CXXFLAGS += -O2
   CXXFLAGS += -g -fPIC
-  CXXFLAGS += -isystem $(BGQ_INSTALL_DIR)/extlib/include
+  CXXFLAGS += -isystem $(DPM_INSTALL_DIR)/extlib/include
   SOLIB_LDFLAGS += -Wl,--enable-new-dtags # use DT_RUNPATH
 endif
 

@@ -25,12 +25,12 @@ include ../../../Make.hlcs.rules
 
 
 TOP_DIR=hlcs
-TOP_INSTALL_DIR=$(BGQ_INSTALL_DIR)/$(TOP_DIR)
+TOP_INSTALL_DIR=$(DPM_INSTALL_DIR)/$(TOP_DIR)
 MODULE_INIT_DIR=$(TOP_INSTALL_DIR)/etc/init
 
 
 CXXFLAGS += \
- -isystem $(BGQ_INSTALL_DIR)/ \
+ -isystem $(DPM_INSTALL_DIR)/ \
  -iquote .. \
  -W \
  -Wall \
@@ -43,11 +43,11 @@ CXXFLAGS += \
 
 
 LDFLAGS += \
- -L $(BGQ_INSTALL_DIR)/utility/src/cxxsockets -lcxxsockets \
- -L $(BGQ_INSTALL_DIR)/utility/src/ -lbgutility \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/utility/lib \
- -L $(BGQ_INSTALL_DIR)/xml/src/library -lXML \
- -Wl,-rpath,$(BGQ_INSTALL_DIR)/xml/lib \
+ -L $(DPM_INSTALL_DIR)/utility/src/cxxsockets -lcxxsockets \
+ -L $(DPM_INSTALL_DIR)/utility/src/ -lbgutility \
+ -Wl,-rpath,$(DPM_INSTALL_DIR)/utility/lib \
+ -L $(DPM_INSTALL_DIR)/xml/src/library -lXML \
+ -Wl,-rpath,$(DPM_INSTALL_DIR)/xml/lib \
  -llog4cxx \
  -lexpat \
  -lssl \

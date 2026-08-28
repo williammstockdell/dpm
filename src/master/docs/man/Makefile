@@ -1,7 +1,7 @@
 include ../../../../Make.hlcs.rules
 
 TOP_DIR=hlcs
-TOP_INSTALL_DIR=$(BGQ_INSTALL_DIR)/$(TOP_DIR)
+TOP_INSTALL_DIR=$(DPM_INSTALL_DIR)/$(TOP_DIR)
 MAN_INSTALL_DIR=$(TOP_INSTALL_DIR)/man/man8
 
 
