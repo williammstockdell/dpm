@@ -45,7 +45,7 @@ LDFLAGS += \
  -L $(DPM_BUILD_DIR)/utility/src/cxxsockets -lcxxsockets \
  -L $(DPM_BUILD_DIR)/utility/src/ -lbgutility \
  -L $(DPM_BUILD_DIR)/utility/src/ -lbgutility \
- -Wl,-rpath,$(DPM_BUILD_DIR)/utility/lib \
+ -Wl,-rpath,'$$ORIGIN/../lib'  \
  -L$(DPM_BUILD_DIR)/xml/src/library -lXML \
  -Wl,-rpath,$(DPM_BUILD_DIR)/xml/lib \
  -Wl,-soname,$(lib_soname)

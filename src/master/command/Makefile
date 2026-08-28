@@ -39,8 +39,7 @@ LDFLAGS += \
  -L../lib -lbgmasterclient \
  -L $(DPM_BUILD_DIR)/utility/src/cxxsockets -lcxxsockets \
  -L $(DPM_BUILD_DIR)/utility/src/ -lbgutility \
- -Wl,-rpath,$(DPM_BUILD_DIR)/lib \
- -Wl,-rpath,$(DPM_BUILD_DIR)/utility/lib \
+ -Wl,-rpath,'$$ORIGIN/../lib' \
  -llog4cxx \
  -lssl \
  -lcrypto
