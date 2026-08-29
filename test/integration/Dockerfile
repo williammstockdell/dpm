@@ -9,6 +9,11 @@ RUN apt-get update && \
         libssl-dev \
         libapr1-dev \
         libaprutil1-dev \
+	libxml2-utils \
+	docbook-xml \
+	docbook-xml \
+	docbook-xsl \
+	xsltproc \
         make \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
@@ -39,6 +44,7 @@ RUN apt-get update && \
         libapr1 \
         libaprutil1 \
         libstdc++6 \
+	docbook-xml \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 

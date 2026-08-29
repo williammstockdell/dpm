@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # begin_generated_IBM_copyright_prolog
 #
 # This is an automatically generated copyright prolog.

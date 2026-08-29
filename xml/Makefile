@@ -24,8 +24,9 @@
 
 os	= $(shell uname)
 
-DIRS = include
 DIRS += $(subst /Makefile,,$(wildcard */Makefile))
+SKIP	= include
+DIRS	:= $(filter-out $(SKIP),$(DIRS))
 
 TARGETS_ALL		= $(addsuffix .all,$(DIRS))
 TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))
@@ -61,8 +62,8 @@ distclean:	this.distclean	$(TARGETS_DISTCLEAN)
 
 
 # dependency to make sure install directory happens first..
-$(filter-out include.install,$(TARGETS_INSTALL)):: include.install
-$(filter-out include.all,$(TARGETS_ALL)):: include.all
+#$(filter-out include.install,$(TARGETS_INSTALL)):: include.install
+#$(filter-out include.all,$(TARGETS_ALL)):: include.all
 
 # +++
 #	Each element in "$TARGETS" is of the form:

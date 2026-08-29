@@ -20,6 +20,7 @@
 # ================================================================
 #
 # end_generated_IBM_copyright_prolog
+
 OS	= $(shell uname)
 
 

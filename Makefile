@@ -44,6 +44,7 @@ test: all
 install:
 	$(MAKE) --directory utility install
 	$(MAKE) --directory src install
+	$(MAKE) --directory xml install
 
 # Build prerequisites between major trees.
 src.all: xml.all utility.all include.all

@@ -116,7 +116,12 @@ default: install
 
 all:$(TARGET_LIST)
 
-install: $(INSTALL_LIST)
+install: all
+	mkdir -p $(DPM_INSTALL_DIR)/lib
+	cp -p libXML.so.1.0.1 $(DPM_INSTALL_DIR)/lib/
+	ln -sf libXML.so.1.0.1 $(DPM_INSTALL_DIR)/lib/libXML.so.1
+	ln -sf libXML.so.1 $(DPM_INSTALL_DIR)/lib/libXML.so
+
 
 $(MODULE_LIB_DIR)/%.a: %.a
 	$(call bgq_install_lib,$<,$@)
@@ -148,11 +153,11 @@ $(LIB64): $(OBJS64)
 
 $(SOLIB_DEV): $(SOLIB_VERS)
 	$(RM) $@
-	$(LN) -s $< $@
+	ln -s $< $@
 
 $(SOLIB_VERS): $(SOLIB_FULL)
 	$(RM) $@
-	$(LN) -s $< $@
+	ln -s $< $@
 
 $(SOLIB_FULL): $(SOLIB_OBJS)
 	$(CXX) -o $@ $^ $(SOLIB_LDFLAGS)

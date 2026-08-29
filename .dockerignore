@@ -1,0 +1,11 @@
+.git
+
+**/*.o
+**/*.o_64
+**/*.d
+
+**/*.a
+**/*.so
+**/*.so.[0-9]*
+test/integration/dpm_install
+cscope.out
