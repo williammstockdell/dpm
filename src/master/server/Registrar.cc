@@ -223,10 +223,12 @@ void Registrar::processNew(CxxSockets::TCPSocketPtr sock) {
 }
 
 void Registrar::listenForNew(const bgq::utility::PortConfiguration::Pairs& portpairs) {
+
     LOG_TRACE_MSG(__FUNCTION__);
     _my_tid = pthread_self();
     _failed = false;
     _end = false;
+
     // Will listen on the registration listener then accept new
     // connections.  The new connections will be validated and
     // inserted into the agent vector in a separate thread.
@@ -315,12 +317,14 @@ void Registrar::cancel() {
 }
 
 void Registrar::run(bool agent) {
+
     // This starts our listener thread
     LOG_TRACE_MSG(__FUNCTION__);
     bgq::utility::PortConfiguration::Pairs portpairs;
 
     const std::string servname = agent ? "32041" : "32042";
     const std::string port_type = agent ? "agent" : "client";
+    const std::string property_name = agent ? "agent_listen_ports" : "client_listen_ports";
 
     try {
         bgq::utility::ServerPortConfiguration port_config(servname, port_type, port_type);

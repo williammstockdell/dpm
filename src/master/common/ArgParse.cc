@@ -139,20 +139,12 @@ void Args::setupPortConfig(const bin_type utype, const std::string& host_string)
         } else {
             _portpairs = port_config.getPairs();
         }
-    }
-    else if (utype == SERVER) {
-
-        bgq::utility::ServerPortConfiguration port_config(32042, bgq::utility::ServerPortConfiguration::ConnectionType::AdministrativeCommand);
-
-        port_config.setProperties(_props, "master.server");
-        port_config.notifyComplete();
-
-        _portpairs = port_config.getPairs();
-    }
+    } else;  // Do nothing for server.  That happens in the Registrar.
 }
 
 // cppcheck-suppress funcArgNamesDifferentUnnamed
 Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), std::vector<std::string>& valargs, const std::vector<std::string>& singles, bin_type utype) {
+
     valargs.push_back("--verbose");
     valargs.push_back("-v");
     valargs.push_back("--properties");
