@@ -139,7 +139,7 @@ void Args::setupPortConfig(const bin_type utype, const std::string& host_string)
         } else {
             _portpairs = port_config.getPairs();
         }
-    } else;  // Do nothing for server.  That happens in the Registrar.
+    } else {};  // Do nothing for server.  That happens in the Registrar.
 }
 
 // cppcheck-suppress funcArgNamesDifferentUnnamed
