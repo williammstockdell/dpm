@@ -37,3 +37,5 @@ src/master/protocol/
 /html
 .cache
 test/integration/dpm_install/
+test/integration/logs/
+test/integration/security/

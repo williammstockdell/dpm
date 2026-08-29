@@ -43,6 +43,7 @@ class Args {
     //! \brief map of other args
     std::map<std::string, std::string> _argpairs;
     std::vector<std::string> _otherargs;
+    void setupPortConfig(const bin_type utype, const std::string& host_string);
     static bool setupLogger(const std::string& verbarg);
     static void setupLoggerDefaults();
     bgq::utility::Properties::Ptr _props;

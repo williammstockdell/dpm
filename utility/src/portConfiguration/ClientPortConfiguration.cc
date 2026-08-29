@@ -58,27 +58,6 @@ ClientPortConfiguration::ClientPortConfiguration(const std::string& default_serv
     // Nothing to do.
 }
 
-// void ClientPortConfiguration::addTo(
-//         boost::program_options::options_description& options
-//     )
-// {
-//     namespace po = boost::program_options;
-
-//     string option_name((_name.empty() ? "" : string() + _name + "-") + OptionName);
-
-//     string desc_text(_description.empty() ? "Server to connect to" : string() + "Server to open " + _description + " connection to" );
-
-//     options.add_options()
-//         (
-//          option_name.c_str(),
-//          po::value<Strings>()->notifier(
-//                                         [this](const Strings& ports) {
-//                                             setPorts(ports);
-//                                         }
-//                                         ),
-//          desc_text.c_str()
-//          );
-// }
 
 SslConfiguration ClientPortConfiguration::createSslConfiguration() const {
     SslConfiguration ssl_config(SslConfiguration::Use::Client,

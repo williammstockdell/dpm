@@ -52,8 +52,8 @@ namespace utility {
 //---------------------------------------------------------------------
 // class Properties
 
-const std::string Properties::EnvironmentalName("BG_PROPERTIES_FILE");
-const std::string Properties::DefaultLocation("/bgsys/local/etc/bg.properties");
+const std::string Properties::EnvironmentalName("DPM_PROPERTIES_FILE");
+const std::string Properties::DefaultLocation("/opt/etc/dpm.properties");
 
 Properties::Properties(const std::string& file) : _filename(file), _map(), _mutex() { this->read(); }
 

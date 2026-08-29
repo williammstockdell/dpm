@@ -1,0 +1,48 @@
+services:
+  server:
+    image: dpm-runtime
+    container_name: dpm-server
+    hostname: dpm-server
+
+    environment:
+      DPM_PROPERTIES_FILE: /etc/dpm/dpm.properties
+
+    volumes:
+      - ./config/dpm.properties:/etc/dpm/dpm.properties:ro
+      - ./certs/server:/etc/dpm/certs:ro
+      - ./logs/server:/var/log/dpm
+
+    command: ["dpm_server"]
+
+    networks:
+      dpm-net:
+        ipv4_address: 172.28.0.10
+
+  dpm-agent1:
+    image: dpm-runtime
+    container_name: dpm-agent1
+    hostname: dpm-agent1
+
+    environment:
+      DPM_PROPERTIES_FILE: /etc/dpm/dpm.properties
+
+    volumes:
+      - ./config/dpm.properties:/etc/dpm/dpm.properties:ro
+      - ./certs/agent1:/etc/dpm/certs:ro
+      - ./logs/agent1:/var/log/dpm
+
+    command: ["dpm_agentd"]
+
+    depends_on:
+      - server
+
+    networks:
+      dpm-net:
+        ipv4_address: 172.28.0.11
+
+networks:
+  dpm-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24

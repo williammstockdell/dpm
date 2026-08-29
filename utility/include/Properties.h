@@ -218,35 +218,6 @@ class Properties {
         MissingSection(const std::string& what) : std::runtime_error(what) {}
     };
 
-    // FIXME:  Replace this for CLI options parsing
-    /*!
-     * \brief Standard program options descriptions.
-     *
-     * The standard program option name is --properties.
-     *
-     */
-    // class ProgramOptions {
-    // public:
-    //     /*!
-    //      *  \brief Add the standard program options descriptions to the options description.
-    //      *
-    //      *  Adds an option description for --properties that sets _filename.
-    //      */
-    //     void addTo(
-
-    //             );
-
-    //     /*!
-    //      * \brief Gets the filename.
-    //      *
-
-    //      */
-    //     const std::string& getFilename() const  { return _filename; }
-
-    // private:
-    //     std::string _filename;
-    // };
-
   public:
     /*!
      * \brief ctor.

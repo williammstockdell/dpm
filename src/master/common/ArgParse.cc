@@ -26,6 +26,7 @@
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/portConfiguration/ClientPortConfiguration.h>
+#include <utility/include/portConfiguration/ServerPortConfiguration.h>
 #include <stdlib.h>
 #include <string.h>
 #include <Properties.h>
@@ -111,6 +112,45 @@ void APusage(void (*usage)(), const bool silent = false) {
     std::cerr << "Try the --help or -h option for more information." << std::endl;
 }
 
+
+void Args::setupPortConfig(const bin_type utype, const std::string& host_string) {
+
+    if (utype == CLIENT) {
+
+        bgq::utility::ClientPortConfiguration port_config(32042, bgq::utility::ClientPortConfiguration::ConnectionType::Command);
+
+        port_config.setProperties(_props, "master.client");
+        port_config.notifyComplete();
+
+        if (!host_string.empty()) {
+            bgq::utility::PortConfiguration::parsePortsStr(host_string, "32042", _portpairs);
+        } else {
+            _portpairs = port_config.getPairs();
+        }
+    }
+    else if (utype == AGENT) {
+        bgq::utility::ClientPortConfiguration port_config(32041, bgq::utility::ClientPortConfiguration::ConnectionType::Administrative);
+
+        port_config.setProperties(_props, "master.agent");
+        port_config.notifyComplete();
+
+        if (!host_string.empty()) {
+            bgq::utility::PortConfiguration::parsePortsStr(host_string, "32041", _portpairs);
+        } else {
+            _portpairs = port_config.getPairs();
+        }
+    }
+    else if (utype == SERVER) {
+
+        bgq::utility::ServerPortConfiguration port_config(32042, bgq::utility::ServerPortConfiguration::ConnectionType::AdministrativeCommand);
+
+        port_config.setProperties(_props, "master.server");
+        port_config.notifyComplete();
+
+        _portpairs = port_config.getPairs();
+    }
+}
+
 // cppcheck-suppress funcArgNamesDifferentUnnamed
 Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), std::vector<std::string>& valargs, const std::vector<std::string>& singles, bin_type utype) {
     valargs.push_back("--verbose");
@@ -173,29 +213,7 @@ Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), s
     const bgq::utility::LoggingProgramOptions logging_program_options(default_logger);
     bgq::utility::initializeLogging(*_props, logging_program_options, "master");
 
-    // Needs to get master location from properties and command line
-    bgq::utility::ClientPortConfiguration port_config(32042, bgq::utility::ClientPortConfiguration::ConnectionType::Command);
-    if (utype == CLIENT)
-        port_config.setProperties(_props, "master.client");
-    else if (utype == SERVER)
-        port_config.setProperties(_props, "master.server");
-    else if (utype == AGENT)
-        port_config.setProperties(_props, "master.agent");
-    else
-        exit(0); // FIXME:  Do better
-
-    port_config.notifyComplete();
-
-    if (!host_string.empty()) {
-        bgq::utility::PortConfiguration::parsePortsStr(host_string, "32042", _portpairs);
-    } else {
-        _portpairs = port_config.getPairs();
-    }
-
-    if (_portpairs[0].first.empty()) {
-        std::cerr << "No port pairs or invalid port pairs specified. Using defaults." << std::endl;
-        bgq::utility::PortConfiguration::parsePortsStr("127.0.0.1:32042", "32042", _portpairs);
-    }
+    setupPortConfig(utype, host_string);
 
     LOG_DEBUG_MSG("Using properties file " << _props->getFilename());
 
