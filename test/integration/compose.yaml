@@ -18,6 +18,9 @@ services:
       dpm-net:
         ipv4_address: 172.28.0.10
 
+    ports:
+      - "32042:32042"
+
   dpm-agent1:
     image: dpm-runtime
     container_name: dpm-agent1
