@@ -322,15 +322,17 @@ void Registrar::run(bool agent) {
     LOG_TRACE_MSG(__FUNCTION__);
     bgq::utility::PortConfiguration::Pairs portpairs;
 
-    const std::string servname = agent ? "32041" : "32042";
+    const std::string servname = "";
     const std::string port_type = agent ? "agent" : "client";
-    const std::string property_name = agent ? "agent_listen_ports" : "client_listen_ports";
+    const std::string property_name = "listen_ports";
 
     try {
         bgq::utility::ServerPortConfiguration port_config(servname, property_name, port_type, port_type);
         port_config.setProperties(MasterController::getProps(), "master.server");
         port_config.notifyComplete();
         portpairs = port_config.getPairs();
+        for(auto ppair : portpairs)
+            LOG_TRACE_MSG("Port pair: " << ppair.first << "." << ppair.second);
     } catch (const std::invalid_argument& e) {
         if (portpairs[0].first.length() == 0) {
             std::ostringstream failmsg;
