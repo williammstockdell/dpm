@@ -29,7 +29,7 @@
 /* ================================================================ */
 
 #include "Ids.h"
-
+#include <log4cxx/logger.h>
 #include <utility/include/cxxsockets/exception.h>
 #include <stdlib.h>
 #include <cxxsockets/Host.h>
@@ -37,6 +37,9 @@
 #include <compare>
 
 #include "../lib/exceptions.h"
+#include "Log.h"
+
+LOG_DECLARE_FILE("utility.cxxsockets");
 
 Id::Id() {
     // Nothing to do
@@ -123,13 +126,15 @@ ClientId::ClientId(const std::string& port, const std::string& host) { _id = hos
 
 BinaryId::BinaryId(const std::string& id_string) {
 
-    // Make sure we're not getting garbage.  There should be a colon and some number.
-    char const* digits = "0123456789";
-    if((id_string.find(":") == std::string::npos) ||
-       (id_string.find_first_of(digits) == std::string::npos)) {
+    LOG_TRACE_MSG("Binary ID ctor for " << id_string);
 
-            throw exceptions::APIUserError(exceptions::WARN, "Invalid Binary ID");
-        }
+    // // Make sure we're not getting garbage.  There should be a colon and some number.
+    // char const* digits = "0123456789";
+    // if((id_string.find(":") == std::string::npos) ||
+    //    (id_string.find_first_of(digits) == std::string::npos)) {
+
+    //         throw exceptions::APIUserError(exceptions::WARN, "Invalid Binary ID");
+    //     }
 
     _id = id_string;
 }

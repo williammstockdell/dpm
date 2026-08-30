@@ -191,6 +191,7 @@ void AgentRep::stopBin_nl(const BinaryId& bid, const BinaryLocation& location, c
 
 BinaryId AgentRep::startBin(const BGMasterAgentProtocolSpec::StartRequest& startreq, BGMasterAgentProtocolSpec::StartReply& startrep) {
     LOG_TRACE_MSG(__FUNCTION__);
+
     const BinaryId bid("0");
     if (MasterController::get_end_requested()) {
         return bid; // Don't do anything if we're ending.

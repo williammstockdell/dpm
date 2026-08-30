@@ -332,7 +332,7 @@ void Registrar::run(bool agent) {
         port_config.notifyComplete();
         portpairs = port_config.getPairs();
         for(auto ppair : portpairs)
-            LOG_TRACE_MSG("Port pair: " << ppair.first << "." << ppair.second);
+            LOG_TRACE_MSG("Port pair: " << ppair.first << ":" << ppair.second);
     } catch (const std::invalid_argument& e) {
         if (portpairs[0].first.length() == 0) {
             std::ostringstream failmsg;
