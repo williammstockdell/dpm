@@ -54,8 +54,20 @@ ServerPortConfiguration::ServerPortConfiguration(const std::string& default_serv
     _property_name = "listen_ports";
 }
 
-ServerPortConfiguration::ServerPortConfiguration(const std::string& default_service_name, const std::string& port_type_name, const std::string& port_type_description,
-                                                 const std::string& property_name, ConnectionType::Value connection_type)
+ServerPortConfiguration::ServerPortConfiguration(const std::string& default_service_name,
+                                                 const std::string& port_type_name,
+                                                 const std::string& port_type_description,
+                                                 ConnectionType::Value connection_type)
+    : PortConfiguration(default_service_name), _name(port_type_name), _description(port_type_description), _connection_type(connection_type) {
+
+    // Nothing to do.
+}
+
+ServerPortConfiguration::ServerPortConfiguration(const std::string& default_service_name,
+                                                 const std::string& property_name,
+                                                 const std::string& port_type_name,
+                                                 const std::string& port_type_description,
+                                                 ConnectionType::Value connection_type)
     : PortConfiguration(default_service_name), _name(port_type_name), _description(port_type_description), _connection_type(connection_type), _property_name(property_name) {
 
     // Nothing to do.

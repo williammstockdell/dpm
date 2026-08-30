@@ -55,7 +55,7 @@ static_lib     = lib$(lib_base).a
 
 INSTALL_LIST   = $(call INSTALL_LIB_TARGET,$(lib_short) $(lib_vers) $(lib_full) $(static_lib))
 
-
+CXXFLAGS += -Werror
 CXXFLAGS += -Wall
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wconversion

@@ -327,7 +327,7 @@ void Registrar::run(bool agent) {
     const std::string property_name = agent ? "agent_listen_ports" : "client_listen_ports";
 
     try {
-        bgq::utility::ServerPortConfiguration port_config(servname, port_type, port_type);
+        bgq::utility::ServerPortConfiguration port_config(servname, property_name, port_type, port_type);
         port_config.setProperties(MasterController::getProps(), "master.server");
         port_config.notifyComplete();
         portpairs = port_config.getPairs();

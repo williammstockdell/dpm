@@ -144,7 +144,14 @@ class ServerPortConfiguration : public PortConfiguration {
     ServerPortConfiguration(const std::string& default_service_name,                                      //!< The service name that will be used if none is provided.
                             const std::string& port_type_name,                                            //!< The port name, will be prepended to options
                             const std::string& port_type_description,                                     //!< The port description, will be embedded in the option description help text.
-                            const std::string& property_name = "listen_ports",
+                            ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
+    );
+
+        //! \brief Constructor to specify port type.
+    ServerPortConfiguration(const std::string& default_service_name,                                      //!< The service name that will be used if none is provided.
+                            const std::string& property_name,
+                            const std::string& port_type_name,                                            //!< The port name, will be prepended to options
+                            const std::string& port_type_description,                                     //!< The port description, will be embedded in the option description help text.
                             ConnectionType::Value connection_type = ConnectionType::AdministrativeCommand //!< [in]
     );
 
