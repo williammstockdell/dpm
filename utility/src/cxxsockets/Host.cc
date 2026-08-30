@@ -37,7 +37,7 @@ LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
-void Host::build(const std::string& identifier) {
+void Host::resolve(const std::string& identifier) const {
     try {
         SockAddr sa(AF_UNSPEC, identifier, "");
         _ip = sa.getHostAddr();
@@ -54,6 +54,22 @@ void Host::build(const std::string& identifier) {
                  << "Check DNS, hostname and local network settings. " << e.what();
         LOG_DEBUG_MSG(errormsg.str());
         throw Error(e.errcode, errormsg.str());
+    }
+}
+
+const std::string& Host::ip() const {
+
+    if(_ip.empty())
+        resolve(_name);
+    return _ip;
+}
+
+void Host::build(const std::string& identifier) {
+
+    try {
+        resolve(identifier);
+    } catch(const Error& e) {
+        LOG_WARN_MSG(e.what() << " Startup name resolution not available.");
     }
 }
 

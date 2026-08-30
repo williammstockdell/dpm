@@ -148,6 +148,7 @@ int main(int argc, const char** argv) {
     validargs.push_back("--logdir");
     validargs.push_back("--workingdir");
     validargs.push_back("--users");
+    singles.push_back("-f");
 
     Args largs(argc, argv, &usage, &help, validargs, singles, AGENT);
     bgq::utility::Properties::Ptr props = largs.get_props();
@@ -199,10 +200,12 @@ int main(int argc, const char** argv) {
         // Create log file and symlink
         setlogging(logdir, agent.get_hostname().uhn());
 
-        // daemonize
-        if (daemon(0, 1) < 0) {
-            std::cerr << "Error trying to daemonize dpm_agentd: " << strerror(errno) << std::endl;
-            exit(EXIT_FAILURE);
+        if(largs.find_arg("-f") == false) {
+            // daemonize
+            if (daemon(0, 1) < 0) {
+                std::cerr << "Error trying to daemonize dpm_agentd: " << strerror(errno) << std::endl;
+                exit(EXIT_FAILURE);
+            }
         }
     }
 

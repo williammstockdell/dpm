@@ -34,12 +34,13 @@ namespace CxxSockets {
 //! \brief Representation of a Host in an IP network.  Encapsulates
 //! the name and the IPv4 or IPv6 address.
 class Host {
-    std::string _ip;
-    std::string _name;
+    mutable std::string _ip;
+    mutable std::string _name;
     //! \brief This is the primary, preferred host.
     bool _primary;
 
     void build(const std::string& identifier);
+    void resolve(const std::string& identifier) const;
 
   public:
     //! \brief Default constructor.
@@ -56,7 +57,7 @@ class Host {
     bool operator<(const Host& h) const { return _name < h._name; }
 
     //! \brief return the ip address
-    const std::string& ip() const { return _ip; }
+    const std::string& ip() const;
 
     //! \brief Return the fully qualified host name.
     //  ex: 'foo.bar.com'

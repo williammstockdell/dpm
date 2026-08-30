@@ -257,9 +257,12 @@ Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), s
                 exit(EXIT_FAILURE);
             }
         } else {
+
             // It's not in the pairs vector, see if it's a wildcard or a single.
-            if (curr_arg.find("--") != std::string::npos && curr_arg.find("-") != std::string::npos) {
+            if (curr_arg.find("--") != std::string::npos || curr_arg.find("-") != std::string::npos) {
+
                 if (std::find(singles.begin(), singles.end(), curr_arg) != singles.end()) {
+
                     _otherargs.push_back(curr_arg);
                 } else {
                     // It's not in the pairs list or the singles list, it isn't any good.

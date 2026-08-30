@@ -121,6 +121,7 @@ int main(int argc, const char** argv) {
 
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
+    singles.push_back("-f");
 
     Args largs(argc, argv, &usage, &help, validargs, singles, SERVER);
     bgq::utility::Properties::Ptr props = largs.get_props();
@@ -183,10 +184,12 @@ int main(int argc, const char** argv) {
             exit(EXIT_FAILURE);
         }
 
-        // Run as background process
-        if (daemon(1, 1) < 0) {
-            LOG_FATAL_MSG("Error trying to daemonize dpm_master_server: " << strerror(errno));
-            exit(-1);
+        if(largs.find_arg("-f") == false) {
+            // Run as background process
+            if (daemon(1, 1) < 0) {
+                LOG_FATAL_MSG("Error trying to daemonize dpm_master_server: " << strerror(errno));
+                exit(-1);
+            }
         }
     }
 

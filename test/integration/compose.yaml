@@ -1,5 +1,5 @@
 services:
-  server:
+  dpm-server:
     image: dpm-runtime
     container_name: dpm-server
     hostname: dpm-server
@@ -9,10 +9,10 @@ services:
 
     volumes:
       - ./config/dpm.properties:/etc/dpm/dpm.properties:ro
-      - ./certs/server:/etc/dpm/certs:ro
+      - ./security:/etc/dpm/security:ro
       - ./logs/server:/var/log/dpm
 
-    command: ["dpm_server"]
+    command: ["dpm_server", "-f"]
 
     networks:
       dpm-net:
@@ -28,13 +28,13 @@ services:
 
     volumes:
       - ./config/dpm.properties:/etc/dpm/dpm.properties:ro
-      - ./certs/agent1:/etc/dpm/certs:ro
+      - ./security:/etc/dpm/security:ro
       - ./logs/agent1:/var/log/dpm
 
-    command: ["dpm_agentd"]
+    command: ["dpm_agentd", "-f"]
 
     depends_on:
-      - server
+      - dpm-server
 
     networks:
       dpm-net:
