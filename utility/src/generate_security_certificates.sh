@@ -68,7 +68,7 @@ keytool -import -noprompt -alias ca -file security/ca/cert.pem -keystore securit
 
 
 # Generate administrative private key
-openssl genrsa -out security/admin/key.pem 2048
+openssl genrsa -out security/admin/key.pem 3072
 
 # Create request for administrative certificate
 openssl req -new -key security/admin/key.pem -sha256 -nodes -subj '/C=PT/O=DPM/CN=DPM administrative' -out security/admin/req.pem
@@ -87,7 +87,7 @@ rm security/admin/key.p12
 
 
 # Generate command private key
-openssl genrsa -out security/command/key.pem 1024
+openssl genrsa -out security/command/key.pem 3072
 
 # Create request for command certificate
 openssl req -new -key security/command/key.pem -sha256 -nodes -subj '/C=PT/O=DPM/CN=DPM command' -out security/command/req.pem
