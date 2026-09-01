@@ -166,6 +166,7 @@ BGAgentId AgentManager::findAgentId(const CxxSockets::Host& host) {
 
 AgentRepPtr AgentManager::findAgentRep(const CxxSockets::Host& host) {
     LOG_TRACE_MSG(__FUNCTION__);
+
     std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
     for (const AgentRepPtr& agent : _agents) {

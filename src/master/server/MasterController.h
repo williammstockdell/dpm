@@ -135,6 +135,7 @@ class MasterController {
 
     //! Map defined user ids to aliases
     static void buildLogDirs(const bgq::utility::Properties::Section& logdirs);
+    static void sendClientMessage(const XML::Serializable& message, const std::string& classname, std::vector<ClientProtocolPtr>& deadClients);
 
     static ClientManager _client_manager;
     static AgentManager _agent_manager;

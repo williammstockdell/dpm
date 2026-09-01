@@ -88,12 +88,12 @@ AgentRepPtr Alias::runPolicy(const BGAgentId& agent_id, bool restart = false) {
         throw exceptions::InternalError(exceptions::WARN, msg.str());
     }
 
-    // If they specified an agent, pop it out and see if it is valid
     AgentRepPtr agent_to_run;
     if (agent_id.str() != "") {
         LOG_DEBUG_MSG("Agent " << agent_id.str() << " specified.");
         agent_to_run = MasterController::get_agent_manager().findAgentRep(agent_id);
-        if (agent_to_run == 0) {
+
+        if ((agent_to_run == 0)) {
             // Bad agent specified! Fail!
             std::ostringstream msg;
             msg << "Bad agent " << agent_id.str() << " specified";
@@ -125,6 +125,7 @@ AgentRepPtr Alias::runPolicy(const BGAgentId& agent_id, bool restart = false) {
                 _waiting_for_agent = false;
             }
         } else {
+
             // See if there is a host policy for this alias and make sure the specified agent agrees with it.
             if (find_host_internal(agent_to_run->get_host()) != true) {
                 if (!restart) {
@@ -144,6 +145,7 @@ AgentRepPtr Alias::runPolicy(const BGAgentId& agent_id, bool restart = false) {
         // or a backup host with an attempt timeout.
         bool winner = false;
         for (const CxxSockets::Host& curr_host : _hosts) {
+
             // Loop through hosts and the first one that has a valid associated agent is our winner.
             agent_to_run = MasterController::get_agent_manager().findAgentRep(curr_host);
             if (agent_to_run) {
@@ -210,6 +212,7 @@ AgentRepPtr Alias::validateStartAgent(const BGAgentId& agent_id) {
     if (_waiting_for_agent) {
         throw exceptions::InternalError(exceptions::INFO, "Cannot start alias until agent started.");
     }
+
     LOGGING_DECLARE_ALIAS_MDC(_name);
     // This just locks and calls the non-locking private method
     std::scoped_lock scoped_lock(_mutex);

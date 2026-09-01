@@ -71,6 +71,7 @@ Agent::Agent(const bgq::utility::Properties::ConstPtr& props) : _uid_mutex(), _u
     // Nothing to do
 }
 
+
 void Agent::start(const bgq::utility::PortConfiguration::Pairs& ports, const int signal_read_fd) {
 
     _host = _hostname;
@@ -257,6 +258,7 @@ int Agent::join(const bgq::utility::PortConfiguration::Pair& port) {
 }
 
 void Agent::sendBuffered() {
+
     std::list<MsgBasePtr> buffered_messages;
     {
         std::scoped_lock lock(_buffered_messages_mutex);

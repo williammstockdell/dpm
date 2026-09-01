@@ -43,6 +43,50 @@ services:
       dpm-net:
         ipv4_address: 172.28.0.11
 
+  dpm-agent2:
+    image: dpm-runtime
+    container_name: dpm-agent2
+    hostname: dpm-agent2
+
+    environment:
+      DPM_PROPERTIES_FILE: /etc/dpm/dpm.properties
+
+    volumes:
+      - ./config/dpm.properties:/etc/dpm/dpm.properties:ro
+      - ./security:/etc/dpm/security:ro
+      - ./logs/agent1:/var/log/dpm
+
+    command: ["dpm_agentd", "-f"]
+
+    depends_on:
+      - dpm-server
+
+    networks:
+      dpm-net:
+        ipv4_address: 172.28.0.12
+
+  dpm-agent3:
+    image: dpm-runtime
+    container_name: dpm-agent3
+    hostname: dpm-agent3
+
+    environment:
+      DPM_PROPERTIES_FILE: /etc/dpm/dpm.properties
+
+    volumes:
+      - ./config/dpm.properties:/etc/dpm/dpm.properties:ro
+      - ./security:/etc/dpm/security:ro
+      - ./logs/agent1:/var/log/dpm
+
+    command: ["dpm_agentd", "-f"]
+
+    depends_on:
+      - dpm-server
+
+    networks:
+      dpm-net:
+        ipv4_address: 172.28.0.13
+
 networks:
   dpm-net:
     driver: bridge

@@ -124,6 +124,7 @@ void MasterController::stopThreads(const bool end_binaries, const int signal) {
 void MasterController::handleErrorMessage(const std::string& msg) {
 
     LOG_ERROR_MSG(__FUNCTION__ << ": " << msg);
+
     std::ostringstream errmsg;
     std::vector<ClientProtocolPtr> deadClients;
 
@@ -133,18 +134,7 @@ void MasterController::handleErrorMessage(const std::string& msg) {
 
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::ErrorMessage error(errmsg.str());
-    std::scoped_lock scoped_lock(_monitor_prots_mutex);
-    for (const ClientProtocolPtr& prot : _monitor_prots) {
-        try {
-            prot->sendOnly(error.getClassName(), error);
-        } catch (const CxxSockets::Error& e) {
-
-            // If we get an error we assume that the client has been killed and should be removed
-            // otherwise we have a potential memory leak.
-            LOG_WARN_MSG(e.what());
-            deadClients.push_back(prot);
-        }
-    }
+    sendClientMessage(error, error.getClassName(), deadClients);
 
     // Loop through the deadClients and remove them from _monitor_prots container.
     for (unsigned i = 0; i < deadClients.size(); ++i) {
@@ -152,8 +142,6 @@ void MasterController::handleErrorMessage(const std::string& msg) {
         MasterController::get_monitor_prots().erase(std::remove(MasterController::get_monitor_prots().begin(), MasterController::get_monitor_prots().end(), deadClients[i]),
                                                     MasterController::get_monitor_prots().end());
     }
-
-    MasterController::addHistoryMessage(msg);
 
     return;
 }
@@ -163,6 +151,25 @@ void MasterController::getErrorMessages(std::vector<std::string>& messages) {
 
     // Going to pop items out of the circular buffer.
     _err_buff.getContents(messages);
+}
+
+void MasterController::sendClientMessage(const XML::Serializable& message, const std::string& classname, std::vector<ClientProtocolPtr>& deadClients) {
+    LOG_TRACE_MSG(__FUNCTION__);
+
+    std::scoped_lock scoped_lock(_monitor_prots_mutex);
+
+    for (const ClientProtocolPtr& prot : _monitor_prots) {
+
+        try {
+            prot->sendOnly(classname, message);
+        } catch (const CxxSockets::Error& e) {
+
+            // If we get an error we assume that the client has been killed and should be removed
+            // otherwise we have a potential memory leak.
+            LOG_WARN_MSG(e.what());
+            deadClients.push_back(prot);
+        }
+    }
 }
 
 void MasterController::addHistoryMessage(const std::string& message) {
@@ -177,18 +184,7 @@ void MasterController::addHistoryMessage(const std::string& message) {
 
     // Send it to all of the monitors.
     BGMasterClientProtocolSpec::EventMessage event(msg.str());
-    std::scoped_lock scoped_lock(_monitor_prots_mutex);
-    for (const ClientProtocolPtr& prot : _monitor_prots) {
-        try {
-            prot->sendOnly(event.getClassName(), event);
-        } catch (const CxxSockets::Error& e) {
-
-            // If we get an error we assume that the client has been killed and should be removed
-            // otherwise we have a potential memory leak.
-            LOG_WARN_MSG(e.what());
-            deadClients.push_back(prot);
-        }
-    }
+    sendClientMessage(event, event.getClassName(), deadClients);
 
     // Loop through the deadClients and remove them from _monitor_prots container.
     for (unsigned i = 0; i < deadClients.size(); ++i) {
@@ -196,6 +192,7 @@ void MasterController::addHistoryMessage(const std::string& message) {
         MasterController::get_monitor_prots().erase(std::remove(MasterController::get_monitor_prots().begin(), MasterController::get_monitor_prots().end(), deadClients[i]),
                                                     MasterController::get_monitor_prots().end());
     }
+
     return;
 }
 
@@ -206,6 +203,7 @@ void MasterController::getHistoryMessages(std::vector<std::string>& messages) {
 
 void MasterController::buildHostList(const bgq::utility::Properties::Section& hosts, const std::vector<std::string>& exclude_list, std::ostringstream& failmsg) {
     LOG_TRACE_MSG(__FUNCTION__);
+
     bool firstdup = true;
 
     for (const bgq::utility::Properties::Pair& keyval : hosts) {
@@ -694,12 +692,12 @@ void MasterController::buildPolicies(std::ostringstream& failmsg) {
 
     // Get the $BG_DRIVER environment variable
     std::string driver = "";
-    char* drv = getenv("BG_DRIVER");
+    char* drv = getenv("DPM_DRV");
     if (drv != NULL)
         driver = drv;
     if (driver.length() == 0)
         driver = "/bgsys/drivers/ppcfloor"; // reasonable default
-    LOG_DEBUG_MSG("BG_DRIVER environment variable is " << driver);
+    LOG_DEBUG_MSG("DPM_DRV environment variable is " << driver);
 
     // Need to get preferred_host_wait time to send to the alias constructor.
     try {
@@ -742,11 +740,11 @@ void MasterController::buildPolicies(std::ostringstream& failmsg) {
             exclude_list.push_back(keyval.first); // Refreshing!
         }
 
-        // The $BG_DRIVER environment variable can be part of the path.
+        // The $DPM_DRIVER environment variable can be part of the path.
         // We need to replace what's in the property file with the env var.
         std::string path = keyval.second;
-        const size_t path_loc = path.find("$BG_DRIVER");
-        if (path_loc != std::string::npos) {    // If $BG_DRIVER is in the path...
+        const size_t path_loc = path.find("$DPM_DRIVER");
+        if (path_loc != std::string::npos) {    // If $DPM_DRIVER is in the path...
             path.replace(path_loc, 10, driver); // ...replace it with the driver variable
         }
         LOG_DEBUG_MSG("Setting path to " << path);
@@ -796,10 +794,14 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
 
     LOG_INFO_MSG("Starting all listed binaries for agent " << (agentrep ? agentrep->get_agent_id().str() : "all agents") << ".");
     std::vector<AliasPtr> servers_to_start = _aliases.get_list_copy();
+
     while (!servers_to_start.empty() && !_master_terminating) {
+
         const AliasPtr al = servers_to_start.front();
+
         // Now take it out of the list, we'll put it in the back later if we can't start it.
         servers_to_start.erase(std::remove(servers_to_start.begin(), servers_to_start.end(), al), servers_to_start.end());
+
         if (al->get_name() == "dpm_master_server" || al->get_name() == "dpm_master") {
             continue; // Don't start ourselves
         }
@@ -815,6 +817,7 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
         BGAgentId aid;
         AgentRepPtr agent;
         std::string failreason;
+
         try {
             agent = al->validateStartAgent(aid);
         } catch (const exceptions::InternalError& e) {
@@ -826,8 +829,18 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
                 failreason = e.what();
                 sleep(1);
             }
+        } catch (...) {
+            LOG_ERROR_MSG("Unexpected exception!");
+            if (agentrep && !al->find_host(agentrep->get_host())) {
+                // this agent was not configured to start this alias, keep going
+                continue;
+            } else {
+                failreason = "Unexpected exception";
+                sleep(1);
+            }
         }
 
+        LOG_TRACE_MSG("Got through validate");
         if (agent) {
             // If we got here, we have an agent ready.
             const BGMasterAgentProtocolSpec::StartRequest agentreq(al->get_path(), al->get_args(), al->get_logdir(), al->get_name(), al->get_user());

@@ -39,12 +39,13 @@ namespace CxxSockets {
 
 void Host::resolve(const std::string& identifier) const {
     LOG_TRACE_MSG("resolving " << identifier);
+
     try {
         SockAddr sa(AF_UNSPEC, identifier, "");
         _ip = sa.getHostAddr();
         _name = sa.getHostName();
         if (_name == _ip) {
-            LOG_DEBUG_MSG("Unresolved IP: " << _ip);
+            LOG_DEBUG_MSG("Unresolved IP: " << _ip << ":" << _name);
             _name = _ip;
         }
     } catch (const SoftError& e) {
