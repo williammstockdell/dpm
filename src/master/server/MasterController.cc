@@ -539,7 +539,9 @@ void MasterController::addBehaviors(const bgq::utility::Properties::Section& fai
                     policy_found = true;
                     std::ostringstream logmsg;
                     for (const AliasPtr& al : _aliases) {
+
                         LOG_TRACE_MSG("Comparing alias " << al->get_name() << " to policy alias " << keyval.first);
+
                         if (keyval.first == al->get_name()) {
                             // Found an existing alias so update the policy
                             alias_found = true;
@@ -551,6 +553,7 @@ void MasterController::addBehaviors(const bgq::utility::Properties::Section& fai
                                 logmsg << "Ignoring duplicate policy triggers ";
                                 logmsg << current_policy << " ";
                             } else {
+
                                 // Now check to make sure that if there are failover pairs,
                                 // all hosts are in the alias' host list.
                                 typedef std::pair<CxxSockets::Host, CxxSockets::Host> HostPair;
@@ -850,7 +853,7 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
             const BinaryId bid = agent->startBin(agentreq, reply);
             if (bid.str() == "0") {
                 std::ostringstream msg;
-                msg << "Attempt to start binary for alias " << al->get_name() << " failed, check RAS.";
+                msg << "Attempt to start binary for alias " << al->get_name() << " failed.";
                 failed_aliases[al->get_name()] = msg.str();
                 handleErrorMessage(msg.str());
             }

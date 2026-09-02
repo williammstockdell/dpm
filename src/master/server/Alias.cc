@@ -290,7 +290,7 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
                 oldtarget = target;
                 target = bvr.findFailoverTarget(oldtarget);
                 if (bvr.get_retries() < _retry_count) {
-                    // Update database with RAS message
+
                     std::ostringstream msg;
                     msg << "Retry count within " << RETRY_WINDOW << " second window failed for alias " << get_name() << " with a count of " << _retry_count - 1 << " and " << bvr.get_retries()
                         << " allowed.";

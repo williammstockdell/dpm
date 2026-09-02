@@ -417,7 +417,6 @@ void AgentRep::executePolicy_nl(const BinaryId& reqbid, AgentRepPtr rep_p, Alias
         std::ostringstream msg;
         msg << "Unable to execute policy for " << reqbid.str() << "|" << al->get_name() << " " << e.what();
         MasterController::handleErrorMessage(msg.str());
-        // Any RAS should have been dropped by the Alias object.
     }
 }
 
@@ -659,7 +658,7 @@ void AgentRep::waitMessages() {
 
     if (!_orderly) {
         // We got here because we lost contact with our agent or something
-        // bad in our communications protocol. Cut a RAS message.
+        // bad in our communications protocol.
         LOG_INFO_MSG("Connected bgagentd " << get_agent_id().str() << " on " << get_host().uhn() << " failed.");
     }
 

@@ -135,7 +135,7 @@ class Alias {
     bool find_host_internal(const CxxSockets::Host& host) const {
         // cppcheck-suppress useStlAlgorithm
         for (const CxxSockets::Host& h : _hosts) {
-            if (h == host)
+            if (h.uhn() == host.uhn())
                 return true;
         }
         return false;
