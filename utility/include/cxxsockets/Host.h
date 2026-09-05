@@ -31,30 +31,48 @@
 
 namespace CxxSockets {
 
+enum class HostSpecType {
+    IpAddress,
+    Uhn,
+    Fqhn
+};
+
 //! \brief Representation of a Host in an IP network.  Encapsulates
 //! the name and the IPv4 or IPv6 address.
 class Host {
+
     mutable std::string _ip;
     mutable std::string _name;
+
+    //! \brief the specification is a unique identifier for this host assigned at construction.
+    mutable std::string _specification;
+    mutable HostSpecType _spec_type;
+
     //! \brief This is the primary, preferred host.
     bool _primary;
 
     void build(const std::string& identifier);
     void resolve(const std::string& identifier) const;
+    void inferSpecType(const std::string& identifier) const;
 
   public:
     //! \brief Default constructor.
-    Host() : _ip(), _name(), _primary(false) {}
+    Host() : _ip(), _name(), _specification(""), _spec_type(HostSpecType::Uhn), _primary(false) {}
 
     //! \brief Constructor
     //! \param identifier Either an IP address or host name.
-    explicit Host(const std::string& identifier) {
+    explicit Host(const std::string& identifier) : _specification(identifier), _spec_type(HostSpecType::Uhn) {
         build(identifier);
         _primary = false;
     }
 
-    bool operator==(const Host& host) const { return host.ip() == _ip; }
-    bool operator<(const Host& h) const { return _name < h._name; }
+    bool matches(const Host& actual) const;
+
+    bool operator==(const Host& host) const { return matches(host); }
+    bool operator<(const Host& h) const { return _specification < h._specification; }
+
+    //! \brief return the specification
+    const std::string& spec() const { return _specification; }
 
     //! \brief return the ip address
     const std::string& ip() const;

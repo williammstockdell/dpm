@@ -28,7 +28,7 @@
 #include <sstream>
 #include <cstddef>
 #include <string>
-
+#include <arpa/inet.h>
 #include "cxxsockets/SockAddr.h"
 #include "cxxsockets/exception.h"
 #include "Log.h"
@@ -37,6 +37,26 @@ LOG_DECLARE_FILE("utility.cxxsockets");
 
 namespace CxxSockets {
 
+bool looksLikeIpAddress(const std::string& value) {
+
+    in_addr ipv4{};
+    in6_addr ipv6{};
+
+    return inet_pton(AF_INET, value.c_str(), &ipv4) == 1 ||
+           inet_pton(AF_INET6, value.c_str(), &ipv6) == 1;
+}
+
+void Host::inferSpecType(const std::string& identifier) const {
+
+    if (looksLikeIpAddress(identifier)) {
+        _spec_type = HostSpecType::IpAddress;
+    } else if (identifier.find('.') != std::string::npos) {
+        _spec_type = HostSpecType::Fqhn;
+    } else {
+        _spec_type = HostSpecType::Uhn;
+    }
+}
+
 void Host::resolve(const std::string& identifier) const {
     LOG_TRACE_MSG("resolving " << identifier);
 
@@ -44,10 +64,12 @@ void Host::resolve(const std::string& identifier) const {
         SockAddr sa(AF_UNSPEC, identifier, "");
         _ip = sa.getHostAddr();
         _name = sa.getHostName();
+
         if (_name == _ip) {
             LOG_DEBUG_MSG("Unresolved IP: " << _ip << ":" << _name);
             _name = _ip;
         }
+
     } catch (const SoftError& e) {
         LOG_DEBUG_MSG(e.what() << " Will use IP address instead of name.");
     } catch (const Error& e) {
@@ -59,6 +81,22 @@ void Host::resolve(const std::string& identifier) const {
     }
 }
 
+bool Host::matches(const Host& actual) const {
+
+    switch (_spec_type) {
+        case HostSpecType::IpAddress:
+            return _specification == actual.ip();
+
+        case HostSpecType::Uhn:
+            return _specification == actual.uhn();
+
+        case HostSpecType::Fqhn:
+            return _specification == actual.fqhn();
+    }
+
+    return false;
+}
+
 const std::string& Host::ip() const {
 
     if(_ip.empty())
@@ -67,6 +105,9 @@ const std::string& Host::ip() const {
 }
 
 void Host::build(const std::string& identifier) {
+    LOG_TRACE_MSG("Building " << identifier);
+
+    inferSpecType(identifier);
 
     try {
         resolve(identifier);

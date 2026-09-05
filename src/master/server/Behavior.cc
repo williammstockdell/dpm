@@ -24,13 +24,24 @@
 #include "Behavior.h"
 
 #include <utility>
+#include <log4cxx/helpers/messagebuffer.h>
+#include <log4cxx/logger.h>
+#include <log4cxx/mdc.h>
+#include <utility/include/Log.h>
+
+
+LOG_DECLARE_FILE("master");
 
 CxxSockets::Host Behavior::findFailoverTarget(const CxxSockets::Host& failed_host) {
-    std::map<CxxSockets::Host, CxxSockets::Host>::iterator twoit = _pairs.find(failed_host);
-    if (twoit != _pairs.end()) {
-        return twoit->second;
-    } else {
-        CxxSockets::Host bogus;
-        return bogus;
+
+    for (const auto& pair : _pairs) {
+        if (pair.first == failed_host) {
+            LOG_TRACE_MSG("target is host " << pair.second.uhn());
+            return pair.second;
+        }
     }
+
+    LOG_TRACE_MSG("BOGUS HOST IN BEHAVIOR");
+    CxxSockets::Host bogus;
+    return bogus;
 }

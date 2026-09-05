@@ -229,6 +229,7 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
     // Check the failed binary id for the start time to see if it is within the retry window.
     // If it is, bump the retry count and we'll check the policy later.
     if (!bptr) {
+
         BinaryLocation bloc;
         if (MasterController::get_agent_manager().findBinary(failed_bid, bloc)) {
             bptr = bloc.first;
@@ -236,6 +237,7 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
     }
 
     if (!bptr) { // Still no binary controller. We'll construct a dummy one.
+
         const BinaryControllerPtr p(new BinaryController());
         bptr = p;
     }
@@ -251,13 +253,18 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
 
     Behavior bvr;
     bool p = _my_policy.get_behavior(trig, bvr);
+
     if (p == false) {
         // No Behavior defined.  No policy to execute.
         LOG_INFO_MSG("No behavior defined for " << get_name() << ".");
     } else if (bvr.get_action() == Behavior::FAILOVER) {
+
         CxxSockets::Host target = bvr.findFailoverTarget(agent.get_host());
         bool done = false;
+
+        LOG_TRACE_MSG("Found a failover target " << target.uhn());
         CxxSockets::Host oldtarget = agent.get_host();
+
         while (!done) { // We'll do retries, going back and forth between fail-over pairs.
             // We have to fail over.
             if (target.ip().length() == 0) {

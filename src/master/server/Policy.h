@@ -48,6 +48,7 @@ class Policy {
 
     bool addBehavior(Trigger t, const Behavior& b) {
         // If the trigger isn't already here, add it
+
         if (_action_policies.find(t) == _action_policies.end()) {
             _action_policies[t] = b;
             return true;

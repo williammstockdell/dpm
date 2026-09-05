@@ -107,6 +107,7 @@ void AgentManager::removeAgent(AgentRepPtr agent) {
                     try {
                         Policy::Trigger t = Policy::AGENT_ABEND;
                         AgentRepPtr rep_p = al->evaluatePolicy(t, failing, reqbid, binptr);
+
                         if (rep_p && !rep_p->runningAlias(al->get_name())) {
                             // Now we've got a new agent that isn't already running this alias.
                             const BGMasterAgentProtocolSpec::StartRequest agentreq(al->get_path(), al->get_args(), al->get_logdir(), al->get_name(), al->get_user());
@@ -127,7 +128,7 @@ void AgentManager::removeAgent(AgentRepPtr agent) {
                         }
                     } catch (const exceptions::InternalError& e) {
                         std::ostringstream msg;
-                        msg << "Unable to execute policy for " << reqbid.str() << "|" << al->get_name() << " " << e.what();
+                        msg << "AgentManager::Unable to execute policy for " << reqbid.str() << "|" << al->get_name() << " " << e.what();
                         MasterController::handleErrorMessage(msg.str());
                     }
                 }
@@ -141,6 +142,7 @@ AgentRepPtr AgentManager::findAgentRep(const BGAgentId& aid) {
     std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
     for (const AgentRepPtr& agent : _agents) {
+
         if (agent->get_agent_id() == aid) {
             p = agent;
         }
@@ -165,12 +167,13 @@ BGAgentId AgentManager::findAgentId(const CxxSockets::Host& host) {
 }
 
 AgentRepPtr AgentManager::findAgentRep(const CxxSockets::Host& host) {
-    LOG_TRACE_MSG(__FUNCTION__);
+    LOG_TRACE_MSG(__FUNCTION__ << ":host");
 
     std::lock_guard scoped_lock(_agent_manager_mutex);
     AgentRepPtr p;
     for (const AgentRepPtr& agent : _agents) {
         const CxxSockets::Host lname = agent->get_host();
+
         if (lname == host) {
             p = agent;
         }

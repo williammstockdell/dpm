@@ -25,7 +25,6 @@
 #define MASTER_BEHAVIOR_H_
 
 #include <utility/include/cxxsockets/Host.h>
-
 #include <map>
 #include <string>
 
@@ -52,9 +51,10 @@ class Behavior {
   public:
     //! \brief Number of times to retry starting.
 
-    Behavior() : _action(INVALID_ACTION), _retries(0), _name("") {}
+    Behavior() : _action(INVALID_ACTION), _retries(0), _name("") { }
     ~Behavior() {}
-    Behavior(const std::string& name, Action a, const std::map<CxxSockets::Host, CxxSockets::Host>& fp, Retries r) : _action(a), _pairs(fp), _retries(r), _name(name) {}
+    Behavior(const std::string& name, Action a, const std::map<CxxSockets::Host, CxxSockets::Host>& fp, Retries r) : _action(a), _pairs(fp), _retries(r), _name(name) { }
+    void print() {};
     Action get_action() const { return _action; }
     Retries get_retries() const { return _retries; }
     const std::string& get_name() const { return _name; }

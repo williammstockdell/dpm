@@ -415,7 +415,7 @@ void AgentRep::executePolicy_nl(const BinaryId& reqbid, AgentRepPtr rep_p, Alias
         }
     } catch (const exceptions::InternalError& e) {
         std::ostringstream msg;
-        msg << "Unable to execute policy for " << reqbid.str() << "|" << al->get_name() << " " << e.what();
+        msg << "AgentRep::Unable to execute policy for " << reqbid.str() << "|" << al->get_name() << " " << e.what();
         MasterController::handleErrorMessage(msg.str());
     }
 }
