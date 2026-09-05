@@ -1,15 +1,9 @@
-Then classify what remains: things to remove immediately, things temporarily retained (serialization),
-and things that are truly still needed.
-
 normalize compiler flags centrally while you’re doing this instead of letting every
 leaf Makefile have its own 2011-vintage collection.
 
 Tests — but I’d split this into two stages.  After the networking work, add proper unit/integration tests, especially loopback
 connection, disconnect/reconnect, timeout, shutdown, failover policy parsing, properties parsing, and protocol round trips.
 I agree with not resurrecting the entire old Boost.Test graveyard; mine it for useful cases.
-
-Formatting. Yes. I’d do this after the code is structurally stable, probably with clang-format, and make it mechanically
-enforceable rather than hand-fixing 15 years of style drift.
 
 Protocol/serialization modernization. Yes, and I’d intentionally
 defer this until the existing protocol has tests. The XML-generated protocol classes are exactly the sort of thing where
@@ -29,3 +23,23 @@ Tests:
 App start/stop/status tests.
 Does agent die if an app dies?
 Does server get notifications?
+
+1.0:
+Versioning
+Finish failover/restart testing and fix anything it exposes.
+Declare the 1.0 behavior/API effectively frozen.
+Update license/copyright headers.
+Update the existing man pages to match reality.
+Do the clean-checkout → build → install → configure → run smoke test.
+Fix only release-blocking problems from that exercise, then tag 1.0.
+Installation script
+
+2.0:
+Address the XML/wire-protocol legacy rather than merely modernizing the implementation around it.
+Reconsider/replace the existing serialization/protocol pieces and clean up whatever protocol-era baggage remains.
+Because the client API abstracts the protocol, try to contain those changes below that API rather than forcing callers to know about the wire format.
+Packaging
+
+3.0:
+A graphical operator/administration console built on the existing client API
+showing included connected agents, running binaries, placement, start/stop/restart controls, failures/history, failover events, and potentially log access.

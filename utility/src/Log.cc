@@ -222,17 +222,15 @@ void initializeLogging(const Properties& bg_properties, const std::string& subse
             }
         }
 
-        std::cout << "Configuring logging" << std::endl;
-
         const auto names = properties.propertyNames();
 
-        for (const auto& name : names) {
-            std::cout << name << " = " << properties.get(name) << std::endl;
-        }
 
         log4cxx::PropertyConfigurator::configure(properties);
-        std::cout << "logging configured" << std::endl;
         LOG_DEBUG_MSG("Logging configured.");
+
+        for (const auto& name : names) {
+            LOG_TRACE_MSG(name << " = " << properties.get(name));
+        }
 
         if (invalid_subsection) {
             LOG_WARN_MSG("Error reading logging subsection '" << subsection_full_name << "' in properties file '" << bg_properties.getFilename()
