@@ -90,7 +90,6 @@ ar_objs=${ar_srcs:%.cc=%.o}
 
 
 so_srcs = $(ar_srcs)
-so_srcs += BoolAlpha.cc
 so_srcs += ExitStatus.cc
 so_srcs += UserId.cc
 so_srcs += portConfiguration/PortConfiguration.cc

@@ -13,12 +13,22 @@ NOTICE='/* ================================================================ */
 /*                                                                  */
 /* ================================================================ */'
 
-git diff --name-only -z "$BASELINE"..HEAD -- '*.cc' '*.h' |
+find . -type f \( -name '*.cc' -o -name '*.h' \) -print0 |
 while IFS= read -r -d '' file; do
-    [[ -f "$file" ]] || continue
-
+    # Only IBM-derived files.
     grep -q 'end_generated_IBM_copyright_prolog' "$file" || continue
+
+    # Already updated.
     grep -q 'Modifications Copyright (C) Will Stockdell 2026' "$file" && continue
+
+    # Ignore files that have only been moved/renamed since the import.
+    # A real content change produces at least one diff hunk.
+    if ! git log --follow -p --format= \
+        "$BASELINE"..HEAD -- "$file" |
+        grep '^@@' >/dev/null
+    then
+        continue
+    fi
 
     echo "$file"
 

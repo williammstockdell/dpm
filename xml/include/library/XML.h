@@ -21,6 +21,15 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+/* ================================================================ */
+/*                                                                  */
+/* Modifications Copyright (C) Will Stockdell 2026                  */
+/*                                                                  */
+/* Modifications to this file are made available under the          */
+/* Eclipse Public License (EPL) version 1.0.                        */
+/*                                                                  */
+/* ================================================================ */
+
 /*
  * A set of classes to help with parsing XML files into C++ objects
  * Implement a subclass of XML::Serializable if you want to build it

@@ -21,6 +21,15 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+/* ================================================================ */
+/*                                                                  */
+/* Modifications Copyright (C) Will Stockdell 2026                  */
+/*                                                                  */
+/* Modifications to this file are made available under the          */
+/* Eclipse Public License (EPL) version 1.0.                        */
+/*                                                                  */
+/* ================================================================ */
+
 #include <netinet/tcp.h>
 #include <poll.h>
 #include <unistd.h>

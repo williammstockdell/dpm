@@ -21,6 +21,15 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+/* ================================================================ */
+/*                                                                  */
+/* Modifications Copyright (C) Will Stockdell 2026                  */
+/*                                                                  */
+/* Modifications to this file are made available under the          */
+/* Eclipse Public License (EPL) version 1.0.                        */
+/*                                                                  */
+/* ================================================================ */
+
 //! \brief A container class for nonblocking thread communications.
 //! Multiple threads may send but only a single receiver is supported.
 //! It's called a "dropoff queue" because the senders "drop off" messages

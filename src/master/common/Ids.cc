@@ -22,6 +22,15 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 /* ================================================================ */
+/*                                                                  */
+/* Modifications Copyright (C) Will Stockdell 2026                  */
+/*                                                                  */
+/* Modifications to this file are made available under the          */
+/* Eclipse Public License (EPL) version 1.0.                        */
+/*                                                                  */
+/* ================================================================ */
+
+/* ================================================================ */
 /* Modifications & Modernization:                                   */
 /* Copyright (c) 2026 Will Stockdell.                               */
 /* This file has been modified from the original Blue Gene/Q source.*/
