@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -12,7 +12,7 @@
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,7 +24,7 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster list_agents command</refpurpose>
+    <refpurpose>Manual for DPM list_agents command</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="list_agents.synopsis">
@@ -52,7 +52,7 @@
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -67,8 +67,8 @@
 <refsect1 id="list_agents.description">
     <title>Description</title>
     <para> Returns a list of IDs for active agents and their associated running binaries.
-The return format is agentid::binaryid.  An agent ID is a made up of the IP address from 
-which the agent is running, a colon, and a port number that bgmaster_server uses to communicate 
+The return format is agentid::binaryid.  An agent ID is a made up of the IP address from
+which the agent is running, a colon, and a port number that dpm_server uses to communicate
 with it. A binary ID is made up of the IP address on which the binary is running, a colon, and
 its process ID. </para>
 </refsect1>

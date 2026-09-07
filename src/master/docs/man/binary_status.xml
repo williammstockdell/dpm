@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -12,7 +12,7 @@
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,7 +24,7 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster binary_status command</refpurpose>
+    <refpurpose>Manual for DPM Server binary_status command</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="binary_status.synopsis">
@@ -40,7 +40,7 @@
         <varlistentry>
             <term><option>--properties</option></term>
             <listitem>
-            <para>The bg.properties configuration file to use.</para>
+            <para>The dpm.properties configuration file to use.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -62,10 +62,10 @@
 <refsect1 id="binary_status.description">
     <title>Description</title>
     <para>	Returns the status of one or all binaries currently
-    under control of bgmaster_server.  By default it returns
+    under control of dpm_server.  By default it returns
     the binary id (IP:PID), status, alias name and start time of all binaries.
     If a binary id is specified, it returns the status of that binary.
-    </para>    
+    </para>
 </refsect1>
 
 

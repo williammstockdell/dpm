@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
-<!ENTITY product "bgagentd">
+<!ENTITY product "dpm_agentd">
 ]>
 
-<refentry lang="en" id="bgagentd">
+<refentry lang="en" id="dpm_agentd">
 <refentryinfo>
     <productname>&product;</productname>
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,12 +24,12 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster bgagentd </refpurpose>
+    <refpurpose>Manual for DPM dpm_agentd </refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="bgagentd.synopsis">
     <title>Synopsis</title>
-    <cmdsynopsis><command>bgagentd</command>
+    <cmdsynopsis><command>dpm_agentd</command>
     </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -40,7 +40,7 @@
         <varlistentry>
             <term><option>--properties</option></term>
             <listitem>
-            <para>The bg.properties configuration file to use.</para>
+            <para>The dpm.properties configuration file to use.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -58,7 +58,7 @@
         <varlistentry>
             <term><option>--debug</option></term>
             <listitem>
-            <para>Debug mode sends log output to the console and runs bgagentd as a foreground 
+            <para>Debug mode sends log output to the console and runs bgagentd as a foreground
 	      process. </para>
             </listitem>
         </varlistentry>
@@ -66,7 +66,7 @@
             <term><option>--users</option></term>
             <listitem>
             <para>List of user IDs to which bgagentd is permitted to switch.  Specify "root" to
-	      disallow user ID switching.  This parameter is usually set in the bgagent init script.  
+	      disallow user ID switching.  This parameter is usually set in the bgagent init script.
 	      The requested user ID is set in bg.properties under the [agent] section as agentuid=
 	    </para>
             </listitem>
@@ -91,17 +91,17 @@
 
 <refsect1 id="bgagentd.description">
     <title>Description</title>
-    <para>bgagentd is the BGmaster system's process watcher.  
-      bgagentd operates solely on instructions from bgmaster_server.  
+    <para>dpm_agentd is the DPM system's process watcher.
+      bgagentd operates solely on instructions from bgmaster_server.
       bgagentd should be started from the bgagent init script at system startup time and
       allowed to run continuously in the background.</para>
 </refsect1>
 
 
-<refsect1 id="bgagentd.seealso">
+<refsect1 id="dpm_agentd.seealso">
     <title>See also</title>
     <para><citerefentry>
-           <refentrytitle>bgmaster_server</refentrytitle>
+           <refentrytitle>dpm_server</refentrytitle>
            <manvolnum>8</manvolnum>
        </citerefentry>
     </para>

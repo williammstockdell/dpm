@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -12,7 +12,7 @@
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,13 +24,13 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster master_start </refpurpose>
+    <refpurpose>Manual for DPM master_start </refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="master_start.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>
-master_start [ alias ] | [ "bgmaster" ] [ "binaries" ] [ OPTIONS ]
+master_start [ alias ] | [ "dpm" ] [ "binaries" ] [ OPTIONS ]
 </command>
     </cmdsynopsis>
 </refsynopsisdiv>
@@ -46,23 +46,23 @@ master_start [ alias ] | [ "bgmaster" ] [ "binaries" ] [ OPTIONS ]
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term><option>bgmaster</option></term>
+            <term><option>dpm</option></term>
             <listitem>
-            <para>Start the bgmaster_server process and any servers specified in bg.properties'
+            <para>Start the dpm_server process and any servers specified in bg.properties'
 [master.startup] start_order parameter.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term><option>bgmaster_only</option></term>
+            <term><option>dpm_only</option></term>
             <listitem>
-            <para>Start the bgmaster_server process, but do not start any managed servers.</para>
+            <para>Start the dpm_server process, but do not start any managed servers.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term><option>binaries</option></term>
             <listitem>
-            <para>Start the managed binaries specified in the bg.properties file.  
-bgmaster_server and the associated bgagentds must be running.</para>
+            <para>Start the managed binaries specified in the bg.properties file.
+dpm_server and the associated bgagentds must be running.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -80,7 +80,7 @@ bgmaster_server and the associated bgagentds must be running.</para>
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -96,8 +96,8 @@ bgmaster_server and the associated bgagentds must be running.</para>
 
 <refsect1 id="master_start.description">
     <title>Description</title>
-    <para>master_start is the tool to start processes under the management of bgmaster_server
-and bgagentd.  It is also capable of starting bgmaster_server.  bgagentd processes should
+    <para>master_start is the tool to start processes under the management of dpm_server
+and bgagentd.  It is also capable of starting dpm_server.  bgagentd processes should
 be started by system init scripts.  A single alias or all managed binaries may be started.</para>
 </refsect1>
 

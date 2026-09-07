@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -12,7 +12,7 @@
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,7 +24,7 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster get_history command</refpurpose>
+    <refpurpose>Manual for DPM get_history command</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="get_history.synopsis">
@@ -52,7 +52,7 @@
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -67,8 +67,8 @@
 
 <refsect1 id="get_history.description">
     <title>Description</title>
-    <para>Returns the contents of bgmaster_server's history log ring buffer.  The history log
-contains the last fifty instances of process starts and stops since bgmaster_server was started.
+    <para>Returns the contents of dpm_server's history log ring buffer.  The history log
+contains the last fifty instances of process starts and stops since dpm_server was started.
  </para>
 </refsect1>
 

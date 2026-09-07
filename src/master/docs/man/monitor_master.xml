@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -12,7 +12,7 @@
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,7 +24,7 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster monitor_master command</refpurpose>
+    <refpurpose>Manual for DPM monitor_master command</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="monitor_master.synopsis">
@@ -52,7 +52,7 @@
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -67,9 +67,9 @@
 
 <refsect1 id="monitor_master.description">
     <title>Description</title>
-    <para>monitor_master provides a rolling update of events and errors from bgmaster_server.  When it makes
-its initial connection to bgmaster_server, it gathers the contents of the history and error buffers and prints 
-them out.  It then maintains the connection and bgmaster_server feeds each new event and error back to 
+    <para>monitor_master provides a rolling update of events and errors from dpm_server.  When it makes
+its initial connection to dpm_server, it gathers the contents of the history and error buffers and prints
+them out.  It then maintains the connection and dpm_server feeds each new event and error back to
 monitor_master which displays them on standard out.
  </para>
 </refsect1>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
-<!ENTITY product "bgmaster_server">
+<!ENTITY product "dpm_server">
 ]>
 
-<refentry lang="en" id="bgmaster_server">
+<refentry lang="en" id="dpm_server">
 <refentryinfo>
     <productname>&product;</productname>
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -27,25 +27,25 @@
     <refpurpose>Manual for BGmaster bgmaster_server </refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="bgmaster_server.synopsis">
+<refsynopsisdiv id="dpm_server.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>bgmaster_server</command>
     </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1 id="bgmaster_server.options">
+<refsect1 id="dpm_server.options">
     <title>Arguments</title>
     <para>None</para>
 </refsect1>
 
-<refsect1 id="bgmaster_server.description">
+<refsect1 id="dpm_server.description">
     <title>Description</title>
-    <para> bgmaster_server is the process control deamon for BGmaster.  bgmaster_server
-should be started with the "master_start bgmaster" command.</para>
+    <para> dpm_server is the process control deamon for DPM.  dpm_server
+should be started with the "master_start dpm" command.</para>
 </refsect1>
 
 
-<refsect1 id="bgmaster_server.seealso">
+<refsect1 id="dpm_server.seealso">
     <title>See also</title>
     <para><citerefentry>
            <refentrytitle>master_stop</refentrytitle>

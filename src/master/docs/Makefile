@@ -45,7 +45,14 @@ TARGETS += $(TARGETS_UNINSTALL)
 
 default:        all
 all:            $(TARGETS_ALL)
-#install:		$(TARGETS_INSTALL)
+
+debug:
+	@echo $(TARGETS_INSTALL)
+
+install:
+	$(MAKE) --directory man install
+	$(MAKE) --directory html install
+
 clean:			$(TARGETS_CLEAN)
 distclean:	clean   $(TARGETS_DISTCLEAN)
 #uninstall:              $(TARGETS_UNINSTALL)

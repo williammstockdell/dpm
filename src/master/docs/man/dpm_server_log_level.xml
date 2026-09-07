@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
-<!ENTITY product "bgmaster_server_refresh_config">
+<!ENTITY product "dpm_server_log_level">
 ]>
 
-<refentry lang="en" id="bgmaster_server_refresh_config">
+<refentry lang="en" id="dpm_server_log_level">
 <refentryinfo>
     <productname>&product;</productname>
     <authorgroup>
@@ -24,18 +24,18 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster bgmaster_server_refresh_config </refpurpose>
+    <refpurpose>Manual for BGmaster bgmaster_server_log_level </refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="bgmaster_server_refresh_config.synopsis">
+<refsynopsisdiv id="bgmaster_server_log_level.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>
-bgmaster_server_refresh_config [ OPTIONS ] filename
+bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
 </command>
     </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1 id="bgmaster_server_refresh_config.options">
+<refsect1 id="bgmaster_server_log_level.options">
     <title>Arguments</title>
     <para>Accepted arguments:</para>
     <variablelist>
@@ -46,9 +46,9 @@ bgmaster_server_refresh_config [ OPTIONS ] filename
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term><option>filename</option></term>
+            <term><option>logger=level</option></term>
             <listitem>
-            <para>bg.properties configuration file to use </para>
+            <para>logger to change and new level </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -63,18 +63,24 @@ bgmaster_server_refresh_config [ OPTIONS ] filename
             <para>Add program trace information.  Levels of verbosity are TRACE, DEBUG, INFO, WARN, ERROR, FATAL. </para>
             </listitem>
         </varlistentry>
+        <varlistentry>
+            <term><option>--properties filename</option></term>
+            <listitem>
+            <para>bg.properties file to use </para>
+            </listitem>
+        </varlistentry>
 
     </variablelist>
 
 </refsect1>
 
-<refsect1 id="bgmaster_server_refresh_config.description">
+<refsect1 id="bgmaster_server_log_level.description">
     <title>Description</title>
-    <para>Update bgmaster_server's configuration with a new or changed properties file.  If no properties file is given, it uses the default.  Note that updates to bgmaster policies are additive only.  Existing policy parameters may not be changed, deleted or replaced, but new ones may be added.</para>
+    <para>Display and optionally update bgmaster_server's logging configuration.</para>
 </refsect1>
 
 
-<refsect1 id="bgmaster_server_refresh_config.seealso">
+<refsect1 id="bgmaster_server_log_level.seealso">
     <title>See also</title>
     <para><citerefentry>
            <refentrytitle>master_status</refentrytitle>

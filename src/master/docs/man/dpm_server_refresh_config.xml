@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
-<!ENTITY product "bgmaster_server_log_level">
+<!ENTITY product "dpm_server_refresh_config">
 ]>
 
-<refentry lang="en" id="bgmaster_server_log_level">
+<refentry lang="en" id="dpm_server_refresh_config">
 <refentryinfo>
     <productname>&product;</productname>
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,18 +24,18 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster bgmaster_server_log_level </refpurpose>
+    <refpurpose>Manual for DPM dpm_server_refresh_config </refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="bgmaster_server_log_level.synopsis">
+<refsynopsisdiv id="dpm_master_server_refresh_config.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>
-bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
+      dpm_server_refresh_config [ OPTIONS ] filename
 </command>
     </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1 id="bgmaster_server_log_level.options">
+<refsect1 id="dpm_master_server_refresh_config.options">
     <title>Arguments</title>
     <para>Accepted arguments:</para>
     <variablelist>
@@ -46,15 +46,15 @@ bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term><option>logger=level</option></term>
+            <term><option>filename</option></term>
             <listitem>
-            <para>logger to change and new level </para>
+            <para>dpm.properties configuration file to use </para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_master_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -63,24 +63,18 @@ bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
             <para>Add program trace information.  Levels of verbosity are TRACE, DEBUG, INFO, WARN, ERROR, FATAL. </para>
             </listitem>
         </varlistentry>
-        <varlistentry>
-            <term><option>--properties filename</option></term>
-            <listitem>
-            <para>bg.properties file to use </para>
-            </listitem>
-        </varlistentry>
 
     </variablelist>
 
 </refsect1>
 
-<refsect1 id="bgmaster_server_log_level.description">
+<refsect1 id="dpm_master_server_refresh_config.description">
     <title>Description</title>
-    <para>Display and optionally update bgmaster_server's logging configuration.</para>
+    <para>Update dpm_server's configuration with a new or changed properties file.  If no properties file is given, it uses the default.  Note that updates to dpm_master policies are additive only.  Existing policy parameters may not be changed, deleted or replaced, but new ones may be added.</para>
 </refsect1>
 
 
-<refsect1 id="bgmaster_server_log_level.seealso">
+<refsect1 id="dpm_master_server_refresh_config.seealso">
     <title>See also</title>
     <para><citerefentry>
            <refentrytitle>master_status</refentrytitle>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -12,7 +12,7 @@
     <authorgroup>
         <author>
             <contrib>Developer</contrib>
-            <firstname>© Copyright IBM Corp. 2010, 2011</firstname>
+            <firstname>© Copyright IBM Corp. 2010, 2011, Will Stockdell 2026</firstname>
         </author>
     </authorgroup>
 </refentryinfo>
@@ -24,7 +24,7 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster list_clients command</refpurpose>
+    <refpurpose>Manual for DPM list_clients command</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="list_clients.synopsis">
@@ -52,7 +52,7 @@
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -69,7 +69,7 @@
     <title>Description</title>
     <para>Returns a list of client IDs for active clients.  A client ID
 consists of the IP address on which the client is running, a colon, and
-the port bgmaster_server uses to communicate with it.
+the port dpm_server uses to communicate with it.
  </para>
 </refsect1>
 
