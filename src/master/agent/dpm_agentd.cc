@@ -21,10 +21,18 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+/* ================================================================ */
+/*                                                                  */
+/* Modifications Copyright (C) Will Stockdell 2026                  */
+/*                                                                  */
+/* Modifications to this file are made available under the          */
+/* Eclipse Public License (EPL) version 1.0.                        */
+/*                                                                  */
+/* ================================================================ */
+
 #include <fcntl.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
-#include <utility/include/BoolAlpha.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <errno.h>
 #include <log4cxx/helpers/messagebuffer.h>
@@ -166,7 +174,6 @@ int main(int argc, const char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    bgq::utility::BoolAlpha debug;
     std::string workingdir = largs["--workingdir"];
     std::string users = largs["--users"];
 
@@ -180,37 +187,30 @@ int main(int argc, const char** argv) {
 
     Agent agent(props);
 
-    if (!debug._value) {
+    // Now find the logdir
+    std::string logdir;
 
-        // Now find the logdir
-        std::string logdir;
+    try {
 
-        try {
+        logdir = largs["--logdir"];
 
-            logdir = largs["--logdir"];
+        if (logdir.empty())
+            logdir = props->getValue("master.agent", "logdir");
 
-            if (logdir.empty())
-                logdir = props->getValue("master.agent", "logdir");
-
-        } catch (const std::invalid_argument& e) {
-            LOG_ERROR_MSG("No logging directory specified or missing section. " << e.what());
-            exit(EXIT_FAILURE);
-        }
-
-        // Create log file and symlink
-        setlogging(logdir, agent.get_hostname().uhn());
-
-        if(largs.find_arg("-f") == false) {
-            // daemonize
-            if (daemon(0, 1) < 0) {
-                std::cerr << "Error trying to daemonize dpm_agentd: " << strerror(errno) << std::endl;
-                exit(EXIT_FAILURE);
-            }
-        }
+    } catch (const std::invalid_argument& e) {
+        LOG_ERROR_MSG("No logging directory specified or missing section. " << e.what());
+        exit(EXIT_FAILURE);
     }
 
-    if (debug._value) {
-        LOG_INFO_MSG(argv[0] << " [" << getpid() << "] starting in debug mode.");
+    // Create log file and symlink
+    setlogging(logdir, agent.get_hostname().uhn());
+
+    if(largs.find_arg("-f") == false) {
+        // daemonize
+        if (daemon(0, 1) < 0) {
+            std::cerr << "Error trying to daemonize dpm_agentd: " << strerror(errno) << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
 
     if (!workingdir.empty()) {

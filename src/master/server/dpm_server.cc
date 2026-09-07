@@ -21,10 +21,18 @@
 /*                                                                  */
 /* end_generated_IBM_copyright_prolog                               */
 
+/* ================================================================ */
+/*                                                                  */
+/* Modifications Copyright (C) Will Stockdell 2026                  */
+/*                                                                  */
+/* Modifications to this file are made available under the          */
+/* Eclipse Public License (EPL) version 1.0.                        */
+/*                                                                  */
+/* ================================================================ */
+
 #include <fcntl.h>
 #include <openssl/conf.h>
 #include <openssl/engine.h>
-#include <utility/include/BoolAlpha.h>
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/ScopeExit.h>
@@ -139,8 +147,6 @@ int main(int argc, const char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    bgq::utility::BoolAlpha debug;
-
     std::string logdir;
     try {
         logdir = props->getValue("master.server", "logdir");
@@ -160,38 +166,37 @@ int main(int argc, const char** argv) {
         lock_file = 0;
     });
 
-    if (!debug._value) {
-        if (master_instances == "1") {
+    if (master_instances == "1") {
 
-            try {
-                lock_file = new LockFile("dpm_master_server");
-            } catch (const std::exception& e) {
-                std::cerr << "Unable to create dpm_server lock file: " << e.what() << std::endl;
-                return EXIT_FAILURE;
-            }
-
-            if (lock_file->_fileExists) {
-                LOG_FATAL_MSG("Lock file for dpm_master_server found. End dpm_master_server process " << lock_file->_pid << " and remove " << lock_file->_fname);
-                exit(EXIT_FAILURE);
-            }
+        try {
+            lock_file = new LockFile("dpm_master_server");
+        } catch (const std::exception& e) {
+            std::cerr << "Unable to create dpm_server lock file: " << e.what() << std::endl;
+            return EXIT_FAILURE;
         }
 
-        if (!setlogging(logdir)) {
-            if (lock_file) {
-                delete lock_file;
-                lock_file = 0;
-            }
+        if (lock_file->_fileExists) {
+            LOG_FATAL_MSG("Lock file for dpm_master_server found. End dpm_master_server process " << lock_file->_pid << " and remove " << lock_file->_fname);
             exit(EXIT_FAILURE);
         }
+    }
 
-        if(largs.find_arg("-f") == false) {
-            // Run as background process
-            if (daemon(1, 1) < 0) {
-                LOG_FATAL_MSG("Error trying to daemonize dpm_master_server: " << strerror(errno));
-                exit(-1);
-            }
+    if (!setlogging(logdir)) {
+        if (lock_file) {
+            delete lock_file;
+            lock_file = 0;
+        }
+        exit(EXIT_FAILURE);
+    }
+
+    if(largs.find_arg("-f") == false) {
+        // Run as background process
+        if (daemon(1, 1) < 0) {
+            LOG_FATAL_MSG("Error trying to daemonize dpm_master_server: " << strerror(errno));
+            exit(-1);
         }
     }
+
 
     if (lock_file) {
         try {
