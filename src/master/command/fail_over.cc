@@ -74,7 +74,7 @@ void help() {
     std::cerr << "                            to find the associated policy for failover" << std::endl;
     std::cerr << "  --properties arg     Blue Gene configuration file" << std::endl;
     std::cerr << "  --help               This help text" << std::endl;
-    std::cerr << "  --host               host:port pair to use to connect to bgmaster_server" << std::endl;
+    std::cerr << "  --host               host:port pair to use to connect to dpm_server" << std::endl;
     std::cerr << "Administrative authority required." << std::endl;
 }
 
@@ -90,7 +90,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
     if (largs.size() != 0) {

@@ -46,7 +46,7 @@ LOG_DECLARE_FILE("master");
 
 void help() {
     std::cerr << std::endl
-              << "Displays the logging configuration for the Blue Gene bgmaster server."
+              << "Displays the logging configuration for the Blue Gene dpm server."
               << " Optionally sets the logging configuration." << std::endl
               << std::endl;
     std::cerr << "Administrative authority required." << std::endl << std::endl;
@@ -58,7 +58,7 @@ void help() {
     std::cerr << std::endl;
 }
 
-void usage() { std::cerr << "bgmaster_server_log_level [logger=level [... logger=level]]" << std::endl; }
+void usage() { std::cerr << "dpm_server_log_level [logger=level [... logger=level]]" << std::endl; }
 
 int doLoglevel(const BGMasterClient& client, std::vector<std::string>& input) {
     try {
@@ -88,7 +88,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (const exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
     std::vector<std::string> loggers;

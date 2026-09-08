@@ -66,7 +66,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (const exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 

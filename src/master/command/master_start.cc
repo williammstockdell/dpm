@@ -85,7 +85,7 @@ void doStart(BGMasterClient& client, const Args& args, const std::string& target
 
     std::getline(stream >> std::ws, arguments);
 
-    if (target == "bgmaster_server" || target == "bgmaster") { // bgmaster_server
+    if (target == "dpm_server" || target == "dpm") { // dpm_server
         const std::string propstr = "--properties";
         const std::string properties = args[propstr];
         if (properties.length() != 0)
@@ -95,7 +95,7 @@ void doStart(BGMasterClient& client, const Args& args, const std::string& target
             exit(EXIT_FAILURE);
         }
 
-        // bgmaster_server will daemonize itself so we need to wait for
+        // dpm_server will daemonize itself so we need to wait for
         // the child to exit
         int exit_status = 0;
         waitpid(child, &exit_status, 0);
@@ -127,11 +127,11 @@ void doStart(BGMasterClient& client, const Args& args, const std::string& target
 }
 
 void help() {
-    std::cerr << "Starts a controlled process or bgmaster_server." << std::endl;
+    std::cerr << "Starts a controlled process or dpm_server." << std::endl;
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-void usage() { std::cerr << "master_start [ alias ] | [ \"bgmaster\" ] [ \"binaries\" ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
+void usage() { std::cerr << "master_start [ alias ] | [ \"dpm\" ] [ \"binaries\" ] [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
 int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
@@ -140,12 +140,12 @@ int main(int argc, const char** argv) {
     const Args largs(argc, argv, &usage, &help, validargs, singles);
     BGMasterClient client;
 
-    // See if "bgmaster" is specified
-    bool bgmaster = false;
+    // See if "dpm" is specified
+    bool dpm = false;
     bool binaries = false;
     for (Args::const_iterator it = largs.begin(); it != largs.end(); ++it) {
-        if (*it == "bgmaster") {
-            bgmaster = true;
+        if (*it == "dpm") {
+            dpm = true;
         }
         if (*it == "binaries") {
             binaries = true;
@@ -153,8 +153,8 @@ int main(int argc, const char** argv) {
     }
 
     std::string s;
-    if (bgmaster)
-        s = "bgmaster_server";
+    if (dpm)
+        s = "dpm_server";
     else if (binaries) {
         s.clear();
     } else {
@@ -166,11 +166,11 @@ int main(int argc, const char** argv) {
         }
     }
 
-    if (s != "bgmaster_server") {
+    if (s != "dpm_server") {
         try {
             client.connectMaster(largs.get_props(), largs.get_portpairs());
         } catch (const exceptions::BGMasterError& e) {
-            std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+            std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
             exit(EXIT_FAILURE);
         }
     }

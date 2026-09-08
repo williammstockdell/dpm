@@ -45,13 +45,13 @@
 
 LOG_DECLARE_FILE("master");
 
-enum TypeToStop { BGMASTER_ONLY, BINARY, BGMASTER, BGAGENT, ALIAS, BINARIES };
+enum TypeToStop { DPM_ONLY, BINARY, DPM, BGAGENT, ALIAS, BINARIES };
 
 int doStop(BGMasterClient& client, const std::string& target, const TypeToStop stoptype = ALIAS, const int signal = 15) {
     BinaryId id(target);
     std::string errormsg;
     switch (stoptype) {
-    case BGMASTER_ONLY:
+    case DPM_ONLY:
         try {
             client.end_master(true);
             errormsg = "Stopped " + target;
@@ -81,18 +81,18 @@ int doStop(BGMasterClient& client, const std::string& target, const TypeToStop s
         std::cerr << "\tUse '/etc/init.d/bgagent stop' to stop bgagentd. \n" << std::endl;
         return EXIT_FAILURE;
     default:
-        // Default behavior is BGMASTER and BINARIES
-    case BGMASTER:
+        // Default behavior is DPM and BINARIES
+    case DPM:
         try {
-            errormsg = "Stopping bgmaster (bgmaster_server)";
+            errormsg = "Stopping dpm (dpm_server)";
             client.end_master(false, signal);
         } catch (const exceptions::BGMasterError& e) {
-            std::cerr << "Stopping bgmaster (bgmaster_server) failed, error is: " << e.what() << std::endl;
+            std::cerr << "Stopping dpm (dpm_server) failed, error is: " << e.what() << std::endl;
             return EXIT_FAILURE;
         }
         break;
         // We don't bother to fall through to BINARIES because
-        // BGMASTER already takes care of them anyway.
+        // DPM already takes care of them anyway.
     case BINARIES:
         try {
             const BinaryId emptyid;
@@ -112,8 +112,8 @@ int doStop(BGMasterClient& client, const std::string& target, const TypeToStop s
 }
 
 void help() {
-    std::cerr << "Stop any or all controlled processes and bgmaster_server. " << std::endl;
-    std::cerr << "By default, it stops bgmaster_server and all managed binaries." << std::endl;
+    std::cerr << "Stop any or all controlled processes and dpm_server. " << std::endl;
+    std::cerr << "By default, it stops dpm_server and all managed binaries." << std::endl;
     std::cerr << "Processes are allowed an orderly completion" << std::endl;
     std::cerr << "with a timeout before they are forced to end." << std::endl;
     std::cerr << "The signal number argument provides an initial signal" << std::endl;
@@ -122,7 +122,7 @@ void help() {
 }
 
 void usage() {
-    std::cerr << "master_stop [ alias ] | [ \"bgmaster\" ] | [ \"binaries\" ] | [ \"bgmaster_only\" ] "
+    std::cerr << "master_stop [ alias ] | [ \"dpm\" ] | [ \"binaries\" ] | [ \"dpm_only\" ] "
               << "[ --binary binary id ] | [ --signal signal number ] [ --properties filename ] "
               << "[ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl;
 }
@@ -251,13 +251,13 @@ int main(int argc, const char** argv) {
             usage();
             exit(EXIT_FAILURE);
         }
-        if (target == "bgmaster")
-            stoptype = BGMASTER;
+        if (target == "dpm")
+            stoptype = DPM;
         else if (target == "binaries") {
             target.clear();
             stoptype = BINARY;
-        } else if (target == "bgmaster_only")
-            stoptype = BGMASTER_ONLY;
+        } else if (target == "dpm_only")
+            stoptype = DPM_ONLY;
         else
             stoptype = ALIAS;
     }
@@ -265,7 +265,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (const exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 

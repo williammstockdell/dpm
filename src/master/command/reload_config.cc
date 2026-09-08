@@ -68,7 +68,7 @@ void help() {
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-void usage() { std::cerr << "bgmaster_server_refresh_config [ --help ] [ --host host:port ] [ --verbose verbosity ] filename" << std::endl; }
+void usage() { std::cerr << "dpm_server_refresh_config [ --help ] [ --host host:port ] [ --verbose verbosity ] filename" << std::endl; }
 
 int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
@@ -80,7 +80,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (const exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 

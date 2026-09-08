@@ -136,7 +136,6 @@ static void useDefaultConfiguration() {
 // functions
 
 void initializeLogging(const Properties& bg_properties, const std::string& subsection_name) {
-    std::cout << "I'm initializing logging! " << logging_initialized << std::endl;
 
     if (logging_initialized) {
         LOG_DEBUG_MSG("Logging already initialized.");
@@ -185,7 +184,6 @@ void initializeLogging(const Properties& bg_properties, const std::string& subse
 
     // if BG_LOGGING_PROPERTIES_FILE is set then read logging properties from that file
     // rather than from the properties.
-    std::cout << "flag" << std::endl;
 
     const char* filename_env = getenv(LoggingPropertiesFilenameEnvVarName.c_str());
 

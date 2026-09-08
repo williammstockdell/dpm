@@ -64,7 +64,7 @@ void doStat(const BGMasterClient& client, bool fancy) {
             std::cout << "Aliases not currently running" << std::endl;
             std::cout << "-----------------------------" << std::endl;
             for (const std::string& al : idles) {
-                if (al != "bgmaster_server") {
+                if (al != "dpm_server") {
                     std::cout << al << std::endl;
                 }
             }
@@ -85,11 +85,11 @@ void doStat(const BGMasterClient& client, bool fancy) {
         std::cout << std::endl << version << " running under pid " << mpid << " since " << start_time << std::endl;
         std::cout << "configured from " << properties << std::endl;
     } else {
-        std::cerr << "bgmaster_server process id unavailable" << std::endl;
+        std::cerr << "dpm_server process id unavailable" << std::endl;
     }
 }
 
-void help() { std::cerr << "Return the process id of bgmaster_server and information about managed processes." << std::endl; }
+void help() { std::cerr << "Return the process id of dpm_server and information about managed processes." << std::endl; }
 
 void usage() { std::cerr << "master_status [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
@@ -112,7 +112,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (const exceptions::CommunicationError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(1);
     }
     doStat(client, fancy);

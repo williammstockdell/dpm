@@ -42,7 +42,7 @@
 
 LOG_DECLARE_FILE("master");
 
-void help() { std::cerr << "Get the current contents of bgmaster_server event history ring buffer." << std::endl; }
+void help() { std::cerr << "Get the current contents of dpm_server event history ring buffer." << std::endl; }
 
 void usage() { std::cerr << "get_history [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 
@@ -55,7 +55,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (const exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 

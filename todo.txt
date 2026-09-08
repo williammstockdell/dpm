@@ -26,7 +26,6 @@ Does server get notifications?
 
 1.0:
 Versioning
-Finish failover/restart testing and fix anything it exposes.
 Test every command and its options
 Do the clean-checkout → build → install → configure → run smoke test.
 Fix only release-blocking problems from that exercise, then tag 1.0.

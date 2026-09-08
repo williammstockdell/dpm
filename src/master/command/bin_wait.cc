@@ -54,7 +54,7 @@ void doWaitBin(BGMasterClient& client, const std::string& target) {
 }
 
 void help() {
-    std::cerr << "Connects to bgmaster_server and waits for a specific" << std::endl;
+    std::cerr << "Connects to dpm_server and waits for a specific" << std::endl;
     std::cerr << "binary id to complete execution." << std::endl;
 }
 
@@ -70,7 +70,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 

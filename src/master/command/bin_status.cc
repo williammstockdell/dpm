@@ -76,7 +76,7 @@ void doStatus(const BGMasterClient& client, const std::string& target) {
 
 void help() {
     std::cerr << "Returns the status of one or all binaries currently" << std::endl;
-    std::cerr << "under control of bgmaster_server.  By default it returns" << std::endl;
+    std::cerr << "under control of dpm_server.  By default it returns" << std::endl;
     std::cerr << "the binary id (IP:PID), status, alias name and start time of all binaries." << std::endl;
     std::cerr << "If a binary id is specified, it returns the status of that binary." << std::endl;
 }
@@ -93,7 +93,7 @@ int main(int argc, const char** argv) {
     try {
         client.connectMaster(largs.get_props(), largs.get_portpairs());
     } catch (exceptions::BGMasterError& e) {
-        std::cerr << "Unable to contact bgmaster_server: " << e.what() << std::endl;
+        std::cerr << "Unable to contact dpm_server: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 
