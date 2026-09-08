@@ -95,4 +95,4 @@ UserErrorExceptionTest: UserErrorExceptionTest.o TestLogging.o $(CATCH_OBJ)  $(C
 test: IdsTest AgentBaseTest HostTest NoDelayTest UserErrorExceptionTest
 
 clean:
-	$(RM) *.o *~
+	$(RM) *.o *~ UserErrorExceptionTest NoDelayTest HostTest AgentBaseTest IdsTest
