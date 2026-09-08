@@ -24,12 +24,12 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster bgmaster_server </refpurpose>
+    <refpurpose>Manual for DPM dpm_server </refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="dpm_server.synopsis">
     <title>Synopsis</title>
-    <cmdsynopsis><command>bgmaster_server</command>
+    <cmdsynopsis><command>dpm_server</command>
     </cmdsynopsis>
 </refsynopsisdiv>
 

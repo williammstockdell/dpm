@@ -41,9 +41,11 @@
 
 LOG_DECLARE_FILE("master");
 
-CxxSockets::Host Behavior::findFailoverTarget(const CxxSockets::Host& failed_host) {
+CxxSockets::Host Behavior::findFailoverTarget(const CxxSockets::Host& failed_host) const {
 
     for (const auto& pair : _pairs) {
+
+        // cppcheck-suppress useStlAlgorithm
         if (pair.first == failed_host) {
             LOG_TRACE_MSG("target is host " << pair.second.uhn());
             return pair.second;

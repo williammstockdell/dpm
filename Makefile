@@ -30,13 +30,14 @@ TARGETS += $(TARGETS_DISTCLEAN)
 
 .PHONY: default all clean install distclean test $(TARGETS)
 
-check:
-	NO_COLOR=1 cppcheck --project=compile_commands.json -isrc/master/protocol -itest/catch2 --enable=warning,style,performance,portability --inline-suppr --inconclusive --force --error-exitcode=1
-
-default: all
 
 # Add check to this list when cppcheck is cleared up
 all: $(TARGETS_ALL)
+
+default: all
+
+db:
+	bear -- make -j$(nproc) all
 
 test: all
 	$(MAKE) --directory test test
@@ -61,5 +62,5 @@ distclean: $(TARGETS_DISTCLEAN)
 $(TARGETS):
 	$(MAKE) --directory $(basename $@) $(subst .,,$(suffix $@))
 
-debug:
-	@echo $(CURDIR)
+check:
+	NO_COLOR=1 cppcheck --project=compile_commands.json -isrc/master/protocol -itest/catch2 --enable=warning,style,performance,portability --inline-suppr --inconclusive --force --error-exitcode=1

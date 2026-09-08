@@ -63,7 +63,7 @@ class Behavior {
     Behavior() : _action(INVALID_ACTION), _retries(0), _name("") { }
     ~Behavior() {}
     Behavior(const std::string& name, Action a, const std::map<CxxSockets::Host, CxxSockets::Host>& fp, Retries r) : _action(a), _pairs(fp), _retries(r), _name(name) { }
-    void print() {};
+
     Action get_action() const { return _action; }
     Retries get_retries() const { return _retries; }
     const std::string& get_name() const { return _name; }
@@ -71,7 +71,7 @@ class Behavior {
     //! \brief Figure out where to fail over.
     //! \param failed_host Host that failed.
     //! \return The target host for the failover.
-    CxxSockets::Host findFailoverTarget(const CxxSockets::Host& failed_host);
+    CxxSockets::Host findFailoverTarget(const CxxSockets::Host& failed_host) const;
 
     static Action string_to_action(const std::string& st) {
         Action a;
