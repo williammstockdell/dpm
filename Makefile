@@ -1,7 +1,6 @@
 DIRS =
 DIRS += xml
 DIRS += utility
-DIRS += include
 DIRS += src
 DIRS += src/docs
 
@@ -48,7 +47,7 @@ install:
 	$(MAKE) --directory xml install
 
 # Build prerequisites between major trees.
-src.all: xml.all utility.all include.all
+src.all: xml.all utility.all
 docs.all: src.all
 
 clean: $(TARGETS_CLEAN)
