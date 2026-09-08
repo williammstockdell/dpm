@@ -220,6 +220,7 @@ void AgentRep::agentAbend(const std::ostringstream& msg) {
 BinaryId AgentRep::startBin_nl(const BGMasterAgentProtocolSpec::StartRequest& startreq, BGMasterAgentProtocolSpec::StartReply& startrep) {
     LOGGING_DECLARE_ID_MDC(_agent_id.str());
     LOG_TRACE_MSG(__FUNCTION__);
+
     BinaryId bid("0");
 
     if (MasterController::get_end_requested()) {
@@ -248,8 +249,10 @@ BinaryId AgentRep::startBin_nl(const BGMasterAgentProtocolSpec::StartRequest& st
         LOG_ERROR_MSG("Agent connection error during start send request.");
         return bid;
     } catch (const CxxSockets::Error& err) {
+
         std::string nrs("No requester socket.");
         if (err.errcode == -1 || err.what() == nrs) {
+            LOG_ERROR_MSG("Start request failed: " << err.what());
             // Agent not yet set up. Just return.
             return bid;
         }

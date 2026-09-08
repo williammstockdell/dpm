@@ -852,7 +852,6 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
             }
         }
 
-        LOG_TRACE_MSG("Got through validate");
         if (agent) {
             // If we got here, we have an agent ready.
             const BGMasterAgentProtocolSpec::StartRequest agentreq(al->get_path(), al->get_args(), al->get_logdir(), al->get_name(), al->get_user());
@@ -860,6 +859,7 @@ void MasterController::startServers(std::map<std::string, std::string>& failed_a
             reply._rc = exceptions::OK;
 
             const BinaryId bid = agent->startBin(agentreq, reply);
+
             if (bid.str() == "0") {
                 std::ostringstream msg;
                 msg << "Attempt to start binary for alias " << al->get_name() << " failed.";

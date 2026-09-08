@@ -137,14 +137,6 @@ BinaryId::BinaryId(const std::string& id_string) {
 
     LOG_TRACE_MSG("Binary ID ctor for " << id_string);
 
-    // // Make sure we're not getting garbage.  There should be a colon and some number.
-    // char const* digits = "0123456789";
-    // if((id_string.find(":") == std::string::npos) ||
-    //    (id_string.find_first_of(digits) == std::string::npos)) {
-
-    //         throw exceptions::APIUserError(exceptions::WARN, "Invalid Binary ID");
-    //     }
-
     _id = id_string;
 }
 
