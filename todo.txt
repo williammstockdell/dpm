@@ -27,7 +27,6 @@ Does server get notifications?
 1.0:
 Versioning
 Finish failover/restart testing and fix anything it exposes.
-Declare the 1.0 behavior/API effectively frozen.
 Update license/copyright headers.
 Update the existing man pages to match reality.
 Do the clean-checkout → build → install → configure → run smoke test.

@@ -2,19 +2,6 @@ LIBDIR := $(PREFIX)/lib
 
 CXXSOCKETS := $(PREFIX)/utility/src/cxxsockets/libcxxsockets.a
 
-# BGUTILITY  := $(LIBDIR)/libbgutility.so
-
-# COMMON_TEST_OBJS := \
-#     CommonTest.o \
-#     ../src/master/common/BinaryController.o
-
-# common_tests: $(PORT_TEST_OBJS) $(CATCH_OBJ) $(CXXSOCKETS) $(BGUTILITY)
-# 	$(CXX) -o $@ \
-# 	    $(PORT_TEST_OBJS) \
-# 	    $(CATCH_OBJ) \
-# #	    $(CXXSOCKETS) \
-# 	    -L$(LIBDIR) -lbgutility \
-# 	    $(LDFLAGS)
 ROOT := ..
 
 CXX := g++-14
@@ -50,6 +37,7 @@ IdsTest: IdsTest.o TestLogging.o $(CATCH_OBJ) $(IDS_OBJ) $(CXXSOCKETS) $(BGUTILI
 		$(BGUTILITY) \
 		-llog4cxx \
 		-lcrypto \
+		-lssl \
 		-pthread
 
 ABS_OBJ := $(ROOT)/src/master/common/AgentBase.o
@@ -66,6 +54,7 @@ AgentBaseTest: AgentBaseTests.o TestLogging.o $(CATCH_OBJ) $(ABS_OBJ)  $(CXXSOCK
 		$(BGUTILITY) \
 		-llog4cxx \
 		-lcrypto \
+		-lssl    \
 		-pthread
 
 
@@ -78,6 +67,7 @@ HostTest: HostTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
 		$(BGUTILITY) \
 		-llog4cxx \
 		-lcrypto \
+		-lssl    \
 		-pthread
 
 NoDelayTest: NoDelayTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
@@ -88,6 +78,7 @@ NoDelayTest: NoDelayTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY
 		$(CXXSOCKETS) \
 		$(BGUTILITY) \
 		-lcrypto \
+		-lssl    \
 		-llog4cxx
 
 UserErrorExceptionTest: UserErrorExceptionTest.o TestLogging.o $(CATCH_OBJ)  $(CXXSOCKETS) $(BGUTILITY)
@@ -98,6 +89,7 @@ UserErrorExceptionTest: UserErrorExceptionTest.o TestLogging.o $(CATCH_OBJ)  $(C
 		$(CXXSOCKETS) \
 		$(BGUTILITY) \
 		-lcrypto \
+		-lssl    \
 		-llog4cxx
 
 test: IdsTest AgentBaseTest HostTest NoDelayTest UserErrorExceptionTest
