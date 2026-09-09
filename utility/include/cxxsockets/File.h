@@ -55,10 +55,12 @@ class File {
 
     //! \brief Mutual exclusion for all operations on this file.
     void LockFile(FileLocker& locker) const;
+
     //! \brief Lock send side only
-    int __attribute__((warn_unused_result)) LockSend(PthreadMutexHolder& mutex);
+    [[nodiscard]] int LockSend(PthreadMutexHolder& mutex);
+
     //! \brief Lock receive side only
-    int __attribute__((warn_unused_result)) LockReceive(PthreadMutexHolder& mutex);
+    [[nodiscard]] int LockReceive(PthreadMutexHolder& mutex);
 
     File();
 

@@ -48,6 +48,7 @@
 #include <mutex>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 using std::string;
 
@@ -56,7 +57,6 @@ LOG_DECLARE_FILE("utility");
 namespace bgq {
 namespace utility {
 
-#include <algorithm>
 
 //---------------------------------------------------------------------
 // class Properties

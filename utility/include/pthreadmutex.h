@@ -216,7 +216,7 @@ class PthreadMutexHolder {
     /*!
     // Unlock the mutex we are holding.
     // @param   none.
-    // @retrurn value from the pthread_mutex_unlock call.
+    // @return value from the pthread_mutex_unlock call.
     */
     int Unlock() {
         int nRet = 0;

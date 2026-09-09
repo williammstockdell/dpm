@@ -39,3 +39,20 @@ Packaging
 3.0:
 A graphical operator/administration console built on the existing client API
 showing included connected agents, running binaries, placement, start/stop/restart controls, failures/history, failover events, and potentially log access.
+
+
+1.0 install/release
+Source release
+    dpm-v0.0.3.tar.gz
+
+Optional convenience binary
+    dpm-v0.0.3-ubuntu24.04-x86_64.tar.gz
+
+Reference build environment
+    Dockerfile / build container
+
+Installation
+    make
+    make install
+    PREFIX=/somewhere make install
+    DESTDIR=/staging make install

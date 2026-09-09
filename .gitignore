@@ -41,3 +41,4 @@ test/integration/logs/
 test/integration/security/
 commands.txt
 docs
+utility.tagfile

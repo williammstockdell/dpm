@@ -40,16 +40,8 @@
  * - Common logging: Log.h
  * - Configuration %file: Properties.h
  * - CxxSockets
- * - Control System \link bgq::utility::performance performance counter\endlink classes and macros.
  * - Port Configuration \link bgq::utility::PortConfiguration classes\endlink for \link bgq::utility::ClientPortConfiguration clients\endlink and \link bgq::utility::ServerPortConfiguration
  * servers\endlink
- * - Executing arbitrary code at scope exit with \link bgq::utility::ScopeGuard ScopeGuard\endlink
- * - Generic \link bgq::utility::PluginHandle plugin interface\endlink  for loading shared libraries.
- * - Implementation of the \link bgq::utility::Singleton Singleton Design Pattern\endlink.
- * - \link bgq::utility::SignalHandler SignalHandler\endlink using <a href="http://think-async.com">Boost.Asio</a> design patterns.
- * - \link bgq::utility::Inotify Inotify\endlink wrapper using <a href="http://think-async.com">Boost.Asio</a> design patterns.
- * - \link bgq::utility::Symlink Symlink\endlink wrapper around readlink(2).
- * - \link bgq::utility::BoolAlpha BoolAlpha\endlink wrapper around std::boolalpha.
  *
  * The library is libbgutility.so
  */

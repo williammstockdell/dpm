@@ -244,9 +244,6 @@ class Properties {
     explicit Properties(const std::string& file = std::string() //!< [in] file to open
     );
 
-    /*!
-     * \copydoc Properties::Properties()
-     */
     static Ptr create(const std::string& file = std::string() //!< [in] file to open
     ) {
         return Ptr(new Properties(file));
