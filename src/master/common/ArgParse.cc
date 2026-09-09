@@ -49,6 +49,7 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <utility/include/version.h>
 
 LOG_DECLARE_FILE("master");
 
@@ -121,6 +122,16 @@ void APusage(void (*usage)(), const bool silent = false) {
     std::cerr << "Try the --help or -h option for more information." << std::endl;
 }
 
+void APversion() {
+
+        std::ostringstream version;
+    version << "DPM";
+    version << " version: " << dpm::version::tag();
+    version << " hash: " << dpm::version::hash();
+    version << " " << __DATE__ << " " << __TIME__;
+
+    std::cerr << version.str() << std::endl;
+}
 
 void Args::setupPortConfig(const bin_type utype, const std::string& host_string) {
 
@@ -158,11 +169,18 @@ Args::Args(const int argc, const char** argv, void (*usage)(), void (*help)(), s
     valargs.push_back("-v");
     valargs.push_back("--properties");
     valargs.push_back("-p");
+    valargs.push_back("--version");
 
     // First find the properties
     bool gotprops = false;
     std::string host_string;
     for (int i = 1; i < argc; ++i) {
+
+        if (!strcasecmp(argv[i], "--version")) {
+            APversion();
+            exit(0);
+        }
+
         if (!strcasecmp(argv[i], "--properties") || !strcasecmp(argv[i], "-p")) {
             if (_props) {
                 std::cerr << "--properties already specified." << std::endl;
