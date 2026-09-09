@@ -25,7 +25,6 @@ Does agent die if an app dies?
 Does server get notifications?
 
 1.0:
-Versioning
 Test every command and its options
 Do the clean-checkout → build → install → configure → run smoke test.
 Fix only release-blocking problems from that exercise, then tag 1.0.
