@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE refentry PUBLIC 
+<!DOCTYPE refentry PUBLIC
 "-//OASIS//DTD DocBook XML V4.5//EN"
 "/usr/share/apps/ksgmltools2/docbook/xml-dtd-4.2/docbookx.dtd"
 [
@@ -24,13 +24,13 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster master_status </refpurpose>
+    <refpurpose>Manual for DPM master_status </refpurpose>
 </refnamediv>
 
 <refsynopsisdiv id="master_status.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>
-master_status [ alias ] | [ bgmaster ] [ OPTIONS ]
+master_status [ alias ] | [ dpm_server ] [ OPTIONS ]
 </command>
     </cmdsynopsis>
 </refsynopsisdiv>
@@ -42,7 +42,7 @@ master_status [ alias ] | [ bgmaster ] [ OPTIONS ]
         <varlistentry>
             <term><option>--properties</option></term>
             <listitem>
-            <para>The bg.properties configuration file to use.</para>
+            <para>The dpm.properties configuration file to use.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -54,7 +54,7 @@ master_status [ alias ] | [ bgmaster ] [ OPTIONS ]
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -70,9 +70,9 @@ master_status [ alias ] | [ bgmaster ] [ OPTIONS ]
 
 <refsect1 id="master_status.description">
     <title>Description</title>
-    <para>Check to see if bgmaster_server is running.  It returns the process 
-id of bgmaster_server, a list of agents connected and the binaries they are running.
-If bgmaster_server isn't running, it returns an error.</para>
+    <para>Check to see if dpm_server is running.  It returns the process
+id of dpm_server, a list of agents connected and the binaries they are running.
+If dpm_server isn't running, it returns an error.</para>
 </refsect1>
 
 

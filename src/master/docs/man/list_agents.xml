@@ -40,7 +40,7 @@
         <varlistentry>
             <term><option>--properties</option></term>
             <listitem>
-            <para>The bg.properties configuration file to use.</para>
+            <para>The dpm.properties configuration file to use.</para>
             </listitem>
         </varlistentry>
         <varlistentry>

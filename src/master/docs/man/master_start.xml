@@ -48,7 +48,7 @@ master_start [ alias ] | [ "dpm" ] [ "binaries" ] [ OPTIONS ]
         <varlistentry>
             <term><option>dpm</option></term>
             <listitem>
-            <para>Start the dpm_server process and any servers specified in bg.properties'
+            <para>Start the dpm_server process and any servers specified in dpm.properties'
 [master.startup] start_order parameter.</para>
             </listitem>
         </varlistentry>
@@ -61,8 +61,8 @@ master_start [ alias ] | [ "dpm" ] [ "binaries" ] [ OPTIONS ]
         <varlistentry>
             <term><option>binaries</option></term>
             <listitem>
-            <para>Start the managed binaries specified in the bg.properties file.
-dpm_server and the associated bgagentds must be running.</para>
+            <para>Start the managed binaries specified in the dpm.properties file.
+dpm_server and the associated dpm_agentds must be running.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -74,7 +74,7 @@ dpm_server and the associated bgagentds must be running.</para>
         <varlistentry>
             <term><option>--properties</option></term>
             <listitem>
-            <para>bg.properties configuration file to use </para>
+            <para>dpm.properties configuration file to use </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -97,7 +97,7 @@ dpm_server and the associated bgagentds must be running.</para>
 <refsect1 id="master_start.description">
     <title>Description</title>
     <para>master_start is the tool to start processes under the management of dpm_server
-and bgagentd.  It is also capable of starting dpm_server.  bgagentd processes should
+and dpm_agentd.  It is also capable of starting dpm_server.  dpm_agentd processes should
 be started by system init scripts.  A single alias or all managed binaries may be started.</para>
 </refsect1>
 

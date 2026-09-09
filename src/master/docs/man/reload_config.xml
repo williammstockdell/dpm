@@ -48,7 +48,7 @@ reload_config [ OPTIONS ] filename
         <varlistentry>
             <term><option>filename</option></term>
             <listitem>
-            <para>bg.properties configuration file to use </para>
+            <para>dpm.properties configuration file to use </para>
             </listitem>
         </varlistentry>
 

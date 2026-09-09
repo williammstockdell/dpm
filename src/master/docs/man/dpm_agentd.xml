@@ -27,13 +27,13 @@
     <refpurpose>Manual for DPM dpm_agentd </refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="bgagentd.synopsis">
+<refsynopsisdiv id="dpm_agentd.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>dpm_agentd</command>
     </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1 id="bgagentd.options">
+<refsect1 id="dpm_agentd.options">
     <title>Arguments</title>
     <para>Accepted arguments:</para>
     <variablelist>
@@ -46,35 +46,35 @@
         <varlistentry>
             <term><option>--logdir</option></term>
             <listitem>
-            <para>The directory to which bgagentd should send its log file. </para>
+            <para>The directory to which dpm_agentd should send its log file. </para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term><option>--host</option></term>
             <listitem>
-            <para>Specify comma separated host:port pairs to connect to bgmaster_server. </para>
+            <para>Specify comma separated host:port pairs to connect to dpm_server. </para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term><option>--debug</option></term>
             <listitem>
-            <para>Debug mode sends log output to the console and runs bgagentd as a foreground
+            <para>Debug mode sends log output to the console and runs dpm_agentd as a foreground
 	      process. </para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term><option>--users</option></term>
             <listitem>
-            <para>List of user IDs to which bgagentd is permitted to switch.  Specify "root" to
-	      disallow user ID switching.  This parameter is usually set in the bgagent init script.
-	      The requested user ID is set in bg.properties under the [agent] section as agentuid=
+            <para>List of user IDs to which dpm_agentd is permitted to switch.  Specify "root" to
+	      disallow user ID switching.  This parameter is usually set in the dpm agent init script.
+	      The requested user ID is set in dpm.properties under the [agent] section as agentuid=
 	    </para>
             </listitem>
         </varlistentry>
         <varlistentry>
             <term><option>--workingdir</option></term>
             <listitem>
-            <para>Fully qualified working directory for bgagentd and child processes
+            <para>Fully qualified working directory for dpm_agentd and child processes
             </para>
             </listitem>
         </varlistentry>
@@ -89,11 +89,11 @@
 
 </refsect1>
 
-<refsect1 id="bgagentd.description">
+<refsect1 id="dpm_agentd.description">
     <title>Description</title>
     <para>dpm_agentd is the DPM system's process watcher.
-      bgagentd operates solely on instructions from bgmaster_server.
-      bgagentd should be started from the bgagent init script at system startup time and
+      dpm_agentd operates solely on instructions from dpm_server.
+      dpm_agentd should be started from the dpm agent init script at system startup time and
       allowed to run continuously in the background.</para>
 </refsect1>
 

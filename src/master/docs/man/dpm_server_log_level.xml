@@ -24,18 +24,18 @@
 
 <refnamediv>
     <refname>&product;</refname>
-    <refpurpose>Manual for BGmaster bgmaster_server_log_level </refpurpose>
+    <refpurpose>Manual for BGmaster dpm_server_log_level </refpurpose>
 </refnamediv>
 
-<refsynopsisdiv id="bgmaster_server_log_level.synopsis">
+<refsynopsisdiv id="dpm_server_log_level.synopsis">
     <title>Synopsis</title>
     <cmdsynopsis><command>
-bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
+dpm_server_log_level [ OPTIONS ] [ logger=level ]
 </command>
     </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1 id="bgmaster_server_log_level.options">
+<refsect1 id="dpm_server_log_level.options">
     <title>Arguments</title>
     <para>Accepted arguments:</para>
     <variablelist>
@@ -54,7 +54,7 @@ bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -66,7 +66,7 @@ bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
         <varlistentry>
             <term><option>--properties filename</option></term>
             <listitem>
-            <para>bg.properties file to use </para>
+            <para>dpm.properties file to use </para>
             </listitem>
         </varlistentry>
 
@@ -74,13 +74,13 @@ bgmaster_server_log_level [ OPTIONS ] [ logger=level ]
 
 </refsect1>
 
-<refsect1 id="bgmaster_server_log_level.description">
+<refsect1 id="dpm_server_log_level.description">
     <title>Description</title>
-    <para>Display and optionally update bgmaster_server's logging configuration.</para>
+    <para>Display and optionally update dpm_server's logging configuration.</para>
 </refsect1>
 
 
-<refsect1 id="bgmaster_server_log_level.seealso">
+<refsect1 id="dpm_server_log_level.seealso">
     <title>See also</title>
     <para><citerefentry>
            <refentrytitle>master_status</refentrytitle>

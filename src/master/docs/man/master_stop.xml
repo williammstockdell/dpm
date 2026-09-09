@@ -42,7 +42,7 @@ master_stop [ alias ] [ OPTIONS ]
         <varlistentry>
             <term><option>--properties</option></term>
             <listitem>
-            <para>The bg.properties configuration file to use.</para>
+            <para>The dpm.properties configuration file to use.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -54,21 +54,21 @@ master_stop [ alias ] [ OPTIONS ]
         <varlistentry>
             <term><option>"binaries"</option></term>
             <listitem>
-            <para>Stop all binaries managed by bgmaster.</para>
+            <para>Stop all binaries managed by dpm.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term><option>"bgmaster"</option></term>
+            <term><option>"dpm"</option></term>
             <listitem>
-            <para>Stop the bgmaster_server process and all managed binaries. Note this option is asynchronous,
-            it will return before bgmaster_server and all managed binaries have terminated.</para>
+            <para>Stop the dpm_server process and all managed binaries. Note this option is asynchronous,
+            it will return before dpm_server and all managed binaries have terminated.</para>
             </listitem>
         </varlistentry>
         <varlistentry>
-            <term><option>"bgmaster_only"</option></term>
+            <term><option>"dpm_only"</option></term>
             <listitem>
-            <para>Kill the bgmaster_server process but leave the agents and managed binaries running.
-bgmaster_server can then be restarted with master_start and all agents will report their status 
+            <para>Kill the dpm_server process but leave the agents and managed binaries running.
+dpm_server can then be restarted with master_start and all agents will report their status 
 and the status of their managed binaries. </para>
             </listitem>
         </varlistentry>
@@ -97,7 +97,7 @@ it to end. </para>
         <varlistentry>
             <term><option>--host host:port</option></term>
             <listitem>
-            <para>TCP host and port pair to use to connect to bgmaster_server </para>
+            <para>TCP host and port pair to use to connect to dpm_server </para>
             </listitem>
         </varlistentry>
         <varlistentry>
@@ -113,8 +113,8 @@ it to end. </para>
 
 <refsect1 id="master_stop.description">
     <title>Description</title>
-    <para>Stop any or all controlled processes, bgmaster_server or everything.
-By default, it stops bgmaster_server and all managed binaries.  Processes are allowed an 
+    <para>Stop any or all controlled processes, dpm_server or everything.
+By default, it stops dpm_server and all managed binaries.  Processes are allowed an 
 orderly completion with a timeout before they are forced to end.
   By default the initial signal is SIGTERM.</para>
 </refsect1>
