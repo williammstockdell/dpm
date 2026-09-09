@@ -64,8 +64,8 @@ distclean:	clean   $(TARGETS_DISTCLEAN)
 $(TARGETS)::
 	$(MAKE) --directory $(basename $@) $(subst .,,$(suffix $@))
 
-docs.clean:
-	$(RM) doxygen.out
+#docs.clean:
+#	$(RM) doxygen.out
 
 
 doxygen.out:

@@ -70,6 +70,7 @@ install:
 	$(MAKE) --directory server install
 	$(MAKE) --directory agent install
 	$(MAKE) --directory command install
+	$(MAKE) --directory docs install
 
 clean: $(DIR_TARGS_CLEAN)
 

@@ -22,10 +22,10 @@
 /* end_generated_IBM_copyright_prolog                               */
 
 /*!
- * \mainpage BGmaster
- * \author IBM
+ * \mainpage DPM
+ * \author IBM, Will Stockdell
  *
- * Copyright IBM Corp. 2010, 2012
+ * Copyright IBM Corp. 2010, 2012, modifications by Will Stockdell 2026
  *
  * \section toc Table of Contents
  *
@@ -35,19 +35,16 @@
  * - \ref commands
  * - \ref policies
  * - \ref other_options
- * - \ref ras
  *
  * \section introduction Introduction
- * The Blue Gene/Q distributed process manager, known as BGmaster, consists of three components,
- * bgmaster_server, bgagentd, and several client commands for interacting with bgmaster_server.
- * BGmaster is responsible for not only managing the distributed mc_server components,
- * it continues to serve to manage all other control system components as its predecessors
- * bgpmaster and bglmaster have.
+ * DPM, Distributed Process Manager, is based on the Blue Gene/Q distributed process manager, known as BGmaster.
+ * It consists of three components,
+ * dpm_server, dpm_agentd, and several client commands for interacting with dpm_server.
  * \section quick_start Quick Start
- * This section will give you enough information to start your own bgmaster_server and bgagentd
+ * This section will give you enough information to start your own dpm_server and dpm_agentd
  * and run a simulator environment. Advanced configurations for failover are not covered here.
  * - Set unique listeners: BGmaster now supports the common server port configuration
- *    syntax. It needs two listeners defined. One for client connections and one for bgagentd
+ *    syntax. It needs two listeners defined. One for client connections and one for dpm_agentd
  *    connections. They are defined in the [master] section as follows:
  * \code
  *    [master.server]
@@ -63,18 +60,17 @@
  *  Choose a unique listening port for each.
  * - Set a directory for ouptut logging. Stderr and stdout from all of your servers
  *   will be piped to files generated in this directory. This will be in the [master.server]
- *   section as well. bgagentd also has its own logging directory specification. So
+ *   section as well. dpm_agentd also has its own logging directory specification. So
  *   add that in the [master.agent] section. The format looks like this in both sections:
  * \code
  *   logdir=/path/to/log/directory
  * \endcode
  * - Define an alias for each server you plan on running in the [master.binmap] section.
- *   This includes bgmaster_server itself which must be defined as "bgmaster". An alias
+ *   This includes dpm_server itself which must be defined as "bgmaster". An alias
  *   is more than just a short name for an executable. It is a representation of an executable
  *   and the set of policies and arguments with which it is associated.
  * \code
- * bgmaster=/bglhome/willstoc/bgq-head/bgq/work/hlcs/sbin/bgmaster_server
- * mc_server=/bglhome/willstoc/bgq-head/bgq/work/control/sbin/mc_serversim_64
+ * bgmaster=/bglhome/willstoc/bgq-head/bgq/work/hlcs/sbin/dpm_server
  * mmcs_server=/bglhome/willstoc/bgq-head/bgq/work/hlcs/sbin/mmcs_server
  * \endcode
  * - If you wish to pass command line arguments to any of your servers, they are added in
@@ -90,23 +86,22 @@
  * # Option to start selected servers when bgmaster starts.
  * start_servers=true
  * # comma separated list of aliases to start serially
- * start_order=mc_server,mmcs_server
  * \endcode
  * - Start an agent process.
  * \code
  * > cd <driverpath>/hlcs/sbin
- * > ./bgagentd
+ * > ./dpm_agentd
  * \endcode
- * - Start bgmaster_server
+ * - Start dpm_server
  * \code
  * > ./master_start bgmaster
  * \endcode
  * - If you have configured your servers to start automatically, they should both start.
  *   They can also be started with the ./master_start command and stopped with ./master_stop.
- *   The complete set of commands are listed in the SEE ALSO section of the bgmaster_server
+ *   The complete set of commands are listed in the SEE ALSO section of the dpm_server
  *   man page.
  * \code
- * > man /bgsys/drivers/ppcfloor/hlcs/man/man8/bgmaster_server.8
+ * > man /bgsys/drivers/ppcfloor/hlcs/man/man8/dpm_server.8
  * \endcode
  *
  * \section concepts Concepts
@@ -151,26 +146,20 @@
  * \section commands Commands
  * These are the available BGmaster commands. See the man pages for details.
  * - alias_wait:  Wait for a binary associated with a specified alias to start.
- * - binary_status:  Returns the status of one or all binaries currently under control of bgmaster_server.
+ * - binary_status:  Returns the status of one or all binaries currently under control of dpm_server.
  * - binary_wait:  Waits for a binary associated with the specified alias to become active.
  * - fail_over:  Force a specific binary id to be killed and restarted on another node.
- * - get_errors:  Returns up to 25 items in bgmaster_server's ring buffer of logged errors.
+ * - get_errors:  Returns up to 25 items in dpm_server's ring buffer of logged errors.
  * - list_agents:  Returns  a list of IDs for active agents and their associated running binaries.
  * - list_clients:  Returns a list of client IDs for active clients.
- * - master_start:  Start a controlled process or bgmaster_server.
- * - master_status:  Check to see if bgmaster_server is running.
- * - master_stop:   Stop a controlled process, bgmaster_server, or any or all bgagentd processes.
- * - refresh_config:  Start a controlled process or bgmaster_server.
+ * - master_start:  Start a controlled process or dpm_server.
+ * - master_status:  Check to see if dpm_server is running.
+ * - master_stop:   Stop a controlled process, dpm_server, or any or all dpm_agentd processes.
+ * - refresh_config:  Start a controlled process or dpm_server.
  *
  * \section other_options Additional Options
  * - [master] section \n
  *                    \n
- * \code
- * db=true|false
- * # If this is set to "true", bgmaster_server will attempt to connect to the database and issue
- * # ras messages for starting, stopping, restarting, failure detection and other events for its
- * # own components and the ones it is managing.
- * \endcode
  *
  * \section policies Advanced Policy Configuration
  * Policy configuration is complex and flexible. They are documented in the bg.properties template
@@ -181,12 +170,10 @@
  * # may start. Comma separated
  * # my_alias=bgqfen1.rchland.ibm.com,bgqfen2.rchland.ibm.com
  * mmcs_server=bgqfen1
- * mc_server=bgqfen1
  *
  * [master.policy.instances]
  * # policies for the number of instances of each alias are allowed
  * # valid entries are 0 through 65535
- * mc_server=1
  * mmcs_server=10
  *
  * [master.policy.failure]
@@ -230,18 +217,5 @@
  * sleeper=sleeper_restart,sleeper_failover
  *
  * \endcode
- *
- * \section ras RAS Messages
- * BGmaster emits RAS messages for several events. These include the following:
- * - 00030000: "bgmaster_server has been started in process $(PID)"
- * - 00030001: "bgmaster_server process $(PID) stopped"
- * - 00030002: "bgmaster_server started binary $(BIN)"
- * - 00030003: "bgmaster_server stopped binary $(BIN)"
- * - 00030004: "bgmaster_server has detected a failure of binary $(BIN) with signal $(SIGNAL) and exit status $(ESTAT)"
- * - 00030005: "bgmaster_server has executed a restart policy for alias $(ALIAS)"
- * - 00030006: "bgmaster_server has executed a failover policy for alias $(ALIAS) from $(SOURCE) to $(TARGET)"
- * - 00030007: "bgmaster_server has detected a failure of bgagentd $(AGENT_ID)"
- * - 00030008: "bgmaster_server has been requested to end bgagentd $(AGENT_ID)"
- * - 00030009: "bgmaster_server process $(PID) has failed with signal $(SIGNAL)"
  *
  */

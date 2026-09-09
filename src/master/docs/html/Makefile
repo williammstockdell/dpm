@@ -23,22 +23,18 @@
 
 include ../../../../Make.hlcs.rules
 
-all:
-
-docs: Doxyfile
-
 clean:
 	rm -f doxygen.out
 
 
 distclean: clean
 
-INSTALL_DIR = $(DPM_BUILD_DIR)/hlcs/docs/master
+INSTALL_DIR = $(DPM_INSTALL_DIR)/src/master/docs/html/
 
 IMAGE = Alias_etc.png
 
 $(INSTALL_DIR):
-	$(MKDIR) -p $@
+	mkdir -p $@
 
 $(INSTALL_DIR)/%: % | $(INSTALL_DIR)
 	$(CP) $^ $@
@@ -46,18 +42,23 @@ $(INSTALL_DIR)/%: % | $(INSTALL_DIR)
 install: docs $(INSTALL_DIR)/$(IMAGE)
 
 uninstall:
-	rm -rf $(DPM_BUILD_DIR)/hlcs/docs/master
+	rm -rf $(DPM_BUILD_DIR)/docs/master
 
-doxygen_version := $(subst 1.7,1.6,$(findstring 1.6, $(shell doxygen --version))$(findstring 1.7, $(shell doxygen --version)))
+doxygen_version := $(shell doxygen --version 2>/dev/null)
 required_doxygen_version := 1.6
+doxygen_version_ok := $(shell printf '%s\n%s\n' \
+	$(required_doxygen_version) $(doxygen_version) | \
+	sort -V | head -1)
 
 docs: doxygen.out
 
+all: docs
+
 doxygen.out: Doxyfile | $(INSTALL_DIR)
-ifeq ($(doxygen_version),$(required_doxygen_version))
+ifeq ($(doxygen_version_ok),$(required_doxygen_version))
 	@echo "generating documentation"
 	cd ../../../../ && cat src/master/docs/html/$^ | sed 's:DPM_BUILD_DIR:$(DPM_BUILD_DIR):' | doxygen - > src/master/docs/html/doxygen.out
 else
-	@echo "Will not generate docs because doxygen version is" $(shell doxygen --version) "and required version is" $(required_doxygen_version)
+	@echo "Will not generate docs because doxygen version is" $(doxygen_version) "and minimum version is" $(required_doxygen_version)
 	@touch $@
 endif

@@ -1,26 +1,26 @@
 # Doxyfile 1.6.1
-# begin_generated_IBM_copyright_prolog                             
-#                                                                  
-# This is an automatically generated copyright prolog.             
-# After initializing,  DO NOT MODIFY OR MOVE                       
-# ================================================================ 
-#                                                                  
-# Licensed Materials - Property of IBM                             
-#                                                                  
-# Blue Gene/Q                                                      
-#                                                                  
-# (C) Copyright IBM Corp.  2011, 2011                              
-#                                                                  
-# US Government Users Restricted Rights -                          
-# Use, duplication or disclosure restricted                        
-# by GSA ADP Schedule Contract with IBM Corp.                      
-#                                                                  
-# This software is available to you under the                      
-# Eclipse Public License (EPL).                                    
-#                                                                  
-# ================================================================ 
-#                                                                  
-# end_generated_IBM_copyright_prolog                               
+# begin_generated_IBM_copyright_prolog
+#
+# This is an automatically generated copyright prolog.
+# After initializing,  DO NOT MODIFY OR MOVE
+# ================================================================
+#
+# Licensed Materials - Property of IBM
+#
+# Blue Gene/Q
+#
+# (C) Copyright IBM Corp.  2011, 2011
+#
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted
+# by GSA ADP Schedule Contract with IBM Corp.
+#
+# This software is available to you under the
+# Eclipse Public License (EPL).
+#
+# ================================================================
+#
+# end_generated_IBM_copyright_prolog
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project
@@ -47,7 +47,7 @@ DOXYFILE_ENCODING      = UTF-8
 # The PROJECT_NAME tag is a single word (or a sequence of words surrounded
 # by quotes) that should identify the project.
 
-PROJECT_NAME           = "BG/Q High Level Control System"
+PROJECT_NAME           = "DPM High Level Control System"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -60,7 +60,7 @@ PROJECT_NUMBER         =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = BGQ_INSTALL_DIR/hlcs/docs/overview
+OUTPUT_DIRECTORY       = DPM_INSTALL_DIR/docs/overview
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -667,7 +667,7 @@ EXAMPLE_RECURSIVE      = NO
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = 
+IMAGE_PATH             =
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1317,12 +1317,12 @@ SKIP_FUNCTION_MACROS   = YES
 # If a tag file is not located in the directory in which doxygen
 # is run, you must also specify the path to the tagfile here.
 
-TAGFILES               =    BGQ_INSTALL_DIR/utility/docs/utility.tagfile=../../utility/html
+TAGFILES               =    DPM_INSTALL_DIR/utility/docs/utility.tagfile=../../utility/html
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = BGQ_INSTALL_DIR/hlcs/docs/overview/overview.tagfile
+GENERATE_TAGFILE       = DPM_INSTALL_DIR/hlcs/docs/overview/overview.tagfile
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes
@@ -1385,7 +1385,7 @@ HAVE_DOT               = YES
 # DOTFONTPATH environment variable or by setting DOT_FONTPATH to the directory
 # containing the font.
 
-DOT_FONTNAME           = FreeSans
+#DOT_FONTNAME           = FreeSans
 
 # The DOT_FONTSIZE tag can be used to set the size of the font of dot graphs.
 # The default size is 10pt.

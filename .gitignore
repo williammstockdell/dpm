@@ -40,3 +40,4 @@ test/integration/dpm_install/
 test/integration/logs/
 test/integration/security/
 commands.txt
+docs

@@ -55,6 +55,9 @@ clean: $(TARGETS_CLEAN)
 	$(RM) -rf $(CURDIR)/bin
 	$(RM) -rf $(CURDIR)/sbin
 	$(RM) -rf $(CURDIR)/etc
+	$(RM) -rf $(CURDIR)/man
+	$(RM) -rf $(CURDIR)/html
+	$(RM) -rf $(CURDIR)/docs
 
 distclean: $(TARGETS_DISTCLEAN)
 
