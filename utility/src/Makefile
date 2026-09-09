@@ -55,6 +55,11 @@ static_lib     = lib$(lib_base).a
 
 INSTALL_LIST   = $(call INSTALL_LIB_TARGET,$(lib_short) $(lib_vers) $(lib_full) $(static_lib))
 
+GIT_TAG  := $(shell git describe --tags --abbrev=0 2>/dev/null || echo unknown)
+GIT_HASH := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
+
+CXXFLAGS += -DDPM_GIT_TAG=\"$(GIT_TAG)\" -DDPM_GIT_HASH=\"$(GIT_HASH)\"
+
 CXXFLAGS += -Werror
 CXXFLAGS += -Wall
 CXXFLAGS += -Wextra
@@ -85,6 +90,7 @@ ar_srcs += LoggingProgramOptions.cc
 ar_srcs += Properties.cc
 ar_srcs += XMLEntity.cc
 ar_srcs += Exec.cc
+ar_srcs += version.cc
 
 ar_objs=${ar_srcs:%.cc=%.o}
 
@@ -134,7 +140,6 @@ $(static_lib): $(ar_objs) Makefile
 clean: $(TARGETS_CLEAN)
 	$(RM) *.o *.d performance/*.o portConfiguration/*.o performance/*.d portConfiguration/*.d
 	$(RM) $(lib_short) $(lib_vers) $(lib_full) $(static_lib)
-	$(RM) version.cc
 
 
 distclean: clean $(TARGETS_DISTCLEAN)

@@ -89,7 +89,10 @@ void doStat(const BGMasterClient& client, bool fancy) {
     }
 }
 
-void help() { std::cerr << "Return the process id of dpm_server and information about managed processes." << std::endl; }
+void help() {
+
+    std::cerr << "Return the process id of dpm_server and information about managed processes." << std::endl;
+}
 
 void usage() { std::cerr << "master_status [ --properties filename ] [ --help ] [ --host host:port ] [ --verbose verbosity ]" << std::endl; }
 

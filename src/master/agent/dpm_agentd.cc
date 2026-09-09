@@ -45,6 +45,7 @@
 #include <utility/include/Properties.h>
 #include <utility/include/cxxsockets/Host.h>
 #include <utility/include/portConfiguration/ClientPortConfiguration.h>
+#include <utility/include/version.h>
 #include <csignal>
 #include <filesystem>
 #include <cstdlib>
@@ -245,8 +246,14 @@ int main(int argc, const char** argv) {
     LOG_DEBUG_MSG("Core limits: " << rlimit_core.rlim_cur);
     LOG_DEBUG_MSG("File limits: " << rlimit_nofile.rlim_cur);
 
+    std::ostringstream version;
+    version << "DPM";
+    version << " version: " << dpm::version::tag();
+    version << " hash: " << dpm::version::hash();
+    version << " " << __DATE__ << " " << __TIME__;
+
     LOG_INFO_MSG("dpm_agentd [" << getpid() << "] " <<
 
-                 std::filesystem::path(argv[0]).stem().string() << " " << "Fred" << " (revision " << "Barney" << ") " << __DATE__ << " " << __TIME__ << " starting");
+                 std::filesystem::path(argv[0]).stem().string() << " " << version.str() << __DATE__ << " " << __TIME__ << " starting");
     agent.start(host.getPairs(), signal_read_fd);
 }

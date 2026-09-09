@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <utility/include/TimeStuff.h>
+#include <utility/include/version.h>
 #include <errno.h>
 #include <log4cxx/helpers/messagebuffer.h>
 #include <log4cxx/logger.h>
@@ -879,12 +880,12 @@ void MasterController::startup(const int signal_fd) {
     LOG_TRACE_MSG(__FUNCTION__);
     std::ostringstream version;
     version << "DPM";
-    version << " " << "fred";
-    version << "(revision " << "barney" << ")";
+    version << " version: " << dpm::version::tag();
+    version << " hash: " << dpm::version::hash();
     version << " " << __DATE__ << " " << __TIME__;
     _version_string = version.str();
     LOG_INFO_MSG("dpm_master_server [" << getpid() << "] " << _version_string << " starting...");
-    ;
+
     LOG_INFO_MSG("Using " << _props->getFilename() << " for properties.");
 
     _master_db = false;
