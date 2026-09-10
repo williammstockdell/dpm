@@ -21,6 +21,15 @@
 #
 # end_generated_IBM_copyright_prolog
 
+# ===============================================================#
+#                                                                  #
+# Modifications Copyright (C) Will Stockdell 2026                  #
+#                                                                  #
+# Modifications to this file are made available under the          #
+# Eclipse Public License (EPL) version 1.0.                        #
+#                                                                  #
+# ================================================================ #
+
 INSTALL_DIR=$(DPM_INSTALL_DIR)/xml/include/scripts
 PYSCRIPTS = $(wildcard *.py)
 INSTALL_TARGETS = $(addprefix $(DPM_BUILD_DIR)/xml/include/scripts/, $(PYSCRIPTS))

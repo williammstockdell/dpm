@@ -25,10 +25,13 @@ Does agent die if an app dies?
 Does server get notifications?
 
 1.0:
-Test every command and its options
-Do the clean-checkout → build → install → configure → run smoke test.
-Fix only release-blocking problems from that exercise, then tag 1.0.
-Installation script
+Extend the copyright-header pass from .cc/.h to Makefiles and scripts, using the same baseline/history logic so untouched IBM files remain untouched.
+Do a clean-checkout rebuild and install from scratch.
+Test the installed tree, not just the build tree: binaries, libraries, config failure behavior, certificate-generation path, man pages/docs.
+Move the install tree somewhere else and confirm the $ORIGIN RUNPATH work still holds.
+Run the Docker integration/failover/restart tests one more time against the final code.
+Do one final grep for checkout-path leaks such as /home/will/code/dpm, /home/will/code2/dpm, and /bgsys.
+Tag 1.0 once that passes.
 
 2.0:
 Address the XML/wire-protocol legacy rather than merely modernizing the implementation around it.
