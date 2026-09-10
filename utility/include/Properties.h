@@ -55,14 +55,11 @@ namespace utility {
  *
  * \section properties_overview Overview
  *
- * The properties file is the single central location for all Blue Gene/Q software configuration
- * information. It replaces several configuration files from previous generation Blue Gene systems
- * such as db.properties, bridge.config, and mpirun.cfg. It is the central location to configure
- * database connection information, configure and control logging behavior, as well as the configuration
- * of every component present in the Blue Gene/Q software stack. The location of this file is
+ * The properties file is the single central location for all DPM software configuration
+ * information. The location of this file is
  *
  * \code
- * /bgsys/local/etc/bg.properties
+ * /DPM_INSTALL_PATH/etc/dpm.properties
  * \endcode
  *
  * It contains no plain text passwords and should be readable by all users.

@@ -709,7 +709,7 @@ void MasterController::buildPolicies(std::ostringstream& failmsg) {
     if (drv != NULL)
         driver = drv;
     if (driver.length() == 0)
-        driver = "/bgsys/drivers/ppcfloor"; // reasonable default
+        driver = "/opt/"; // reasonable default
     LOG_DEBUG_MSG("DPM_DRV environment variable is " << driver);
 
     // Need to get preferred_host_wait time to send to the alias constructor.

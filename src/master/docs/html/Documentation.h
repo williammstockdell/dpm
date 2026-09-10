@@ -101,7 +101,7 @@
  *   The complete set of commands are listed in the SEE ALSO section of the dpm_server
  *   man page.
  * \code
- * > man /bgsys/drivers/ppcfloor/hlcs/man/man8/dpm_server.8
+ * > man /DPM_INSTALL_DIR/man/man8/dpm_server.8
  * \endcode
  *
  * \section concepts Concepts
