@@ -68,12 +68,12 @@ void help() {
     std::cerr << "Administrative authority required." << std::endl;
 }
 
-void usage() { std::cerr << "dpm_server_refresh_config [ --help ] [ --host host:port ] [ --verbose verbosity ] filename" << std::endl; }
+void usage() { std::cerr << "reload_config [ --help ] [ --host host:port ] [ --verbose verbosity ] [ --filename filename]" << std::endl; }
 
 int main(int argc, const char** argv) {
     std::vector<std::string> validargs;
     std::vector<std::string> singles;
-    validargs.push_back("*"); // One argument without a "--" is allowed
+    validargs.push_back("--filename");
     const Args largs(argc, argv, &usage, &help, validargs, singles);
     BGMasterClient client;
 

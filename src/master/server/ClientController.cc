@@ -758,13 +758,13 @@ void ClientController::doLoglevelRequest(const BGMasterClientProtocolSpec::Logle
     }
     // Set logging level
     try {
-        bgq::utility::LoggingProgramOptions lpo("ibm.master");
+        bgq::utility::LoggingProgramOptions lpo("dpm.master");
         lpo.notifier(logstrings);
         lpo.apply();
     } catch (const std::invalid_argument& e) {
         loglevrep._rc = exceptions::FATAL;
         loglevrep._rt = e.what();
-        LOG_WARN_MSG(e.what());
+        LOG_WARN_MSG("Failed log setting: " << e.what());
     }
 
     const auto root = log4cxx::Logger::getRootLogger();

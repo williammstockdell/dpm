@@ -46,19 +46,21 @@ LOG_DECLARE_FILE("master");
 
 void help() {
     std::cerr << std::endl
-              << "Displays the logging configuration for the Blue Gene dpm server."
+              << "Displays the logging configuration for the DPM server."
               << " Optionally sets the logging configuration." << std::endl
               << std::endl;
     std::cerr << "Administrative authority required." << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  --host|-H arg                         Server to connect to" << std::endl;
     std::cerr << "  --help|-h                             This help text" << std::endl;
-    std::cerr << "  --properties|-p arg                   Blue Gene configuration file" << std::endl;
+    std::cerr << "  --properties|-p arg                   DPM configuration file" << std::endl;
     std::cerr << "  --verbose|-v arg                      Logging configuration" << std::endl;
+    std::cerr << "  logger=level                                               " << std::endl;
+    std::cerr << "Log levels may be O (off), F (fatal), E (error), W (warn), I (info), D (debug), T (trace), A (all) " << std::endl;
     std::cerr << std::endl;
 }
 
-void usage() { std::cerr << "dpm_server_log_level [logger=level [... logger=level]]" << std::endl; }
+void usage() { std::cerr << "dpm_server_log_level [logger=level [... logger=level]], level is O,F,E,W,I,D,T,A" << std::endl; }
 
 int doLoglevel(const BGMasterClient& client, std::vector<std::string>& input) {
     try {
