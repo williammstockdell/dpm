@@ -36,10 +36,6 @@ install_targets=${install_parts:%=$(BGQ_BIN_INSTALL_DIR)/%}
 
 
 dpm.properties: dpm.properties.template
-	sed -e "s/%%BGQDB_DBNAME%%/$(BGQDB_DBNAME)/" $< | \
-	sed -e "s/%%BGQDB_USER%%/$(BGQDB_USER)/" | \
-	sed -e "s/%%BGQDB_PWD%%/$(BGQDB_PWD)/" | \
-	sed -e "s/%%BGQDB_SCHEMA%%/$(BGQDB_SCHEMA)/" | \
 	sed -e "s,%%DPM_BUILD_DIR%%,$(DPM_BUILD_DIR)," | \
 	sed -e "s,%%CERTIFICATE_DIR%%,$(DPM_BUILD_DIR)/etc/security," > $@
 
