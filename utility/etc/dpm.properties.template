@@ -123,8 +123,6 @@ agentuid = dpmadmin
 dpm_master_server = %%DPM_SERVER%%
 # Maps an alias to a binary path.
 
-dpm_master_server = /bgsys/drivers/ppcfloor/hlcs/sbin/dpm_server
-
 [master.logdirs]
     # Maps aliases to logging directories.  By default, all binaries will log to logdir
     # in the [master.server] section.
