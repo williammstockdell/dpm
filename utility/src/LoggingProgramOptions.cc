@@ -141,8 +141,7 @@ void LoggingProgramOptions::apply() const {
         for (const log4cxx::LoggerPtr& curr_loggerp : repo->getCurrentLoggers()) {
             const log4cxx::LevelPtr level = curr_loggerp->getLevel();
 
-            LOG_DEBUG_MSG(curr_loggerp->getName() << "="
-                          << (level ? level->toString() : "<inherited>"));
+            LOG_DEBUG_MSG(curr_loggerp->getName() << "=" << (level ? level->toString() : "<inherited>"));
         }
     }
 }

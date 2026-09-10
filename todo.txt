@@ -14,10 +14,6 @@ CI, sanitizers/static analysis, and versioning.
 Once it builds cleanly, get a GitHub Actions build running GCC 14 with -Werror, then add ASan/UBSan builds. And at some point
 replace the removed SVN Revision/DriverName mechanism with something very simple based on a release version plus optional Git commit ID.
 
-Roadmap:
-
-build/install cleanup* → reproducible clean build* → warning cleanup/Werror* → baseline tests → Asio/cxxsockets surgery* →
-expanded tests → formatting → protocol/serialization work → CI/sanitizers/release packaging.
 
 Tests:
 App start/stop/status tests.
@@ -25,7 +21,6 @@ Does agent die if an app dies?
 Does server get notifications?
 
 1.0:
-Test the installed tree, not just the build tree: binaries, libraries, config failure behavior, certificate-generation path, man pages/docs.
 Move the install tree somewhere else and confirm the $ORIGIN RUNPATH work still holds.
 Run the Docker integration/failover/restart tests one more time against the final code.
 Tag 1.0 once that passes.

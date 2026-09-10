@@ -231,6 +231,7 @@ AgentRepPtr Alias::validateStartAgent(const BGAgentId& agent_id) {
 AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const BinaryId& failed_bid, BinaryControllerPtr bptr) {
     LOGGING_DECLARE_ALIAS_MDC(_name);
     LOG_TRACE_MSG(__FUNCTION__);
+
     std::scoped_lock scoped_lock(_mutex);
 
     AgentRepPtr rep;
@@ -253,7 +254,9 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
 
     const std::chrono::system_clock::time_point start = bptr->get_start_time();
     const std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+
     LOG_DEBUG_MSG("Start time=" << time_to_string(start) << " Now=" << time_to_string(now));
+
     const auto td = now - start;
     if (td < std::chrono::seconds(RETRY_WINDOW)) {
         ++_retry_count;
@@ -265,7 +268,7 @@ AgentRepPtr Alias::evaluatePolicy(Policy::Trigger trig, BGAgentId& agent, const 
 
     if (p == false) {
         // No Behavior defined.  No policy to execute.
-        LOG_INFO_MSG("No behavior defined for " << get_name() << ".");
+        LOG_INFO_MSG("No behavior defined for " << get_name() << " with trigger " << trig << ".");
     } else if (bvr.get_action() == Behavior::FAILOVER) {
 
         CxxSockets::Host target = bvr.findFailoverTarget(agent.get_host());
