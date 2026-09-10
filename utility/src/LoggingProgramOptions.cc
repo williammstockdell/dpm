@@ -59,26 +59,26 @@ static bool debug(false);
 namespace bgq {
 namespace utility {
 
-LevelPtr LoggingProgramOptions::parseVerboseArgument(const string& str) {
+LevelPtr LoggingProgramOptions::parseVerboseArgument(const string& level_str) {
     // Single letters.
-    if (str == "O" || str == "o")
+    if (level_str == "O" || level_str == "o")
         return Level::getOff();
-    if (str == "F" || str == "f")
+    if (level_str == "F" || level_str == "f")
         return Level::getFatal();
-    if (str == "E" || str == "e")
+    if (level_str == "E" || level_str == "e")
         return Level::getError();
-    if (str == "W" || str == "w")
+    if (level_str == "W" || level_str == "w")
         return Level::getWarn();
-    if (str == "I" || str == "i")
+    if (level_str == "I" || level_str == "i")
         return Level::getInfo();
-    if (str == "D" || str == "d")
+    if (level_str == "D" || level_str == "d")
         return Level::getDebug();
-    if (str == "T" || str == "t")
+    if (level_str == "T" || level_str == "t")
         return Level::getTrace();
-    if (str == "A" || str == "a")
+    if (level_str == "A" || level_str == "a")
         return Level::getAll();
 
-    int level_int(std::stoi(str));
+    int level_int(std::stoi(level_str));
 
     switch (level_int) {
     case 0:
@@ -99,7 +99,7 @@ LevelPtr LoggingProgramOptions::parseVerboseArgument(const string& str) {
         return Level::getAll();
     }
 
-    throw(std::invalid_argument(string() + "invalid verbose option '" + str + "'"));
+    throw(std::invalid_argument("invalid verbose option '" + level_str + "'"));
 }
 
 LoggingProgramOptions::LoggingProgramOptions(const std::string& default_logger_name) : _default_logger_name(default_logger_name) {
