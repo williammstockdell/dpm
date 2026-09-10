@@ -57,15 +57,12 @@ install:
 	install -m 755 src/generate_security_certificates.sh \
 	    $(SBINDIR)/dpm-generate-certificates
 
-clean:			$(TARGETS_CLEAN) docs.clean
+clean:			$(TARGETS_CLEAN)
 distclean:	clean   $(TARGETS_DISTCLEAN)
 
 
 $(TARGETS)::
 	$(MAKE) --directory $(basename $@) $(subst .,,$(suffix $@))
-
-#docs.clean:
-#	$(RM) doxygen.out
 
 
 doxygen.out:

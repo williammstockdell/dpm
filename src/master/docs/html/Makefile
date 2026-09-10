@@ -29,7 +29,7 @@ clean:
 
 distclean: clean
 
-INSTALL_DIR = $(DPM_INSTALL_DIR)/src/master/docs/html/
+INSTALL_DIR = $(DPM_INSTALL_DIR)/docs/master
 
 IMAGE = Alias_etc.png
 
@@ -37,7 +37,7 @@ $(INSTALL_DIR):
 	mkdir -p $@
 
 $(INSTALL_DIR)/%: % | $(INSTALL_DIR)
-	$(CP) $^ $@
+	install -m 644 $< $@
 
 install: docs $(INSTALL_DIR)/$(IMAGE)
 

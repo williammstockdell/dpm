@@ -45,7 +45,6 @@ CXXFLAGS += \
 LDFLAGS += \
  -L $(DPM_BUILD_DIR)/utility/src/cxxsockets -lcxxsockets \
  -L $(DPM_BUILD_DIR)/utility/src/ -lbgutility \
- -Wl,-rpath,$(DPM_BUILD_DIR)/utility/lib \
  -L $(DPM_BUILD_DIR)/xml/src/library -lXML \
  -Wl,-rpath,'$$ORIGIN/../lib'  \
  -llog4cxx \

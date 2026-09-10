@@ -29,12 +29,11 @@ CXXFLAGS    += -isystem $(DPM_BUILD_DIR)/extlib/include
 CXXFLAGS += -std=c++20
 CXXFLAGS += -g
 CXXFLAGS += -Werror
-LDFLAGS     += -L $(DPM_BUILD_DIR)/extlib/lib
-LDFLAGS += -Wl,-rpath,$(DPM_BUILD_DIR)/extlib/lib
 
+LDFLAGS += -L $(DPM_BUILD_DIR)/extlib/lib
 
 # enable RUNPATH ELF tag instead of RPATH
-LDFLAGS     += -Wl,--enable-new-dtags
+LDFLAGS += -Wl,--enable-new-dtags
 
 # define installation directories
 BGQ_LIB_INSTALL_DIR=$(DPM_INSTALL_DIR)/hlcs/lib
