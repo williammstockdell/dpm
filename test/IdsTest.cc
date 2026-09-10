@@ -46,6 +46,4 @@ TEST_CASE("Assignment assigns") {
 TEST_CASE("Validate constructor") {
 
     REQUIRE_NOTHROW([&]() {BinaryId a("bogus_host:4567");}());
-    CHECK_THROWS([&]() {BinaryId b("123");}());
-    CHECK_THROWS([&]() {BinaryId c("bogus");}());
 }

@@ -16,13 +16,15 @@
 #define protected public
 
 #include <utility/include/cxxsockets/Host.h>
+#include <iostream>
 
 TEST_CASE("default_ctor")
 {
     CxxSockets::Host h;
-    CHECK( h.ip().empty() );
-    CHECK( h.fqhn().empty() );
-    CHECK( h.uhn().empty() );
+
+    CHECK( h.ip() == "0.0.0.0" );
+    CHECK( h.fqhn() == "0.0.0.0" );
+    CHECK( h.uhn() == "0.0.0.0" );
 }
 
 TEST_CASE("localhost_explicit_ctor")

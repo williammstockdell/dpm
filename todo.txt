@@ -22,7 +22,6 @@ Does server get notifications?
 
 1.0:
 Move the install tree somewhere else and confirm the $ORIGIN RUNPATH work still holds.
-Run the Docker integration/failover/restart tests one more time against the final code.
 Tag 1.0 once that passes.
 
 2.0:
