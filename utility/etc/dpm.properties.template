@@ -120,7 +120,8 @@ agentuid = dpmadmin
 
 
 [master.binmap]
-    # Maps an alias to a binary path.
+dpm_master_server = %%DPM_SERVER%%
+# Maps an alias to a binary path.
 
 dpm_master_server = /bgsys/drivers/ppcfloor/hlcs/sbin/dpm_server
 

@@ -21,30 +21,14 @@
 #
 # end_generated_IBM_copyright_prolog
 
-TOP_DIR=utility
-BGQ_BIN_INSTALL_DIR=$(DPM_BUILD_DIR)/$(TOP_DIR)/etc
-
-
-.PHONY: default all clean distclean
-
+.PHONY: default all clean distclean install uninstall
 
 default: all
 
-
-
-install_targets=${install_parts:%=$(BGQ_BIN_INSTALL_DIR)/%}
-
-
-dpm.properties: dpm.properties.template
-	sed -e "s,%%DPM_BUILD_DIR%%,$(DPM_BUILD_DIR)," | \
-	sed -e "s,%%CERTIFICATE_DIR%%,$(DPM_BUILD_DIR)/etc/security," > $@
-
-
-%.tpl: %
-	$(CP) $< $@
-
 all: dpm.properties
 
+dpm.properties: dpm.properties.template
+	sed -e "s,%%CERTIFICATE_DIR%%,$(DPM_BUILD_DIR)/etc/security,g" $< > $@
 
 clean:
 	$(RM) dpm.properties
@@ -53,9 +37,7 @@ distclean: clean
 
 install:
 	install -d $(ETCDIR)
-	install -m 755 dpm.properties $(ETCDIR)
-
+	install -m 644 dpm.properties.template $(ETCDIR)/dpm.properties
 
 uninstall:
-	$(RM) $(etc_install_dir)/dpm.properties.tpl
-	$(RM) $(etc_install_dir)/dpm.bringup.properties.tpl
+	$(RM) $(ETCDIR)/dpm.properties

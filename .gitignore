@@ -42,3 +42,4 @@ test/integration/security/
 commands.txt
 docs
 utility.tagfile
+xml/include/scripts/__pycache__/
