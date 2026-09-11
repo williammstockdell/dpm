@@ -16,3 +16,6 @@ The original code is Copyright (c) 2010, 2011 IBM Corp.
 All modernizations, modifications, and new contributions are Copyright (c) 2026 Will Stockdell.
 
 Full, line-by-line identification of all modifications and author attributions is maintained transparently via the project's Git commit history (`git log`).
+
+## Building and Installing
+See the build_install.md document in the top level directory for instructions.
