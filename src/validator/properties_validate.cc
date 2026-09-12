@@ -65,7 +65,9 @@ void help() {
 }
 
 void doBGMaster() {
+
     std::cout << "Evaluating DPM properties...." << std::endl;
+
     MasterController bgm(props);
 
     std::ostringstream failmsg;
@@ -92,7 +94,7 @@ int main(int argc, const char** argv) {
     singles.push_back("-f");
 
     Args largs(argc, argv, &usage, &help, validargs, singles, SERVER);
-    bgq::utility::Properties::Ptr props = largs.get_props();
+    props = largs.get_props();
 
     try {
 
