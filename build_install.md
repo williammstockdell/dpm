@@ -77,5 +77,5 @@ server and agents.
 dependency.
 
 ### Formatting
-If you install clang-format, you can use the .clang-format tool to match the
+If you install clang-format, you can use the .clang-format file to match the
 code format style.

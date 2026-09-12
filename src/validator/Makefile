@@ -39,19 +39,16 @@ CXXFLAGS += -Wall
 CXXFLAGS += -MD -MP
 CXXFLAGS += -iquote $(DPM_BUILD_DIR)/src/master
 CXXFLAGS += -isystem $(DPM_BUILD_DIR)
+CXXFLAGS += -isystem $(DPM_BUILD_DIR)/utility/include
+CXXFLAGS += -I$(DPM_BUILD_DIR)/src/master/protocol
 
-LDFLAGS  += -llog4cxx
-LDFLAGS  += -lcxxsockets
-LDFLAGS  += -L $(DPM_BUILD_DIR)/utility/lib -lbgutility
-LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/utility/lib
-LDFLAGS  += -L $(DPM_BUILD_DIR)/xml/lib -lXML
-LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/xml/lib
-LDFLAGS  += -L $(DPM_BUILD_DIR)/ras/lib -lras
-LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/ras/lib
-LDFLAGS  += -L $(DPM_BUILD_DIR)/db/lib -lbgdb
-LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/db/lib
-LDFLAGS  += -L $(DPM_BUILD_DIR)/control/lib -lmcserver
-LDFLAGS  += -Wl,-rpath,$(DPM_BUILD_DIR)/control/lib
+LDFLAGS += -L $(DPM_BUILD_DIR)/utility/src/cxxsockets -lcxxsockets
+LDFLAGS += -L $(DPM_BUILD_DIR)/utility/src/ -lbgutility
+LDFLAGS += -L $(DPM_BUILD_DIR)/xml/src/library -lXML
+LDFLAGS += -Wl,-rpath,'$$ORIGIN/../lib'
+LDFLAGS += -llog4cxx
+LDFLAGS += -lssl
+LDFLAGS += -lcrypto
 
 BGM_OBJS =
 BGM_OBJS += ../master/common/AgentBase.o
@@ -63,8 +60,8 @@ BGM_OBJS += ../master/server/AliasList.o
 BGM_OBJS += ../master/server/Behavior.o
 BGM_OBJS += ../master/server/ClientController.o
 BGM_OBJS += ../master/server/ClientManager.o
-BGM_OBJS += ../master/server/DBUpdater.o
 BGM_OBJS += ../master/common/Ids.o
+BGM_OBJS += ../master/common/ArgParse.o
 BGM_OBJS += ../master/server/MasterController.o
 BGM_OBJS += ../master/common/Protocol.o
 BGM_OBJS += ../master/server/Registrar.o
@@ -72,18 +69,16 @@ BGM_OBJS += ../master/server/Registrar.o
 BGM_OBJS += ../master/protocol/BGMasterAgentProtocolSpec.o
 BGM_OBJS += ../master/protocol/BGMasterClientProtocolSpec.o
 
-MMCS_OBJS  = ../mmcs/common/Properties.o
-MMCS_OBJS += ../mmcs/common/Subnet.o
-
 INSTALL_LIST += $(call INSTALL_BIN_TARGET, $(EXECS))
 
 bg_bin_links := $(EXECS)
 
 .PHONY: clean docs install distclean all
 
-all: $(EXECS) test
+all: $(EXECS)
 
-install: $(INSTALL_LIST) $(bg_links_targets) test
+install:
+	cp properties_validate $(BINDIR)/
 
 clean:
 	$(RM) $(INSTALL_LIST)
@@ -94,7 +89,7 @@ clean:
 
 distclean:	clean
 
-properties_validate: properties_validate.o $(BGM_OBJS) $(MMCS_OBJS)
+properties_validate: properties_validate.o $(BGM_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 test: properties_validate

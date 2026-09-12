@@ -33,12 +33,12 @@
 #include "../master/lib/exceptions.h"
 #include "../master/server/LockFile.h"
 #include "../master/server/MasterController.h"
-#include "../mmcs/common/Properties.h"
 #include <iostream>
 #include <sstream>
 #include <utility/include/Log.h>
 #include <utility/include/LoggingProgramOptions.h>
 #include <utility/include/portConfiguration/ClientPortConfiguration.h>
+#include "../master/common/ArgParse.h"
 
 // Bogus value to make bgmaster translation units happy.
 LockFile* lock_file;
@@ -65,7 +65,7 @@ void help() {
 }
 
 void doBGMaster() {
-    std::cout << "Evaluating bgmaster properties...." << std::endl;
+    std::cout << "Evaluating DPM properties...." << std::endl;
     MasterController bgm(props);
 
     std::ostringstream failmsg;
@@ -80,135 +80,53 @@ void doBGMaster() {
     }
 }
 
-void doMMCS() {
-    std::cout << "Evaluating mmcs properties...." << std::endl;
-    mmcs::common::Properties mmcsprops;
-    mmcsprops.setProperties(props);
-    mmcs::common::Properties::object server_object = mmcs::common::Properties::server;
-    mmcs::common::Properties::object console_object = mmcs::common::Properties::console;
-    try {
-        mmcsprops.read(server_object, true);
-        mmcsprops.read(console_object, true);
-    } catch (const std::runtime_error& e) {
-        std::cerr << "MMCS Configuration error detected. " << e.what() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-}
+void usage() { std::cerr << "FIX THIS USAGE TEXT" << std::endl; }
 
-bool doOthers() {
-    std::cout << "Evaluating other rules..." << std::endl;
-    // First rule is that all subnets must match their bgmaster alias name to their
-    // machinecontroller name.
-    std::vector<std::string> subnet_names;
-
-    try {
-        int i = 0;
-        while (true) { // Exception will end this loop.
-            std::string subnet = "machinecontroller.subnet.";
-            subnet += std::to_string(i);
-            std::string subnet_id = props->getValue(subnet, "Name");
-            subnet_names.push_back(subnet_id);
-            ++i;
-        }
-    } catch (const std::invalid_argument& e) {
-        // We're supposed to reach here. Just catch and be quiet.
-    }
-
-    // Now get the alias list from master.binmap
-    bgq::utility::Properties::Section binmap = props->getValues("master.binmap");
-    // Finally, make sure that each subnet name is in master.binmap.
-    for (const std::string& curr_subnet : subnet_names) {
-        bool found = false;
-        for (const bgq::utility::Properties::Pair& key_val : binmap) {
-            if (key_val.first == curr_subnet)
-                found = true;
-        }
-        if (!found) {
-            std::cerr << "Error:" << std::endl;
-            std::cerr << curr_subnet << " not found in [master.binmap] section.  "
-                      << "Check bg.properties to ensure that " << curr_subnet << " is configured to start a SubnetMc process and that "
-                      << "its alias matches its subnet ID." << std::endl;
-            return false;
-        }
-    }
-    return true;
-}
 
 int main(int argc, const char** argv) {
-    std::vector<std::string> servers;
-    valid_server_names.push_back("bgmaster_server");
-    valid_server_names.push_back("mmcs_server");
 
-    // add properties and verbose options
-    bgq::utility::Properties::ProgramOptions propertiesOptions;
-    propertiesOptions.addTo(options);
-    bgq::utility::LoggingProgramOptions lpo("ibm");
+    // Parse --properties and --verbose before everything else
 
-    po::positional_options_description positionals;
-    positionals.add("properties", 1);
+    std::vector<std::string> validargs;
+    std::vector<std::string> singles;
+    singles.push_back("-f");
 
-    // parse --properties before everything else
+    Args largs(argc, argv, &usage, &help, validargs, singles, SERVER);
+    bgq::utility::Properties::Ptr props = largs.get_props();
+
     try {
 
-        cmd_line.allow_unregistered();
-        cmd_line.options(options);
-        cmd_line.positional(positionals);
-        po::variables_map vm;
-        po::store(cmd_line.run(), vm);
-        po::notify(vm);
+        bgq::utility::LoggingProgramOptions lpo("dpm.master");
 
-        // create properties and initialize logging
-        props = bgq::utility::Properties::create(propertiesOptions.getFilename());
-        bgq::utility::initializeLogging(*props, lpo);
+        // Create properties and initialize logging
+        bgq::utility::initializeLogging(*props, lpo, std::string("master"));
     } catch (const std::runtime_error& e) {
-        std::cerr << "Error reading properties: " << e.what() << std::endl;
+        std::cerr << "Error reading configuration file: " << e.what() << std::endl;
         exit(EXIT_FAILURE);
-    }
-
-    // parse the rest of the args
-    po::variables_map vm;
-    po::command_line_parser cmd_line(argc, const_cast<char**>(argv));
-    cmd_line.options(options);
-    try {
-        po::store(cmd_line.run(), vm);
-
-        // notify variables_map that we are done processing options
-        po::notify(vm);
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    if (vm["help"].as<bool>()) {
-        std::cout << argv[0] << " [path to properties file]" << std::endl;
-        std::cout << std::endl;
-        std::cout << "OPTIONS:" << std::endl;
-        std::cout << options << std::endl;
-        help();
-        server_names();
-        exit(EXIT_SUCCESS);
-    }
-
     std::cout << "validating " << props->getFilename() << std::endl;
+
+    std::vector<std::string> servers;
+    servers.push_back("dpm_server");
 
     if (servers.size() == 0) {
         servers = valid_server_names;
     }
 
     for (const std::string& curr_server : servers) {
-        if (curr_server == "bgmaster_server") {
+        if (curr_server == "dpm_server") {
             doBGMaster();
-        } else if (curr_server == "mmcs_server") {
-            doMMCS();
         } else {
             std::cerr << "Invalid server name \"" << curr_server << "\".  ";
             server_names();
             exit(EXIT_FAILURE);
         }
     }
-    if (!doOthers()) {
-        exit(EXIT_FAILURE);
-    }
+
     std::cout << "No errors detected for servers ";
     for (const std::string& curr_server : servers) {
         std::cout << curr_server << " ";
