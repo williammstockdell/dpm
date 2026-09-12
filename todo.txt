@@ -20,9 +20,6 @@ App start/stop/status tests.
 Does agent die if an app dies?
 Does server get notifications?
 
-1.0:
-Move the install tree somewhere else and confirm the $ORIGIN RUNPATH work still holds.
-Tag 1.0 once that passes.
 
 2.0:
 Address the XML/wire-protocol legacy rather than merely modernizing the implementation around it.

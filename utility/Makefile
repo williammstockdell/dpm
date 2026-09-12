@@ -67,6 +67,8 @@ install:
 	    $(SBINDIR)/dpm-generate-certificates
 
 clean:			$(TARGETS_CLEAN)
+	$(RM) *.o *.d $(exe)
+
 distclean:	clean   $(TARGETS_DISTCLEAN)
 
 

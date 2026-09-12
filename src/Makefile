@@ -34,6 +34,7 @@ include ../Make.hlcs.rules
 
 DIRS  = docs
 DIRS += master
+DIRS += validator
 
 TARGETS_ALL		= $(addsuffix .all,$(DIRS))
 TARGETS_INSTALL		= $(addsuffix .install,$(DIRS))
@@ -57,6 +58,7 @@ all:            all $(TARGETS_ALL)
 
 install:
 	$(MAKE) --directory master install
+	$(MAKE) --directory validator install
 
 clean:			$(TARGETS_CLEAN)
 distclean:	clean   $(TARGETS_DISTCLEAN)

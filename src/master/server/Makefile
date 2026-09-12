@@ -105,7 +105,6 @@ install:
 
 clean:
 	$(RM) *.o *.d $(exe)
-	$(RM) ras_scan
 
 distclean: clean
 

@@ -135,6 +135,7 @@ int main(int argc, const char** argv) {
     bgq::utility::Properties::Ptr props = largs.get_props();
 
     try {
+
         bgq::utility::LoggingProgramOptions lpo("dpm.master");
 
         // Create properties and initialize logging
